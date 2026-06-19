@@ -1,5 +1,7 @@
 # LearNeur 🧠✨
 
+# Where Therapy Meets Imagination.
+
 **LearNeur** is a smart, interactive, and comprehensive digital ecosystem specifically designed to support children on the Autism Spectrum. It also provides an advanced environment for parents, doctors, and system administrators to monitor the child's condition and progress. The application bridges interactive educational games, tactile physics-based playrooms, and clinical telemetry to deliver a customized and joyful therapeutic experience in one place.
 
 ---
