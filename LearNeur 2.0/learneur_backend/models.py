@@ -123,12 +123,13 @@ class DoctorChildConnection(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     # NOTE: Change "doctors.id" to "users.id" if your doctors are stored in the main Users table
-    doctor_id = Column(String, ForeignKey("doctors.id", ondelete="CASCADE"), nullable=False) 
+    # تم التعديل لتشاور على users.id عشان تتطابق مع نوع String (UUID)
+    doctor_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False) 
     child_id = Column(Integer, ForeignKey("children.id", ondelete="CASCADE"), nullable=False)
     
     # Status can be: "pending", "approved", "rejected"
     status = Column(String, default="pending", nullable=False) 
-    created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     # Relationships (ensure your Doctor and Child models have back-populates if needed)
     doctor = relationship("Doctor", backref="child_connections") # Change "Doctor" to "User" if using single table
