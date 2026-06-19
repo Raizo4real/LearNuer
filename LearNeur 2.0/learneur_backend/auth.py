@@ -1,9 +1,14 @@
 import bcrypt
 from datetime import datetime, timedelta
 import jwt
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "SUPER_SECRET_KEY_LEARNEUR_2026" # غيره بعدين براحتك
-ALGORITHM = "HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256") # الـ HS256
+
 ACCESS_TOKEN_EXPIRE_MINUTES = 259200
 
 # دالة لتشفيير الباسورد (وقت الـ Register)
