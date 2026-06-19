@@ -1,26 +1,24 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
 
-# 1. Define the SQLite connection string
-# This creates a file named "learneur.db" in the same directory
-SQLALCHEMY_DATABASE_URL = "sqlite:///./learneur.db"
+load_dotenv()
 
-# 2. Create the SQLAlchemy engine
-# connect_args={"check_same_thread": False} is required ONLY for SQLite in FastAPI
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# 1. بنجيب الرابط من ملف الـ .env أو من Railway
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
-# 3. Create a SessionLocal class
-# Each instance of this class will be a database session
+# 2. التريكة: لو الرابط بيبدأ بـ postgres بنخليه postgresql عشان SQLAlchemy ميزعلش
+if SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# 3. شلنا الـ connect_args الخاصة بـ SQLite
+engine = create_engine(SQLALCHEMY_DATABASE_URL) 
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# 4. Create a Base class
-# All our ORM models (in models.py) will inherit from this Base
 Base = declarative_base()
 
-# 5. Dependency injection function
-# This yields a database session for a single request and closes it safely afterward
 def get_db():
     db = SessionLocal()
     try:
