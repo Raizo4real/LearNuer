@@ -5,8 +5,8 @@ import os
 # --- إعدادات سيرفر الـ SMTP ---
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SENDER_EMAIL = os.getenv("SMTP_USERNAME", "learneur.verify@gmail.com")
-SENDER_PASSWORD = os.getenv("SMTP_PASSWORD", "rfuvkfxenarcwgpz")   
+SENDER_EMAIL = os.getenv("SMTP_USERNAME")
+SENDER_PASSWORD = os.getenv("SMTP_PASSWORD")   
 
 # --- القالب الموحد للإيميلات (HTML Template) ---
 def get_email_template(title: str, content_html: str) -> str:
