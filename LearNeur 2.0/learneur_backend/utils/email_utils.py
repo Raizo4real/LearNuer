@@ -9,8 +9,8 @@ load_dotenv() # 2. تفعيل قراءة ملف الـ .env أوتوماتيكي
 # Configuration: In production, load these from a .env file
 SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USERNAME = os.getenv("SMTP_USERNAME", "learneur.verify@gmail.com")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "rfuvkfxenarcwgpz")
+SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 def send_otp_email(receiver_email: str, otp_code: str):
     """
