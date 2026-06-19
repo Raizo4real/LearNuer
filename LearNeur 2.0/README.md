@@ -114,9 +114,14 @@ LearNeur/
     ├── config.js                # Global API base URL configuration
     ├── educationalData.js       # Client-side educational content/modules
     └── styles.css               # Global stylesheets and themes
+```
 
+## 📄 Pages & Mechanics
+1.Sandbox Playroom (child_profile.html):
+    O. Mechanics: An immersive environment tailored to the child's communication level (e.g., Non-verbal, Verbal).  
+    O. Features a dynamic sky-bg with floating clouds and a custom JS physics loop (requestAnimationFrame) handling collisions and gravity for draggable toys
+       layered over a 3D grass background and floating CSS clouds.
 
-📄 Pages & MechanicsSandbox Playroom (child_profile.html):Mechanics: An immersive environment tailored to the child's communication level (e.g., Non-verbal, Verbal).  Features a dynamic sky-bg with floating clouds and a custom JS physics loop (requestAnimationFrame) handling collisions and gravity for draggable toys[cite: 3].Owner Dashboard (owner_dashboard.html):Mechanics: A central hub for platform management. Uses dynamic fetching to populate Glassmorphism tables.  Implements custom Toast notifications and non-blocking custom confirmation modals instead of native browser prompts.  Authentication Gateway (auth_router.py & login.html):Mechanics: Evaluates the user's role upon login and dynamically redirects them to the appropriate dashboard, injecting a 6-month valid cookie to maintain long-term sessions without frequent disruptions[cite: 2].🗄️ State & Security ManagementAuthentication State:Tokens are baked into the access_token cookie with a max_age of 6 months, matched by the JWT exp payload, ensuring a seamless user experience[cite: 2].Kiosk Lock Trap:The child's interface uses the History API (window.history.pushState) to trap the back button. If pressed, a secure PIN modal intercepts the action, requiring parental authorization to exit the environment[cite: 3].DOM Protection:Keybindings (F12, Ctrl+Shift+I) and context menus are disabled within the child's portal to prevent accidental navigation or console opening[cite: 3].🎨 Design System3D Claymorphism:
-Buttons and interactive cards feature deep inner shadows and highlights (inset -4px -4px 10px, inset 4px 4px 10px) to mimic real-world clay/rubber, encouraging tactile interaction[cite: 1, 3].Glassmorphism:
-Dashboards utilize semi-transparent backgrounds with backdrop-filter: blur() to create a clean, clinical, yet modern aesthetic for doctors and admins[cite: 1].Ambient Backgrounds:
-Continuous, slow-drifting radial gradients create a soothing atmosphere without being visually aggressive[cite: 1].
+2.Owner/Admin Dashboards (owner_dashboard.html, admin_dashboard.html):
+    O. Mechanics: A central hub for platform management. Uses dynamic data fetching to populate Glassmorphism tables.
+    O. Implements custom Toast notifications and non-blocking custom confirmation modals (preventing ugly native browser alerts).
