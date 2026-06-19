@@ -6,3 +6,4 @@ python-jose[cryptography]
 passlib[bcrypt]
 bcrypt
 aiofiles
+psycopg2-binary==2.9.9
