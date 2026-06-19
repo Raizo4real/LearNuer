@@ -117,11 +117,35 @@ LearNeur/
 ```
 
 ## 📄 Pages & Mechanics
-1.Sandbox Playroom (child_profile.html):
-    O. Mechanics: An immersive environment tailored to the child's communication level (e.g., Non-verbal, Verbal).  
-    O. Features a dynamic sky-bg with floating clouds and a custom JS physics loop (requestAnimationFrame) handling collisions and gravity for draggable toys
-       layered over a 3D grass background and floating CSS clouds.
 
-2.Owner/Admin Dashboards (owner_dashboard.html, admin_dashboard.html):
-    O. Mechanics: A central hub for platform management. Uses dynamic data fetching to populate Glassmorphism tables.
-    O. Implements custom Toast notifications and non-blocking custom confirmation modals (preventing ugly native browser alerts).
+1. **Sandbox Playroom (`child_profile.html`):**
+   - **Mechanics:** An immersive environment tailored to the child's communication level (e.g., Non-verbal, Verbal).
+   - Features a custom JS physics loop (`requestAnimationFrame`) handling collisions and gravity for draggable toys, layered over a 3D grass background and floating CSS clouds.
+
+2. **Owner/Admin Dashboards (`owner_dashboard.html`, `admin_dashboard.html`):**
+   - **Mechanics:** A central hub for platform management. Uses dynamic data fetching to populate Glassmorphism tables.
+   - Implements custom `Toast` notifications and non-blocking custom confirmation modals (preventing ugly native browser alerts).
+
+3. **Doctor Hub (`doctor_hub.html`):**
+   - **Mechanics:** Handles patient telemetry analytics (focus charts, frantic clicks) and includes a global medical community forum for professional discussions.
+
+---
+
+## 🗄️ State & Security Management
+
+1. **Authentication State (6-Month Persistence):**
+   - JWT tokens are configured with an extended `max_age` (6 months) and are securely baked into `HttpOnly` cookies, ensuring a seamless, persistent user experience for Parents and Owners without random logouts.
+
+2. **Kiosk Lock Trap:**
+   - The child's interface uses the `History API` (`window.history.pushState`) to trap the back button. If pressed, a secure PIN modal intercepts the action, requiring parental OTP/PIN authorization to exit the environment.
+
+3. **DOM Protection:**
+   - Developer tools shortcuts (F12, Ctrl+Shift+I) and context menus (Right-click) are strictly disabled within the child's portal to prevent accidental console opening and layout breaking.
+
+---
+
+## 🎨 Design System
+
+- **3D Claymorphism:** Buttons and interactive cards feature deep inner shadows and highlights (`inset -4px -4px 10px`, `inset 4px 4px 10px`) to mimic real-world clay/rubber, encouraging tactile interaction for children.
+- **Glassmorphism:** Dashboards utilize semi-transparent backgrounds with `backdrop-filter: blur()` to create a clean, clinical, yet modern aesthetic for doctors and admins.
+- **Ambient Backgrounds:** Continuous, slow-drifting radial gradients create a soothing atmosphere without being visually aggressive.
