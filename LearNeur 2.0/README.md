@@ -13,8 +13,6 @@
 - [Pages & Mechanics](#-pages--mechanics)
 - [State & Security Management](#-state--security-management)
 - [Design System](#-design-system)
-- [Getting Started](#-getting-started)
-- [Team & Contributors](#-team--contributors)
 
 ---
 
