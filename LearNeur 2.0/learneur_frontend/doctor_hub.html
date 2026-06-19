@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>LearNeur | Doctor Clinical Hub</title>
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. CORE VARIABLES & THEME (Hybrid Aesthetic)
+           ========================================= */
+        :root {
+            /* Light Mode (Clinical & Clean) */
+            --bg-gradient: linear-gradient(135deg, #EBF8FF 0%, #E2E8F0 100%);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary-teal: #4FD1C5;
+            --primary-blue: #63B3ED;
+            --danger: #F56565;
+            --success: #48BB78;
+
+            /* Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            --card-hover: rgba(255, 255, 255, 0.9);
+
+            /* Claymorphism Accents */
+            --clay-bg: #4FD1C5;
+            --clay-shadow: #319795;
+            --clay-highlight: rgba(255, 255, 255, 0.6);
+            --clay-border: #FFFFFF;
+
+            --nav-height: 85px;
+        }
+
+        [data-theme="dark"] {
+            /* Deep, Modern Dark Mode */
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+
+            /* Glassmorphism */
+            --glass-bg: rgba(15, 23, 42, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --card-hover: rgba(30, 41, 59, 0.7);
+
+            /* Claymorphism */
+            --clay-border: #2D3748;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* Ambient Background Mesh */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(120px);
+            opacity: 0.4;
+            pointer-events: none;
+            animation: drift 25s infinite alternate ease-in-out;
+        }
+
+        body::before {
+            width: 45vw;
+            height: 45vw;
+            background: var(--primary-teal);
+            top: -10%;
+            left: -10%;
+        }
+
+        body::after {
+            width: 40vw;
+            height: 40vw;
+            background: var(--primary-blue);
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(8vw, 8vh) scale(1.1); }
+        }
+
+        /* =========================================
+           2. NAVIGATION BAR
+           ========================================= */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            padding: 0 clamp(1.5rem, 5vw, 4rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            font-family: 'Fredoka One', cursive;
+            text-decoration: none;
+            color: var(--primary-teal);
+            cursor: pointer;
+        }
+
+        .nav-logo span { color: var(--primary-blue); }
+
+        .nav-controls { display: flex; align-items: center; gap: 1.5rem; }
+
+        .doctor-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.4rem 1rem 0.4rem 0.4rem;
+            border-radius: 40px;
+            border: 1px solid var(--glass-border);
+        }
+
+        [data-theme="dark"] .doctor-profile-badge {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .doc-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-teal);
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.4), 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .doc-info { display: flex; flex-direction: column; }
+        .doc-name { font-size: 0.95rem; font-weight: 800; line-height: 1.2; }
+        .doc-title { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; }
+
+        .icon-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: var(--card-hover);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .icon-btn.logout:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        /* =========================================
+           3. MAIN CONTENT & SPA SECTIONS
+           ========================================= */
+        .main-container {
+            margin-top: var(--nav-height);
+            padding: clamp(2rem, 5vw, 4rem) clamp(1.5rem, 5vw, 4rem);
+            max-width: 1400px;
+            width: 100%;
+            margin-inline: auto;
+            flex: 1;
+        }
+
+        .spa-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .spa-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-header {
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .welcome-header h1 {
+            font-size: clamp(2.2rem, 4vw, 3rem);
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .welcome-header p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-muted);
+            font-weight: 600;
+            max-width: 700px;
+        }
+
+        .btn-back {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.8rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        /* =========================================
+           4. GRID & HYBRID CARDS
+           ========================================= */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 25vw, 320px), 1fr));
+            gap: clamp(1.5rem, 3vw, 2.5rem);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 35px;
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            color: var(--text-main);
+            position: relative;
+        }
+
+        .hub-card { cursor: pointer; text-decoration: none; overflow: hidden; }
+
+        .hub-card:hover {
+            transform: translateY(-8px);
+            background: var(--card-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            width: 75px;
+            height: 75px;
+            border-radius: 25px;
+            background: var(--clay-bg);
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border: 4px solid var(--clay-border);
+            box-shadow:
+                inset 3px 3px 8px var(--clay-highlight),
+                inset -3px -3px 8px rgba(0, 0, 0, 0.1),
+                0 8px 0 var(--clay-shadow),
+                0 15px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .hub-card:hover .card-icon {
+            transform: translateY(4px);
+            box-shadow: inset 3px 3px 8px var(--clay-highlight), inset -3px -3px 8px rgba(0, 0, 0, 0.1), 0 4px 0 var(--clay-shadow), 0 8px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card h3 {
+            font-size: 1.5rem;
+            font-family: 'Fredoka One', cursive;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .glass-card p {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--danger);
+            color: #FFF;
+            font-size: 0.85rem;
+            font-weight: 900;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(245, 101, 101, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .badge.hidden { display: none; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .data-card { gap: 0.5rem; }
+        .data-card .meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .data-card .meta-icon { font-size: 1.2rem; }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-clay {
+            flex: 1;
+            border: 3px solid var(--clay-border);
+            border-radius: 20px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-chat { background: var(--primary-blue); color: #0F2027; box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 6px 0 #3182CE, 0 10px 15px rgba(0, 0, 0, 0.15); }
+        .btn-chat:active { transform: translateY(6px); box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0px 0 #3182CE, 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .btn-accept { background: var(--primary-teal); color: #000; box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 6px 0 #319795, 0 10px 15px rgba(0, 0, 0, 0.15); }
+        .btn-accept:active { transform: translateY(6px); box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0px 0 #319795, 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .btn-reject { background: var(--danger); color: #FFF; box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.3), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 6px 0 #C53030, 0 10px 15px rgba(0, 0, 0, 0.15); }
+        .btn-reject:active { transform: translateY(6px); box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.3), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0px 0 #C53030, 0 4px 8px rgba(0, 0, 0, 0.1); }
+
+        #toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 1rem; }
+        .toast {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid var(--primary-teal);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: #FFF;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out forwards, fadeOut 0.3s ease-in forwards 3s;
+        }
+        .toast.error { border-color: var(--danger); }
+
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+        .empty-state {
+            grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); font-weight: 700;
+            font-size: 1.2rem; background: var(--glass-bg); border-radius: 25px; border: 1px dashed var(--glass-border);
+        }
+
+        @media (max-width: 768px) {
+            .doctor-profile-badge .doc-info { display: none; }
+            .hub-card { padding: 1.8rem; }
+        }
+
+        /* 📱 Fix for Small Mobile Screens */
+        @media (max-width: 480px) {
+            .navbar { padding: 0 1rem; }
+            .nav-logo { font-size: 1.5rem; }
+            .welcome-header h1 { font-size: 1.8rem; }
+            .glass-card { padding: 1.2rem; }
+            .action-buttons { flex-direction: column; }
+            .btn-clay { padding: 0.8rem; font-size: 1rem; }
+            .doctor-profile-badge { display: none; }
+            .chat-modal-overlay { padding: 0.5rem; gap: 0.5rem; }
+            .hud-left-panel, .hud-right-panel { padding: 1rem; }
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+    <nav class="navbar">
+        <a class="nav-logo" onclick="navigateTo('hub')">Lear<span>Neur</span></a>
+
+        <div class="nav-controls">
+            <div class="doctor-profile-badge">
+                <div class="doc-avatar" id="doc-initial">Dr</div>
+                <div class="doc-info">
+                    <span class="doc-name" id="doc-name">Doctor</span>
+                    <span class="doc-title">Clinical Hub</span>
+                </div>
+            </div>
+            <button id="theme-toggle" class="icon-btn" title="Toggle Theme">🌙</button>
+            <button id="logout-btn" class="icon-btn logout" title="Secure Logout">🚪 </button>
+        </div>
+    </nav>
+
+    <main class="main-container">
+
+        <section id="section-hub" class="spa-section active">
+            <header class="welcome-header">
+                <div>
+                    <h1>Clinical Overview</h1>
+                    <p>Welcome to your secure medical hub. Monitor your patients' cognitive progress, analyze behavioral
+                        telemetry, and manage parent requests.</p>
+                </div>
+            </header>
+
+            <div class="cards-grid">
+                <div class="glass-card hub-card" onclick="navigateTo('pending')">
+                    <div class="badge hidden" id="pending-badge">0 New</div>
+                    <div class="card-icon" style="--clay-bg: #4FD1C5; --clay-shadow: #319795;">💬</div>
+                    <h3>Parent Consultations</h3>
+                    <p>Review and manage incoming connection requests from parents to access child telemetry data.</p>
+                </div>
+
+                <div class="glass-card hub-card" onclick="navigateTo('patients')">
+                    <div class="card-icon" style="--clay-bg: #63B3ED; --clay-shadow: #3182CE;">🧠</div>
+                    <h3>My Patients Telemetry</h3>
+                    <p>Access real-time clinical analytics, focus velocity charts, and dynamic sensory overload indexes
+                        for your assigned patients.</p>
+                </div>
+
+                <div class="glass-card hub-card" onclick="navigateTo('community')">
+                    <div class="card-icon" style="--clay-bg: #F6E05E; --clay-shadow: #D69E2E; color: #2D3748;">🏥</div>
+                    <h3>Medical Community Forum</h3>
+                    <p>Connect with other ABA specialists, neurologists, and speech therapists to discuss peer-reviewed
+                        methodologies.</p>
+                </div>
+
+                <div class="glass-card hub-card" onclick="navigateTo('profile')">
+                    <div class="card-icon" style="--clay-bg: #B794F4; --clay-shadow: #805AD5;">⚙️</div>
+                    <h3>Profile & Verification</h3>
+                    <p>Manage your clinical credentials, update your specializations, and configure notification
+                        preferences.</p>
+                </div>
+            </div>
+        </section>
+
+        <div id="section-profile" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1>Profile & Verification</h1>
+                    <p>Update your clinical details and verification status.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('hub')">⬅ Back to Hub</button>
+            </header>
+
+            <div class="glass-card" style="max-width: 700px; margin: 0 auto; padding: 2.5rem; border-radius: 24px; border-top: 4px solid #9F7AEA;">
+                
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="position: relative; cursor: pointer;" title="Click to change profile picture" onclick="document.getElementById('doc-avatar-upload').click()">
+                            <img id="form-doc-avatar" src="default_doctor.png" alt="Doctor" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-teal);">
+                            <div style="position: absolute; bottom: 0; right: 0; background: var(--primary-teal); color: #000; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 2px solid var(--glass-bg);">✏️</div>
+                        </div>
+                        <input type="file" id="doc-avatar-upload" accept="image/*" style="display: none;" onchange="uploadDoctorAvatar(event)">
+                        <div>
+                            <h3 id="display-doc-name" style="color: var(--text-main); margin-bottom: 5px;">Dr. Loading...</h3>
+                            <span id="verification-badge" style="background: rgba(237, 137, 54, 0.2); color: #ED8936; padding: 4px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800;">Pending Verification</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">Current Rating</p>
+                        <div id="display-doc-rating" style="color: #F6E05E; font-weight: 900; font-size: 1.2rem;">⭐ 0.0</div>
+                    </div>
+                </div>
+
+                <form id="doctor-profile-form">
+                    <div class="input-group">
+                        <label>Full Name (with Title)</label>
+                        <input type="text" id="profile-fullname" placeholder="e.g. Dr. Ahmed Ali" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Clinical Specialty</label>
+                        <input type="text" id="profile-specialty" placeholder="e.g. Pediatric Neurologist" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Professional Bio & Credentials</label>
+                        <textarea id="profile-bio" rows="4" placeholder="Briefly describe your experience, certifications, and approach to autism care..."></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                        <button type="submit" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #9F7AEA, #6B46C1); box-shadow: 0 4px 15px rgba(159, 122, 234, 0.3);">💾 Save Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <section id="section-pending" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1>Pending Connections</h1>
+                    <p>Approve or reject telemetry access requests from parents.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('hub')">⬅ Back to Hub</button>
+            </header>
+
+            <div class="cards-grid" id="pending-grid">
+                <div class="empty-state">Loading requests...</div>
+            </div>
+        </section>
+
+        <section id="section-patients" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1>My Patients</h1>
+                    <p>Children profiles you have active clinical access to.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('hub')">⬅ Back to Hub</button>
+            </header>
+
+            <div class="cards-grid" id="patients-grid">
+                <div class="empty-state">Loading patients...</div>
+            </div>
+        </section>
+
+        <section id="section-telemetry" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1 id="telemetry-title">Patient Telemetry</h1>
+                    <p id="telemetry-subtitle">Real-time clinical analytics derived from active game sessions.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('patients')">⬅ Back to Patients</button>
+            </header>
+
+            <div id="telemetry-content">
+            </div>
+        </section>
+
+        <section id="section-full-report" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1 id="full-report-title">Full Clinical Report</h1>
+                    <p>Detailed performance charts and evaluation metrics.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('telemetry')">⬅ Back to Summary</button>
+            </header>
+
+            <div class="cards-grid" style="margin-bottom: 2rem;">
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <h3 style="margin-bottom: 1rem;">📈 Focus & Duration Trends</h3>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="doctorVelocityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cards-grid">
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-teal);">🧩 Therapeutic Games Logs</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--glass-border);">
+                                    <th style="padding: 1rem; color: var(--text-muted);">Activity</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Duration</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Total Clicks</th>
+                                    <th style="padding: 1rem; color: var(--danger);">Frantic (Anxiety)</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="games-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="grid-column: 1 / -1; border-top: 4px solid var(--primary-blue);">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-blue);">📚 Educational Engine Logs</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse; min-width: 600px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--glass-border);">
+                                    <th style="padding: 1rem; color: var(--text-muted);">Module</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Duration</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Total Clicks</th>
+                                    <th style="padding: 1rem; color: var(--danger);">Frantic (Anxiety)</th>
+                                    <th style="padding: 1rem; color: var(--text-muted);">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="edu-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-community" class="spa-section">
+            <header class="welcome-header">
+                <div>
+                    <h1>Medical Community Forum</h1>
+                    <p>Share medical tips and answer parents' general inquiries.</p>
+                </div>
+                <button class="btn-back" onclick="navigateTo('hub')">⬅ Back to Hub</button>
+            </header>
+
+            <div class="cards-grid">
+                <div class="glass-card" style="border-top: 4px solid var(--primary-teal);">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-teal);">📝 Write a New Post</h3>
+                    <input type="text" id="post-title-input" placeholder="Enter post title..."
+                        style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); margin-bottom: 1rem; font-family: 'Nunito', sans-serif; outline: none;">
+                    <textarea id="post-content-input" placeholder="Share your advice or medical tips here..." rows="4"
+                        style="width: 100%; padding: 1rem; border-radius: 10px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-main); margin-bottom: 1rem; font-family: 'Nunito', sans-serif; outline: none; resize: vertical;"></textarea>
+                    <button class="btn-primary"
+                        style="padding: 0.8rem 2rem; border-radius: 20px; font-weight: bold; width: 100%; border: none; cursor: pointer; background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-blue) 100%); color: #0F2027; box-shadow: 0 10px 25px rgba(79, 209, 197, 0.2);"
+                        onclick="publishPost()">🚀 Publish Post</button>
+                </div>
+
+                <div class="glass-card" style="border-top: 4px solid var(--primary-blue);">
+                    <h3 style="margin-bottom: 1rem; color: var(--primary-blue);">💬 Active Inquiries</h3>
+                    <div id="inquiries-list-area"
+                        style="display: flex; flex-direction: column; gap: 1rem; max-height: 400px; overflow-y: auto;">
+                        <p style="color: gray; text-align: center;">Loading inquiries...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="margin-top: 2rem; border-top: 4px solid var(--primary-teal);">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                    <h3 style="color: var(--primary-teal); margin: 0;">🌍 Global Medical Feed</h3>
+
+                    <select id="forum-sort-select" class="theme-dropdown" onchange="fetchForumFeed()">
+                        <option value="latest">🕒 Most Recent</option>
+                        <option value="popular">🔥 Trending</option>
+                        <option value="top_rated">⭐ Top Rated</option>
+                    </select>
+                </div>
+
+                <div id="forum-feed-area"
+                    style="display: flex; flex-direction: column; gap: 1.5rem; max-height: 600px; overflow-y: auto; padding-right: 10px;">
+                    <p style="color: gray; text-align: center;">Loading feed...</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <div id="inquiryChatModal" class="chat-modal-overlay">
+            <div class="hud-left-panel">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <h2
+                        style="font-family: 'Fredoka One', cursive; color: var(--primary-teal); font-size: 1.5rem; margin: 0;">
+                        🌍 Inquiry</h2>
+                    <button class="chat-close-btn" onclick="closeInquiryModal()">&times;</button>
+                </div>
+                <p id="inquiry-parent-name" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">
+                    Loading...</p>
+
+                <div
+                    style="margin-top: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 10px; border-left: 3px solid var(--primary-blue);">
+                    <p style="font-size: 0.75rem; color: gray; margin-bottom: 3px;">About Post:</p>
+                    <p id="inquiry-post-title" style="color: #FFF; font-size: 0.85rem; font-weight: 600;"></p>
+                </div>
+            </div>
+
+            <div class="chat-messages-area" id="inquiry-messages-area"></div>
+
+            <div class="hud-right-panel">
+                <input type="text" id="inquiry-message-input" placeholder="Type your reply..."
+                    onkeypress="if(event.key === 'Enter') sendInquiryMessage()">
+                <button class="chat-send-btn" onclick="sendInquiryMessage()">Send</button>
+            </div>
+            <input type="hidden" id="current_inquiry_session_id">
+        </div>
+
+        <style>
+            .quoted-reply-box {
+                background: var(--glass-border);
+                border-left: 4px solid var(--primary-teal);
+                padding: 8px 12px;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                font-size: 0.85rem;
+                color: var(--text-main);
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+                font-style: italic;
+                position: relative;
+                box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            }
+
+            .quoted-reply-box::before {
+                content: '📌 Parent quoted:';
+                display: block;
+                font-size: 0.7rem;
+                color: var(--primary-teal);
+                font-weight: 800;
+                margin-bottom: 3px;
+                font-style: normal;
+            }
+
+            .inquiry-card-item {
+                background: var(--glass-bg);
+                border: 1px solid var(--glass-border);
+                padding: 1rem;
+                border-radius: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: 0.2s;
+            }
+
+            .inquiry-card-item:hover {
+                background: var(--card-hover);
+                transform: translateY(-2px);
+            }
+
+            .theme-dropdown {
+                padding: 0.6rem 1.2rem;
+                border-radius: 12px;
+                background: var(--glass-bg);
+                color: var(--text-main);
+                border: 1px solid var(--glass-border);
+                outline: none;
+                font-family: 'Nunito', sans-serif;
+                cursor: pointer;
+                font-weight: 800;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            }
+
+            .theme-dropdown option { background: #F7FAFC; color: #2D3748; font-weight: 600; }
+            [data-theme="dark"] .theme-dropdown option { background: #1A202C; color: #EDF2F7; }
+
+        /* =========================================
+           5. FORM & INPUTS (Profile Section)
+           ========================================= */
+        .input-group { margin-bottom: 1.5rem; text-align: start; }
+        .input-group label {
+            display: block; margin-bottom: 0.5rem; font-size: 0.95rem; font-weight: 800;
+            color: var(--text-main); padding-left: 0.5rem; letter-spacing: 0.5px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%; padding: 1rem 1.2rem; border: 1px solid var(--glass-border);
+            border-radius: 12px; color: var(--text-main); font-size: 1rem;
+            font-family: 'Nunito', sans-serif; font-weight: 600; outline: none; transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] .input-group input, [data-theme="dark"] .input-group textarea { background: rgba(0, 0, 0, 0.25); }
+        [data-theme="light"] .input-group input, [data-theme="light"] .input-group textarea { background: rgba(255, 255, 255, 0.5); }
+
+        .input-group input:focus, .input-group textarea:focus {
+            border-color: var(--primary-teal); background: var(--glass-bg);
+            box-shadow: 0 0 10px rgba(79, 209, 197, 0.2);
+        }
+        
+        .input-group textarea { resize: vertical; min-height: 100px; }
+
+        .btn-primary {
+            border: none; padding: 0.9rem 1.5rem; border-radius: 15px;
+            font-size: 1.05rem; font-weight: 800; color: #FFF; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); outline: none;
+        }
+
+        .btn-primary:hover { transform: translateY(-3px); filter: brightness(1.1); }
+        .btn-primary:active { transform: translateY(1px); }
+        </style>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <script>
+        // --- Configuration & Security ---
+        const BASE_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL)
+            ? CONFIG.API_BASE_URL
+            : ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.API_BASE_URL)
+                ? APP_CONFIG.API_BASE_URL
+                : 'http://127.0.0.1:8000');
+
+        const TOKEN = localStorage.getItem('token');
+        const ROLE = localStorage.getItem('role');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 🛡️ Silent Role Guard
+            if (!TOKEN || !ROLE || ROLE.toUpperCase() !== 'DOCTOR') {
+                window.location.replace('Login.html');
+                return;
+            }
+
+            // Init UI
+            initThemeToggle();
+
+            // Fetch initial data
+            fetchPendingRequests();
+            fetchMyPatients();
+            fetchDoctorProfile();
+            
+            // 🛡️ Secure Logout (Without resetting Theme/Language)
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                showToast("Logging out securely...", "success");
+                
+                setTimeout(() => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user_id');
+                    window.location.href = 'index.html';
+                }, 800);
+            });
+        });
+
+        // --- API Fetch Wrapper ---
+        async function authFetch(endpoint, options = {}) {
+            const headers = {
+                'Authorization': `Bearer ${TOKEN}`,
+                'Content-Type': 'application/json',
+                ...options.headers
+            };
+            const response = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers });
+
+            // 🛡️ Handle Unauthorized silently
+            if (response.status === 401) {
+                localStorage.removeItem('role');
+                localStorage.removeItem('token');
+                window.location.replace('Login.html');
+                throw new Error("Unauthorized");
+            }
+
+            // Handle 204 No Content for PUT/DELETE safely
+            if (response.status === 204) return {};
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.detail || "API Request Failed");
+            return data;
+        }
+
+        // --- SPA Navigation ---
+        function navigateTo(section) {
+            document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`section-${section}`).classList.add('active');
+
+            if (section === 'pending') fetchPendingRequests();
+            if (section === 'patients') fetchMyPatients();
+            if (section === 'community') {
+                fetchDoctorInquiries();
+                fetchForumFeed();
+            }
+            if (section === 'profile') fetchDoctorProfile();
+        }
+        // --- API Implementations ---
+
+        // 1. Fetch Pending Requests
+        async function fetchPendingRequests() {
+            try {
+                const requests = await authFetch('/doctor/requests/pending');
+
+                // Update Notification Badge
+                const badge = document.getElementById('pending-badge');
+                if (requests.length > 0) {
+                    badge.innerText = `${requests.length} New`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+
+                // Render Grid
+                const grid = document.getElementById('pending-grid');
+                if (requests.length === 0) {
+                    grid.innerHTML = `<div class="empty-state">No pending requests at this time.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = requests.map(req => `
+                    <div class="glass-card data-card">
+                        <div class="card-icon" style="--clay-bg: #4FD1C5; --clay-shadow: #319795; width: 60px; height: 60px; font-size: 1.5rem; margin-bottom: 1rem;">👤</div>
+                        <h3>${req.child_name}</h3>
+                        <div class="meta-row"><span class="meta-icon">🎂</span> Age: ${req.child_age}</div>
+                        <div class="meta-row"><span class="meta-icon">🗣️</span> Communication Level: ${req.communication_level}</div>
+                        <div class="meta-row" style="margin-top: 0.5rem;"><span class="meta-icon">📧</span> Parent: ${req.parent_email}</div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn-clay btn-accept" onclick="handleRequest(${req.connection_id}, 'approve')">✅ Accept</button>
+                            <button class="btn-clay btn-reject" onclick="handleRequest(${req.connection_id}, 'reject')">❌ Reject</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast("Failed to load requests", "error");
+            }
+        }
+
+        // 2. Handle Approve/Reject Action
+        async function handleRequest(connectionId, action) {
+            try {
+                const result = await authFetch(`/doctor/requests/${connectionId}/${action}`, { method: 'PUT' });
+                showToast(result.message || `Request ${action}d successfully`, "success");
+
+                fetchPendingRequests();
+                fetchMyPatients();
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast(err.message || "Action failed", "error");
+            }
+        }
+
+        // 3. Fetch My Patients
+        async function fetchMyPatients() {
+            try {
+                const patients = await authFetch('/doctor/my-patients');
+                const grid = document.getElementById('patients-grid');
+
+                if (patients.length === 0) {
+                    grid.innerHTML = `<div class="empty-state">You have no approved patient connections yet.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = patients.map(p => `
+                    <div class="glass-card data-card">
+                        <div class="card-icon" style="--clay-bg: #63B3ED; --clay-shadow: #3182CE; width: 60px; height: 60px; font-size: 1.5rem; margin-bottom: 1rem;">🧠</div>
+                        <h3>${p.name}</h3>
+                        <div class="meta-row"><span class="meta-icon">🎂</span> Age: ${p.age}</div>
+                        <div class="meta-row" style="margin-top: 0.5rem;"><span class="meta-icon">🗣️</span> Communication Level: ${p.communication_level}</div>
+                        
+                        <div class="action-buttons" style="flex-direction: column; gap: 0.8rem; margin-top: 1.2rem;">
+                            <button class="btn-clay btn-accept" style="width: 100%; font-size: 0.95rem; padding: 0.6rem;" onclick="openTelemetry(${p.child_id}, '${p.name}')">📊 View Telemetry</button>
+                            <button class="btn-clay btn-chat" style="width: 100%; font-size: 0.95rem; padding: 0.6rem;" onclick="openChatModal(${p.connection_id}, '${p.name}')">💬 Chat with Parent</button>
+                            </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast("Failed to load patients", "error");
+            }
+        }
+
+        // --- 4. TELEMETRY LOGIC ---
+        let currentPatientData = null; 
+        let doctorChartRef = null;
+
+        async function openTelemetry(childId, childName) {
+            document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-telemetry').classList.add('active');
+
+            document.getElementById('telemetry-title').innerText = `${childName}'s Telemetry`;
+            const contentArea = document.getElementById('telemetry-content');
+            contentArea.innerHTML = '<div class="empty-state">Securely fetching real telemetry data...</div>';
+
+            try {
+                currentPatientData = await authFetch(`/doctor/patient-telemetry/${childId}`);
+                const data = currentPatientData;
+
+                contentArea.innerHTML = `
+                    <div class="cards-grid">
+                        <div class="glass-card" style="border-top: 4px solid var(--primary-teal);">
+                            <h3 style="margin-bottom: 1.5rem;">🧬 Autism Profile</h3>
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: var(--primary-teal);">🗣️ Comm. Level:</strong>
+                                <p style="margin-top: 0.3rem;">${data.communication_level}</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <strong style="color: var(--danger);">🚨 Sensitivities:</strong>
+                                <p style="margin-top: 0.3rem;">${data.sensory_sensitivities}</p>
+                            </div>
+                            <div>
+                                <strong style="color: var(--primary-blue);">⭐ Interests:</strong>
+                                <p style="margin-top: 0.3rem;">${data.special_interests}</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-card" style="border-top: 4px solid var(--primary-blue);">
+                            <h3 style="margin-bottom: 1.5rem;">📈 Game Performance</h3>
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <strong>Focus Score</strong>
+                                    <strong style="color: var(--primary-teal);">${data.focus_score}%</strong>
+                                </div>
+                                <div style="width: 100%; background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px;">
+                                    <div style="width: ${data.focus_score}%; background: var(--primary-teal); height: 100%; border-radius: 5px;"></div>
+                                </div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 15px; text-align: center;">
+                                    <div style="font-size: 2rem;">🧩</div>
+                                    <div style="font-size: 1.5rem; font-weight: 900;">${data.tasks_completed} <span style="font-size:0.8rem; color:gray;">/ ${data.total_sessions}</span></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Completed</div>
+                                </div>
+                                <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 15px; text-align: center;">
+                                    <div style="font-size: 2rem;">⏱️</div>
+                                    <div style="font-size: 1.5rem; font-weight: 900;">${data.total_time_minutes}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Total Mins</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2.5rem; text-align: center;">
+                        <button style="padding: 1rem 3rem; font-size: 1.1rem; border-radius: 30px; background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-blue) 100%); color: #0F2027; border: none; font-weight: 800; box-shadow: 0 10px 25px rgba(79, 209, 197, 0.3); cursor: pointer; transition: transform 0.2s;" onclick="renderFullReport()" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            📊 View Full Clinical Report
+                        </button>
+                    </div>
+                `;
+            } catch (err) {
+                if (err.message !== "Unauthorized") contentArea.innerHTML = '<div class="empty-state" style="color: var(--danger);">Failed to load telemetry.</div>';
+            }
+        }
+
+        function renderFullReport() {
+            if (!currentPatientData) return;
+
+            document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-full-report').classList.add('active');
+            document.getElementById('full-report-title').innerText = `${currentPatientData.name} - Detailed Report`;
+
+            const sessions = currentPatientData.raw_sessions || [];
+
+            if (doctorChartRef) doctorChartRef.destroy();
+            const ctx = document.getElementById('doctorVelocityChart').getContext('2d');
+            const labels = sessions.map((_, i) => `S ${i + 1}`);
+            const durations = sessions.map(s => s.time_taken_seconds);
+
+            doctorChartRef = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Duration (s)',
+                        data: durations,
+                        borderColor: '#4FD1C5',
+                        backgroundColor: 'rgba(79, 209, 197, 0.2)',
+                        fill: true, tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            function backToSummary() {
+                document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById('section-telemetry').classList.add('active');
+            }
+
+            const gamesBody = document.getElementById('games-tbody');
+            const eduBody = document.getElementById('edu-tbody');
+            gamesBody.innerHTML = ''; eduBody.innerHTML = '';
+
+            if (sessions.length === 0) {
+                const emptyRow = `<tr><td colspan="5" style="padding:1rem; text-align:center; color:gray;">No logs found.</td></tr>`;
+                gamesBody.innerHTML = emptyRow; eduBody.innerHTML = emptyRow;
+                return;
+            }
+
+            sessions.forEach(s => {
+                const mins = String(Math.floor(s.time_taken_seconds / 60)).padStart(2, '0');
+                const secs = String(Math.floor(s.time_taken_seconds % 60)).padStart(2, '0');
+                const franticColor = s.frantic_clicks > 4 ? 'var(--danger)' : 'var(--text-main)';
+                const statusHtml = s.is_completed
+                    ? `<span style="background: rgba(72,187,120,0.2); color:var(--success); padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:bold;">Success</span>`
+                    : `<span style="background: rgba(245,101,101,0.2); color:var(--danger); padding:4px 8px; border-radius:6px; font-size:0.8rem; font-weight:bold;">Abandoned</span>`;
+
+                const row = `
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 1rem; font-weight:bold; color:var(--primary-blue);">${s.game_name}</td>
+                        <td style="padding: 1rem;">${mins}:${secs}</td>
+                        <td style="padding: 1rem;">${s.total_clicks}</td>
+                        <td style="padding: 1rem; font-weight:bold; color:${franticColor};">${s.frantic_clicks}</td>
+                        <td style="padding: 1rem;">${statusHtml}</td>
+                    </tr>
+                `;
+
+                if (s.game_name.includes("الركن التعليمي")) {
+                    eduBody.insertAdjacentHTML('beforeend', row);
+                } else {
+                    gamesBody.insertAdjacentHTML('beforeend', row);
+                }
+            });
+        }
+
+        // --- Theme Toggle ---
+        function initThemeToggle() {
+            const btn = document.getElementById('theme-toggle');
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            btn.innerHTML = savedTheme === 'dark' ? '☀️' : '🌙';
+
+            btn.addEventListener('click', () => {
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                const newTheme = isDark ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                btn.innerHTML = isDark ? '🌙' : '☀️';
+            });
+        }
+
+        // --- Toast Notification System ---
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3300);
+        }
+
+        // ================= COMMUNITY & FORUM LOGIC =================
+        async function publishPost() {
+            const title = document.getElementById('post-title-input').value.trim();
+            const content = document.getElementById('post-content-input').value.trim();
+
+            if (!title || !content) return showToast("Title and content are required!", "error");
+
+            try {
+                await authFetch('/forum/posts', {
+                    method: 'POST',
+                    body: JSON.stringify({ title, content })
+                });
+                showToast("Post published successfully!", "success");
+                document.getElementById('post-title-input').value = '';
+                document.getElementById('post-content-input').value = '';
+                fetchForumFeed(); // تحديث الفيد
+            } catch (err) {
+                showToast("Failed to publish post", "error");
+            }
+        }
+
+        async function fetchDoctorInquiries() {
+            const listArea = document.getElementById('inquiries-list-area');
+            listArea.innerHTML = '<p style="color: gray; text-align: center;">Loading...</p>';
+            try {
+                const sessions = await authFetch('/forum/inquiry/doctor-sessions');
+                listArea.innerHTML = '';
+
+                if (sessions.length === 0) {
+                    listArea.innerHTML = '<p style="color: gray; text-align: center;">No active inquiries yet.</p>';
+                    return;
+                }
+
+                sessions.forEach(s => {
+                    const html = `
+                        <div class="inquiry-card-item">
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: var(--text-main);">${s.parent_name}</h4>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Re: ${s.post_title}</p>
+                            </div>
+                            <button style="padding: 0.5rem 1rem; border-radius: 12px; border: none; cursor: pointer; background: var(--primary-teal); color: #000; font-weight: bold;" onclick="openInquiryModal(${s.session_id}, '${s.parent_name}', '${s.post_title.replace(/'/g, "\\'")}')">Reply 💬</button>
+                        </div>
+                    `;
+                    listArea.insertAdjacentHTML('beforeend', html);
+                });
+            } catch (err) {
+                if (err.message !== "Unauthorized") listArea.innerHTML = '<p style="color: #F56565; text-align:center;">Failed to load inquiries.</p>';
+            }
+        }
+
+        async function openInquiryModal(sessionId, parentName, postTitle) {
+            document.getElementById('current_inquiry_session_id').value = sessionId;
+            document.getElementById('inquiry-parent-name').innerText = `Parent: ${parentName}`;
+            document.getElementById('inquiry-post-title').innerText = `"${postTitle}"`;
+            document.getElementById('inquiryChatModal').classList.add('active');
+
+            await fetchInquiryMessages(sessionId);
+        }
+
+        function closeInquiryModal() {
+            document.getElementById('inquiryChatModal').classList.remove('active');
+        }
+
+        async function fetchInquiryMessages(sessionId) {
+            const msgArea = document.getElementById('inquiry-messages-area');
+            msgArea.innerHTML = '<p style="text-align:center; color:gray; margin-top: 2rem;">Loading...</p>';
+
+            try {
+                const messages = await authFetch(`/forum/inquiry/messages/${sessionId}`);
+                msgArea.innerHTML = '';
+
+                if (messages.length === 0) {
+                    msgArea.innerHTML = '<p style="text-align:center; color:gray; margin-top: 2rem;">No messages yet.</p>';
+                    return;
+                }
+
+                messages.forEach(msg => {
+                    const isSentByMe = String(msg.sender_id) === String(getCorrectUserId());
+                    const bubbleClass = isSentByMe ? 'sent' : 'received';
+                    const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    let quoteHtml = '';
+                    if (msg.quoted_text) {
+                        quoteHtml = `<div class="quoted-reply-box">"${escapeHTML(msg.quoted_text)}"</div>`;
+                    }
+
+                    const msgHtml = `
+                        <div class="msg-bubble ${bubbleClass}">
+                            ${quoteHtml}
+                            ${escapeHTML(msg.content)}
+                            <span class="msg-time">${timeStr}</span>
+                        </div>
+                    `;
+                    msgArea.insertAdjacentHTML('beforeend', msgHtml);
+                });
+
+                setTimeout(() => { msgArea.scrollTop = msgArea.scrollHeight; }, 50);
+            } catch (err) {
+                if (err.message !== "Unauthorized") msgArea.innerHTML = '<p style="color:#F56565; text-align:center; margin-top: 2rem;">Error loading chat.</p>';
+            }
+        }
+
+        async function sendInquiryMessage() {
+            const input = document.getElementById('inquiry-message-input');
+            const content = input.value.trim();
+            const sessionId = document.getElementById('current_inquiry_session_id').value;
+
+            if (!content || !sessionId) return;
+            input.disabled = true;
+
+            try {
+                await authFetch(`/forum/inquiry/messages/${sessionId}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ content: content, quoted_text: null })
+                });
+                input.value = '';
+                await fetchInquiryMessages(sessionId);
+            } catch (err) {
+                // 🛡️ تم استبدال الـ Alert بـ Toast هنا
+                if (err.message !== "Unauthorized") {
+                    showToast("Error sending message.", "error"); 
+                    inputField.value = content;
+                }
+            } finally {
+                input.disabled = false;
+                input.focus();
+            }
+        }
+
+        async function fetchForumFeed() {
+            const feedArea = document.getElementById('forum-feed-area');
+            const sortBy = document.getElementById('forum-sort-select').value;
+
+            feedArea.innerHTML = '<p style="color: gray; text-align: center; margin-top: 2rem;">Loading feed...</p>';
+
+            try {
+                const posts = await authFetch(`/forum/posts?sort_by=${sortBy}`);
+                feedArea.innerHTML = '';
+
+                if (posts.length === 0) {
+                    feedArea.innerHTML = '<p style="color: gray; text-align: center; margin-top: 2rem;">No posts available yet. Be the first to share!</p>';
+                    return;
+                }
+
+                posts.forEach(p => {
+                    const dateStr = new Date(p.created_at).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+
+                    let stars = '';
+                    const rating = p.doctor_rating || 0;
+                    for (let i = 0; i < 5; i++) {
+                        stars += i < rating ? '⭐' : '<span style="opacity: 0.3">⭐</span>';
+                    }
+                    const serverUrl = typeof CONFIG !== 'undefined' ? CONFIG.API_BASE_URL.replace('/api', '') : 'http://127.0.0.1:8000';
+                    const avatarSrc = p.doctor_avatar && p.doctor_avatar !== 'default_doctor.png'
+                    ? `${serverUrl}/${p.doctor_avatar}` : 'default_doctor.png';
+                    const postHtml = `
+                        <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 20px; transition: 0.3s; box-shadow: var(--glass-shadow);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <img src="${avatarSrc}" alt="Dr." style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue);">
+                                    <div>
+                                        <h4 style="margin: 0; color: var(--text-main); font-size: 1.1rem;">Dr. ${p.doctor_name}</h4>
+                                        <div style="font-size: 0.75rem; margin-top: 3px;">${stars}</div>
+                                    </div>
+                                </div>
+                                <span style="font-size: 0.8rem; color: var(--text-main); background: var(--glass-border); padding: 4px 10px; border-radius: 10px; font-weight: bold;">${dateStr}</span>
+                            </div>
+                            <h3 style="color: var(--primary-teal); margin-bottom: 0.8rem; font-size: 1.3rem;">${p.title}</h3>
+                            <p style="color: var(--text-main); font-size: 0.95rem; line-height: 1.6; margin: 0; white-space: pre-wrap; font-weight: 600;">${p.content}</p>
+                            
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.5rem; border-top: 1px solid var(--glass-border); padding-top: 10px;">
+                                <button onclick="togglePostLike(${p.post_id})" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; color: ${p.is_liked ? '#F56565' : 'var(--text-muted)'}; font-size: 1rem; font-weight: 800; font-family: 'Nunito', sans-serif; transition: 0.2s; outline: none;">
+                                    <span style="font-size: 1.3rem; transform: ${p.is_liked ? 'scale(1.15)' : 'scale(1)'}; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                                        ${p.is_liked ? '❤️' : '🤍'}
+                                    </span>
+                                    ${p.likes} Likes
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    feedArea.insertAdjacentHTML('beforeend', postHtml);
+                });
+            } catch (err) {
+                if (err.message !== "Unauthorized") feedArea.innerHTML = '<p style="color: #F56565; text-align:center; margin-top: 2rem;">Failed to load forum feed.</p>';
+            }
+        }
+
+        async function togglePostLike(postId) {
+            try {
+                await authFetch(`/forum/posts/${postId}/like`, { method: 'POST' });
+                fetchForumFeed(); 
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast("Failed to process like", "error");
+            }
+        }
+
+        // ================= PROFILE & VERIFICATION LOGIC =================
+        async function fetchDoctorProfile() {
+            try {
+                const profile = await authFetch('/doctor/my-profile');
+
+                const nameEl = document.getElementById('doc-name');
+                if (nameEl) nameEl.innerText = "Dr. " + profile.full_name;
+
+                const titleEl = document.querySelector('.doc-title');
+                if (titleEl) titleEl.innerText = profile.specialty || "Clinical Specialist";
+
+                const avatarEl = document.getElementById('doc-initial');
+                if (avatarEl && profile.full_name) {
+                    avatarEl.innerText = profile.full_name.charAt(0).toUpperCase();
+                
+                const avatarPath = profile.avatar_url && profile.avatar_url !== 'default_doctor.png' 
+                    ? `${BASE_URL.replace('/api', '')}/${profile.avatar_url}` 
+                    : 'default_doctor.png';
+                
+                const formAvatar = document.getElementById('form-doc-avatar');
+                if (formAvatar) formAvatar.src = avatarPath;
+                
+                const navAvatar = document.getElementById('doc-initial');
+                if (navAvatar) {
+                    navAvatar.innerHTML = `<img src="${avatarPath}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                    navAvatar.style.padding = "0"; 
+                }
+                }
+
+                const profileFullname = document.getElementById('profile-fullname');
+                if (profileFullname) profileFullname.value = profile.full_name || '';
+                
+                const profileSpecialty = document.getElementById('profile-specialty');
+                if (profileSpecialty) profileSpecialty.value = profile.specialty || '';
+                
+                const profileBio = document.getElementById('profile-bio');
+                if (profileBio) profileBio.value = profile.bio || '';
+                
+                const displayDocName = document.getElementById('display-doc-name');
+                if (displayDocName) displayDocName.innerText = profile.full_name ? `Dr. ${profile.full_name}` : 'Doctor Profile';
+                
+                const displayDocRating = document.getElementById('display-doc-rating');
+                if (displayDocRating) displayDocRating.innerText = `⭐ ${profile.rating ? profile.rating.toFixed(1) : '0.0'}`;
+                
+                const badge = document.getElementById('verification-badge');
+                if (badge) {
+                    if (profile.is_verified) {
+                        badge.innerText = '✅ Verified Specialist';
+                        badge.style.background = 'rgba(72, 187, 120, 0.2)';
+                        badge.style.color = '#48BB78';
+                    } else {
+                        badge.innerText = '⏳ Pending Verification';
+                        badge.style.background = 'rgba(237, 137, 54, 0.2)';
+                        badge.style.color = '#ED8936';
+                    }
+                }
+            } catch (err) {
+                if (err.message !== "Unauthorized") console.error("Failed to load doctor profile:", err);
+            }
+        }
+
+        document.getElementById('doctor-profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Saving...';
+            btn.disabled = true;
+
+            const payload = {
+                full_name: document.getElementById('profile-fullname').value,
+                specialty: document.getElementById('profile-specialty').value,
+                bio: document.getElementById('profile-bio').value
+            };
+
+            try {
+                await authFetch('/doctor/update-profile', {
+                    method: 'PUT',
+                    body: JSON.stringify(payload)
+                });
+                showToast("Profile updated successfully!", "success");
+                fetchDoctorProfile();
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast(err.message || "Failed to update profile", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // 3. تعديل دالة switchSection عشان تحمل البروفايل لما يفتحه
+        const oldSwitchSection = window.switchSection;
+        if (oldSwitchSection) {
+            window.switchSection = function(sectionId) {
+                oldSwitchSection(sectionId);
+                if (sectionId === 'section-profile') {
+                    fetchDoctorProfile();
+                }
+            };
+        }
+
+        // --- DOCTOR AVATAR UPLOAD LOGIC ---
+        async function uploadDoctorAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('form-doc-avatar').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${BASE_URL}/doctor/upload-avatar`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${TOKEN}` }, 
+                    body: formData
+                });
+                if (response.status === 401) {
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('token');
+                    window.location.replace('Login.html');
+                    throw new Error("Unauthorized");
+                }
+                if (!response.ok) throw new Error("Failed to upload avatar");
+                
+                showToast("Profile picture updated successfully!", "success");
+                fetchDoctorProfile(); 
+            } catch (err) {
+                if (err.message !== "Unauthorized") showToast(err.message, "error");
+            }
+        }
+   
+    </script>
+    <div id="secureChatModal" class="chat-modal-overlay">
+
+        <div class="hud-left-panel">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <h2
+                    style="font-family: 'Fredoka One', cursive; color: var(--primary-teal, #4FD1C5); font-size: 1.8rem; margin: 0;">
+                    💬 Parents Chat</h2>
+                <button class="chat-close-btn" onclick="closeChatModal()">&times;</button>
+            </div>
+            <p id="chat-child-name" style="color: var(--text-muted, #A0AEC0); font-size: 0.95rem; font-weight: 600;">
+                Subject: Loading...</p>
+        </div>
+
+        <div class="chat-messages-area" id="chat-messages-area"></div>
+
+        <div class="hud-right-panel">
+            <input type="text" id="chat-message-input" placeholder="Type your message..."
+                onkeypress="handleChatKeyPress(event)">
+            <button class="chat-send-btn" onclick="sendMessage()">Send</button>
+        </div>
+
+        <input type="hidden" id="current_chat_connection_id">
+    </div>
+
+    <style>
+        /* 🌟 THE HUD CHAT DESIGN (FULL SCREEN SPLIT) */
+        .chat-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            padding: 2rem 5%;
+            gap: 2rem;
+        }
+
+        .chat-modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Left Side (Header & Close) */
+        .hud-left-panel {
+            flex: 0 0 280px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transform: translateX(-50px);
+            transition: 0.4s ease;
+        }
+
+        .chat-modal-overlay.active .hud-left-panel {
+            transform: translateX(0);
+        }
+
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: #A0AEC0;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            line-height: 1;
+        }
+
+        .chat-close-btn:hover {
+            color: #F56565;
+            transform: rotate(90deg);
+        }
+
+        /* Center (Floating Messages) */
+        .chat-messages-area {
+            flex: 1;
+            max-width: 700px;
+            height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages-area::-webkit-scrollbar { width: 4px; }
+        .chat-messages-area::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+        .msg-bubble {
+            max-width: 80%;
+            padding: 1rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.4;
+            word-wrap: break-word;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .msg-bubble.received {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom-left-radius: 4px;
+            color: #EDF2F7;
+        }
+
+        .msg-bubble.sent {
+            align-self: flex-end;
+            background: var(--primary-teal, #4FD1C5);
+            color: #0F172A;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.2);
+        }
+
+        .msg-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            display: block;
+            text-align: right;
+        }
+
+        /* Right Side (Input & Send) */
+        .hud-right-panel {
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transform: translateX(50px);
+            transition: 0.4s ease;
+        }
+
+        .chat-modal-overlay.active .hud-right-panel {
+            transform: translateX(0);
+        }
+
+        #chat-message-input {
+            width: 250px;
+            padding: 1rem 1.2rem;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        #chat-message-input:focus {
+            border-color: var(--primary-teal, #4FD1C5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-send-btn {
+            background: var(--primary-teal, #4FD1C5);
+            color: #0F172A;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .chat-send-btn:active {
+            transform: translateY(2px);
+        }
+
+        /* Mobile Fallback (Stacks vertically so it doesn't break on phones) */
+        @media (max-width: 900px) {
+            .chat-modal-overlay {
+                flex-direction: column;
+                padding: 1rem;
+                justify-content: flex-start;
+                gap: 1rem;
+            }
+
+            .hud-left-panel,
+            .hud-right-panel {
+                width: 100%;
+                flex: 0 0 auto;
+                transform: none;
+            }
+
+            .chat-messages-area {
+                height: 60vh;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #chat-message-input {
+                flex: 1;
+                width: auto;
+            }
+        }
+    </style>
+
+    <script>
+        const CHAT_API_URL = `${typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.API_BASE_URL : 'http://127.0.0.1:8000'}/chat`;
+
+        function getCorrectUserId() {
+            let storedId = localStorage.getItem('user_id');
+            if (storedId && storedId !== 'undefined' && !storedId.includes('@')) return storedId;
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    return payload.user_id || payload.id || payload.sub;
+                } catch (e) { }
+            }
+            return storedId;
+        }
+
+        async function openChatModal(connectionId, childName) {
+            document.getElementById('current_chat_connection_id').value = connectionId;
+            document.getElementById('chat-child-name').innerText = `${childName}`;
+            document.getElementById('secureChatModal').classList.add('active');
+            await fetchMessages(connectionId);
+        }
+
+        function closeChatModal() {
+            document.getElementById('secureChatModal').classList.remove('active');
+            setTimeout(() => { document.getElementById('chat-messages-area').innerHTML = ''; }, 300);
+        }
+
+        async function fetchMessages(connectionId) {
+            const msgArea = document.getElementById('chat-messages-area');
+            msgArea.innerHTML = '<p style="text-align:center; color:gray; margin-top: 2rem;">Loading messages...</p>';
+
+            try {
+                const response = await fetch(`${CHAT_API_URL}/${connectionId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (response.status === 401) {
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('token');
+                    window.location.replace('Login.html');
+                    throw new Error("Unauthorized");
+                }
+                if (!response.ok) throw new Error("Failed to fetch messages");
+
+                const messages = await response.json();
+                msgArea.innerHTML = '';
+
+                if (messages.length === 0) {
+                    msgArea.innerHTML = '<p style="text-align:center; color:gray; font-size:0.9rem; margin-top: 2rem;">No messages yet. Start the conversation!</p>';
+                    return;
+                }
+
+                messages.forEach(msg => appendMessageToUI(msg));
+                scrollToBottom();
+            } catch (err) {
+                if (err.message !== "Unauthorized") msgArea.innerHTML = '<p style="text-align:center; color:#F56565; margin-top: 2rem;">Error loading chat.</p>';
+            }
+        }
+
+        async function sendMessage() {
+            const inputField = document.getElementById('chat-message-input');
+            const content = inputField.value.trim();
+            const connectionId = document.getElementById('current_chat_connection_id').value;
+
+            if (!content || !connectionId) return;
+
+            inputField.value = '';
+            inputField.disabled = true;
+
+            try {
+                const response = await fetch(`${CHAT_API_URL}/${connectionId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+                    body: JSON.stringify({ content: content })
+                });
+                if (response.status === 401) {
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('token');
+                    window.location.replace('Login.html');
+                    throw new Error("Unauthorized");
+                }
+                if (!response.ok) throw new Error("Failed to send message");
+
+                const newMsg = await response.json();
+                const msgArea = document.getElementById('chat-messages-area');
+                if (msgArea.innerHTML.includes('No messages yet')) msgArea.innerHTML = '';
+
+                appendMessageToUI(newMsg);
+                scrollToBottom();
+            } catch (err) {
+                // 🛡️ تم استبدال الـ Alert بـ Toast هنا 
+                if (err.message !== "Unauthorized") {
+                    showToast("Error sending message.", "error");
+                    inputField.value = content;
+                }
+            } finally {
+                inputField.disabled = false;
+                inputField.focus();
+            }
+        }
+
+        function appendMessageToUI(msg) {
+            const msgArea = document.getElementById('chat-messages-area');
+            const myUserId = getCorrectUserId();
+
+            const isSentByMe = String(msg.sender_id) === String(myUserId);
+            const bubbleClass = isSentByMe ? 'sent' : 'received';
+            const timeStr = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const msgHtml = `
+            <div class="msg-bubble ${bubbleClass}">
+                ${escapeHTML(msg.content)}
+                <span class="msg-time">${timeStr}</span>
+            </div>
+        `;
+            msgArea.insertAdjacentHTML('beforeend', msgHtml);
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') sendMessage();
+        }
+
+        function scrollToBottom() {
+            const msgArea = document.getElementById('chat-messages-area');
+            setTimeout(() => { msgArea.scrollTop = msgArea.scrollHeight; }, 50);
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+        }
+    </script>
+</body>
+
+</html>

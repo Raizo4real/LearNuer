@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <title>LearNeur | Owner Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* =========================================
+           1. CORE VARIABLES (Premium Dark/Light)
+           ========================================= */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #EBF8FF 0%, #E2E8F0 100%);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary-teal: #4FD1C5;
+
+            /* Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+            /* Claymorphism */
+            --clay-teal: #4FD1C5;
+            --clay-teal-shadow: #319795;
+            --clay-red: #F56565;
+            --clay-red-shadow: #C53030;
+            --clay-highlight: rgba(255, 255, 255, 0.5);
+
+            --sidebar-width: 280px;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+
+            --glass-bg: rgba(15, 23, 42, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Ambient Background Mesh */
+        .ambient-bg {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 50%, rgba(79, 209, 197, 0.15), transparent 25%),
+                radial-gradient(circle at 80% 30%, rgba(99, 179, 237, 0.15), transparent 25%);
+            z-index: -1;
+            pointer-events: none;
+            animation: drift 20s infinite alternate linear;
+        }
+
+        @keyframes drift {
+            100% {
+                transform: translate(5%, 5%);
+            }
+        }
+
+        /* =========================================
+           2. SIDEBAR LAYOUT
+           ========================================= */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.2rem;
+            color: var(--text-main);
+        }
+
+        .brand-logo span {
+            color: var(--primary-teal);
+        }
+
+        .badge-owner {
+            display: inline-block;
+            background: rgba(79, 209, 197, 0.2);
+            color: var(--primary-teal);
+            font-weight: 800;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 5px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            flex: 1;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: left;
+            padding: 1rem 1.2rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary-teal);
+        }
+
+        .nav-btn.active {
+            background: var(--primary-teal);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+        }
+
+        .sidebar-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .icon-btn {
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.8rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        [data-theme="dark"] .icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-btn:hover {
+            background: var(--primary-teal);
+            color: #000;
+        }
+
+        .icon-btn.danger:hover {
+            background: var(--clay-red);
+            color: #FFF;
+        }
+
+        /* =========================================
+           3. MAIN CONTENT AREA
+           ========================================= */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 3rem;
+            flex: 1;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .dashboard-section {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* =========================================
+           4. UI COMPONENTS (Glass + Clay)
+           ========================================= */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* Glass Tabs */
+        .glass-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: var(--glass-bg);
+            padding: 0.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            width: fit-content;
+        }
+
+        .doc-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            color: var(--text-muted);
+            font-weight: 800;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .doc-tab-btn.active {
+            background: var(--glass-bg);
+            color: var(--text-main);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .doc-tab-content {
+            display: none;
+        }
+
+        .doc-tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* 3D Claymorphism Buttons */
+        .btn-clay {
+            background: var(--clay-teal);
+            color: #FFF;
+            border: 3px solid #FFF;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 6px 0 var(--clay-teal-shadow), 0 10px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.1s, box-shadow 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-clay:active {
+            transform: translateY(6px);
+            box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0px 0 var(--clay-teal-shadow), 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-clay.danger {
+            background: var(--clay-red);
+            box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 6px 0 var(--clay-red-shadow), 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-clay.danger:active {
+            box-shadow: inset 2px 2px 5px var(--clay-highlight), inset -2px -2px 5px rgba(0, 0, 0, 0.1), 0 0px 0 var(--clay-red-shadow), 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(6px);
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .glass-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .glass-table th {
+            padding: 1rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--glass-border);
+        }
+
+        .glass-table td {
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+        }
+
+        .glass-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .action-links {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .link-btn {
+            background: none;
+            border: none;
+            color: var(--primary-teal);
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .link-btn.del {
+            color: var(--clay-red);
+        }
+
+        /* Grid Cards (Pending Doctors) */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pending-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2rem;
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .pending-card h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .pending-card p {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        /* =========================================
+           5. MODALS & FORMS
+           ========================================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: var(--clay-red);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        [data-theme="dark"] .input-group input {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-teal);
+        }
+
+        /* =========================================
+           6. RESPONSIVE MEDIA QUERIES (MOBILE FIXES)
+           ========================================= */
+        @media (max-width: 992px) {
+            .mobile-header {
+                display: flex !important;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.3s ease;
+                z-index: 3000;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+                padding-top: 6.5rem; /* Space for mobile header */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-card { padding: 1.2rem; }
+            .section-header h1 { font-size: 1.8rem; }
+            .grid-cards { grid-template-columns: 1fr; }
+            .modal-card { padding: 1.5rem; }
+            .glass-tabs { flex-direction: column; width: 100%; }
+        }
+
+        /* =========================================
+           7. TOAST NOTIFICATIONS & ALERTS
+           ========================================= */
+        .custom-toast {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-left: 6px solid var(--primary-teal);
+            color: var(--text-main);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        .custom-toast.error {
+            border-left-color: var(--clay-red);
+        }
+
+        .custom-toast.fade-out {
+            animation: fadeOutRight 0.3s ease forwards;
+        }
+
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeOutRight {
+            to { opacity: 0; transform: translateX(100%); }
+        }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+    <div class="ambient-bg"></div>
+
+    <div class="mobile-header glass-card" style="display: none; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; position: fixed; top: 0; left: 0; width: 100%; z-index: 2000; background: var(--glass-bg); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border);">
+        <h2 class="brand-logo" style="font-size: 1.5rem; margin: 0;">Lear<span>Neur</span></h2>
+        <button id="mobile-menu-btn" style="background: none; border: none; color: var(--primary-teal); font-size: 2rem; cursor: pointer;">☰</button>
+    </div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="brand-logo">Lear<span>Neur</span></h2>
+            <span class="badge-owner">Owner Portal</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button class="nav-btn active" data-target="section-parents">👨‍👩‍👧 Parents Management</button>
+            <button class="nav-btn" data-target="section-doctors">🩺 Doctors Management</button>
+            <button class="nav-btn" data-target="section-admins">🛡️ Admins Management</button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="icon-btn">☀️ Light Mode</button>
+            <button id="logout-btn" class="icon-btn danger">🚪 Logout</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <section id="section-parents" class="dashboard-section active">
+            <div class="section-header flex-between">
+                <div>
+                    <h1>Parents Management</h1>
+                    <p>Manage registered parents, monitor accounts, and audit email changes.</p>
+                </div>
+                <button class="btn-clay" onclick="openModal('addParentModal')">➕ Add New Parent</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="table-responsive">
+                    <table class="glass-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parents-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-doctors" class="dashboard-section">
+            <div class="section-header flex-between">
+                <div>
+                    <h1>Doctors Management</h1>
+                    <p>Approve new doctor registrations and manage existing clinical staff.</p>
+                </div>
+                <button class="btn-clay" onclick="openModal('addDoctorModal')">➕ Add New Doctor</button>
+            </div>
+
+            <div class="glass-tabs">
+                <button class="doc-tab-btn active" data-tab="tab-pending">Pending Approvals</button>
+                <button class="doc-tab-btn" data-tab="tab-approved">Approved Doctors</button>
+            </div>
+
+            <div id="tab-pending" class="doc-tab-content active">
+                <div class="grid-cards" id="pending-doctors-grid">
+                </div>
+            </div>
+
+            <div id="tab-approved" class="doc-tab-content">
+                <div class="glass-card">
+                    <div class="table-responsive">
+                        <table class="glass-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Specialty</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approved-doctors-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-admins" class="dashboard-section">
+            <div class="section-header flex-between">
+                <div>
+                    <h1>Admins Management</h1>
+                    <p>Manage system administrators with elevated platform access.</p>
+                </div>
+                <button class="btn-clay" onclick="openModal('addAdminModal')">➕ Add New Admin</button>
+            </div>
+
+            <div class="glass-card">
+                <div class="table-responsive">
+                    <table class="glass-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admins-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="addParentModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>👨‍👩‍👧 Add Direct Parent</h2>
+                <button class="close-btn" onclick="closeModal('addParentModal')">&times;</button>
+            </div>
+            <form id="add-parent-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="add-p-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="add-p-email" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="add-p-password" required>
+                </div>
+                <button type="submit" class="btn-clay w-100">Create & Verify Parent</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editParentModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>✏️ Edit Parent</h2>
+                <button class="close-btn" onclick="closeModal('editParentModal')">&times;</button>
+            </div>
+            <form id="edit-parent-form">
+                <input type="hidden" id="edit-p-id">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="edit-p-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="edit-p-email" required>
+                </div>
+                <div class="input-group">
+                    <label>New Password (Leave blank to keep current)</label>
+                    <input type="password" id="edit-p-password">
+                </div>
+                <button type="submit" class="btn-clay w-100">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editDoctorModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🩺 Edit Doctor</h2>
+                <button class="close-btn" onclick="closeModal('editDoctorModal')">&times;</button>
+            </div>
+            <form id="edit-doctor-form">
+                <input type="hidden" id="edit-d-id">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="edit-d-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Specialty</label>
+                    <input type="text" id="edit-d-specialty" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="edit-d-email" required>
+                </div>
+                <div class="input-group">
+                    <label>New Password (Leave blank to keep current)</label>
+                    <input type="password" id="edit-d-password">
+                </div>
+                <button type="submit" class="btn-clay w-100">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addDoctorModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🩺 Add Direct Doctor</h2>
+                <button class="close-btn" onclick="closeModal('addDoctorModal')">&times;</button>
+            </div>
+            <form id="add-doctor-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="add-d-name" required>
+                </div>
+                <div class="input-group">
+                    <label>Specialty</label>
+                    <input type="text" id="add-d-specialty" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="add-d-email" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="add-d-password" required>
+                </div>
+                <button type="submit" class="btn-clay w-100">Create & Approve Doctor</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="emailHistoryModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>📧 Email Audit History</h2>
+                <button class="close-btn" onclick="closeModal('emailHistoryModal')">&times;</button>
+            </div>
+            <div class="table-responsive">
+                <table class="glass-table small-text">
+                    <thead>
+                        <tr>
+                            <th>Old Email</th>
+                            <th>New Email</th>
+                            <th>Date Changed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="email-history-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="addAdminModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🛡️ Add New Admin</h2>
+                <button class="close-btn" onclick="closeModal('addAdminModal')">&times;</button>
+            </div>
+            <form id="add-admin-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="admin-name" required placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="admin-email" required placeholder="admin@learneur.com">
+                </div>
+                <div class="input-group">
+                    <label>Temporary Password</label>
+                    <input type="password" id="admin-password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-clay w-100" style="margin-top: 1rem;">Create Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customConfirmModal" class="modal-overlay hidden" style="z-index: 3000;">
+        <div class="modal-card" style="max-width: 400px; text-align: center; padding: 2.5rem 2rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;" id="confirm-icon">⚠️</div>
+            <h2 style="margin-bottom: 0.5rem; font-size: 1.5rem;" id="confirm-title">Are you sure?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 600;" id="confirm-message">This action
+                cannot be undone.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn-clay"
+                    style="background: rgba(0,0,0,0.1); color: var(--text-main); border: 1px solid var(--glass-border); box-shadow: none;"
+                    id="confirm-cancel-btn">Cancel</button>
+                <button class="btn-clay danger" id="confirm-ok-btn">Yes, Do it</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 30px; right: 30px; z-index: 4000; display: flex; flex-direction: column; gap: 15px;"></div>
+
+    <script>
+        const API_BASE_URL = `${CONFIG.API_BASE_URL}/admin`;
+
+        // ==========================================
+        // 1. CRITICAL SECURITY GUARD
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const role = localStorage.getItem('role');
+
+            // 🛡️ Silent Guard: Reject anyone who isn't explicitly the OWNER or ADMIN silently
+            if (!token || !role || (role.toUpperCase() !== 'OWNER' && role.toUpperCase() !== 'ADMIN')) {
+                window.location.replace('Login.html'); // Instantly kick out quietly
+                return;
+            }
+
+            // Initialize UI features
+            initThemeToggle();
+            initSidebarNavigation();
+            initDoctorTabs();
+            initMobileMenu(); // تهيئة قائمة الموبايل
+
+            // Initial Data Fetches
+            fetchParents();
+            fetchPendingDoctors();
+            fetchApprovedDoctors();
+            fetchAdmins();
+        });
+
+        // ==========================================
+        // 🌟 CUSTOM UX SYSTEM (Toasts & Confirm)
+        // ==========================================
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.style.position = 'fixed';
+                container.style.bottom = '30px';
+                container.style.right = '30px';
+                container.style.zIndex = '4000';
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.gap = '15px';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${type}`;
+            const icon = type === 'success' ? '✅' : '❌';
+            
+            toast.innerHTML = `<span style="font-size: 1.2rem;">${icon}</span> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function customConfirm(message, type = 'danger') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customConfirmModal');
+                const msgEl = document.getElementById('confirm-message');
+                const okBtn = document.getElementById('confirm-ok-btn');
+                const cancelBtn = document.getElementById('confirm-cancel-btn');
+                const iconEl = document.getElementById('confirm-icon');
+
+                msgEl.textContent = message;
+
+                if (type === 'danger') {
+                    okBtn.className = 'btn-clay danger';
+                    okBtn.textContent = 'Yes, Confirm';
+                    iconEl.textContent = '🗑️';
+                } else {
+                    okBtn.className = 'btn-clay';
+                    okBtn.textContent = 'Yes, Confirm';
+                    iconEl.textContent = '✨';
+                }
+
+                modal.classList.remove('hidden');
+
+                const cleanup = () => {
+                    modal.classList.add('hidden');
+                    okBtn.replaceWith(okBtn.cloneNode(true)); 
+                    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+                };
+
+                document.getElementById('confirm-ok-btn').addEventListener('click', () => {
+                    cleanup();
+                    resolve(true); 
+                });
+
+                document.getElementById('confirm-cancel-btn').addEventListener('click', () => {
+                    cleanup();
+                    resolve(false); 
+                });
+            });
+        }
+
+        // 🛡️ Helper for authenticated requests (Silent Unauthorized)
+        // 🛡️ Helper for authenticated requests (Silent Unauthorized & Better Error Parsing)
+        async function adminFetch(endpoint, options = {}) {
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+            
+            // طرد صامت لو التوكن منتهي
+            if (response.status === 401) {
+                localStorage.removeItem('role');
+                localStorage.removeItem('token');
+                window.location.replace('Login.html');
+                throw new Error("Unauthorized");
+            }
+
+            // Handle 204 No Content for PUT/DELETE safely
+            if (response.status === 204) return {};
+
+            const data = await response.json();
+            
+            if (!response.ok) {
+                // 🛠️ حل مشكلة الـ [object Object] اللي بتظهر مع إيرور 422
+                let errorMessage = "API Request Failed";
+                if (data.detail) {
+                    if (Array.isArray(data.detail)) {
+                        // لو FastAPI مرجع لستة أخطاء (زي 422) نفكها لنص مقروء
+                        errorMessage = data.detail.map(e => `${e.loc[e.loc.length - 1]}: ${e.msg}`).join(' | ');
+                    } else {
+                        // لو رسالة خطأ عادية
+                        errorMessage = data.detail;
+                    }
+                }
+                throw new Error(errorMessage);
+            }
+            return data;
+        }
+
+        // ==========================================
+        // 2. UI NAVIGATION & TOGGLES
+        // ==========================================
+        function initMobileMenu() {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if(mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if(window.innerWidth <= 992) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        function initThemeToggle() {
+            const btn = document.getElementById('theme-toggle');
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            btn.innerHTML = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
+
+            btn.addEventListener('click', () => {
+                const isDark = document.body.getAttribute('data-theme') === 'dark';
+                const newTheme = isDark ? 'light' : 'dark';
+                document.body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                btn.innerHTML = isDark ? '🌙 Dark Mode' : '☀️ Light Mode';
+            });
+        }
+
+        function initSidebarNavigation() {
+            const navBtns = document.querySelectorAll('.sidebar-nav .nav-btn');
+            const sections = document.querySelectorAll('.dashboard-section');
+
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const targetId = btn.getAttribute('data-target');
+                    sections.forEach(sec => {
+                        sec.classList.remove('active');
+                        if (sec.id === targetId) sec.classList.add('active');
+                    });
+                });
+            });
+
+            // 🛡️ Secure Logout (Preserves Theme)
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                showToast("Logging out securely...", "success");
+                
+                setTimeout(() => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('role');
+                    localStorage.removeItem('user_id');
+                    window.location.href = 'index.html';
+                }, 800);
+            });
+        }
+
+        function initDoctorTabs() {
+            const docBtns = document.querySelectorAll('.doc-tab-btn');
+            const docContents = document.querySelectorAll('.doc-tab-content');
+
+            docBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    docBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const targetId = btn.getAttribute('data-tab');
+                    docContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetId) content.classList.add('active');
+                    });
+                });
+            });
+        }
+
+        // ==========================================
+        // 3. MODAL LOGIC
+        // ==========================================
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.add('hidden');
+            });
+        });
+
+        // ==========================================
+        // 4. API FETCH LOGIC
+        // ==========================================
+
+        // --- Parents ---
+        async function fetchParents() {
+            try {
+                const parents = await adminFetch('/parents');
+                const tbody = document.getElementById('parents-table-body');
+                tbody.innerHTML = parents.map(p => `
+                    <tr>
+                        <td>#${p.id}</td> 
+                        <td>${p.full_name}</td>
+                        <td>${p.email}</td>
+                        <td class="action-links">
+                            <button class="link-btn" onclick="openEditParent('${p.id}', '${p.full_name}', '${p.email}')">Edit</button>
+                            <button class="link-btn" onclick="viewEmailHistory('${p.id}')">History</button>
+                            <button class="link-btn del" onclick="deleteParent('${p.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { 
+                if(err.message !== "Unauthorized") console.error(err); 
+            }
+        }
+
+        async function viewEmailHistory(userId) {
+            try {
+                const history = await adminFetch(`/users/${userId}/email-history`);
+                const tbody = document.getElementById('email-history-body');
+                tbody.innerHTML = history.length ? history.map(h => `
+                    <tr>
+                        <td>${h.old_email}</td>
+                        <td>${h.new_email}</td>
+                        <td>${new Date(h.changed_at).toLocaleDateString()}</td>
+                    </tr>
+                `).join('') : `<tr><td colspan="3" style="text-align:center;">No history found.</td></tr>`;
+                openModal('emailHistoryModal');
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        }
+
+        async function deleteParent(id) {
+            if (await customConfirm(`Are you sure you want to delete this parent?`, 'danger')) {
+                try {
+                    await adminFetch(`/parents/${id}`, { method: 'DELETE' });
+                    showToast(`Parent deleted successfully.`, 'success');
+                    fetchParents(); 
+                } catch (err) {
+                    if(err.message !== "Unauthorized") showToast("Error deleting parent: " + err.message, 'error');
+                }
+            }
+        }
+
+        // --- Doctors ---
+        async function fetchPendingDoctors() {
+            try {
+                const pending = await adminFetch('/doctors/pending');
+                const grid = document.getElementById('pending-doctors-grid');
+                grid.innerHTML = pending.map(d => `
+                    <div class="pending-card">
+                        <h3>${d.full_name}</h3>
+                        <p>📧 ${d.email}</p>
+                        <p>🩺 ${d.specialty}</p>
+                        <a href="${d.document_url !== '#' ? 'http://127.0.0.1:8000/' + d.document_url : '#'}" target="_blank" class="link-btn" style="text-align:left;">📄 View Verification Document</a>
+                        <div class="card-actions">
+                            <button class="btn-clay w-100" onclick="approveDoctor('${d.id}')">✅ Approve</button>
+                            <button class="btn-clay danger w-100" onclick="deleteDoctor('${d.id}')">❌ Reject</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { 
+                if(err.message !== "Unauthorized") console.error(err); 
+            }
+        }
+
+        async function fetchApprovedDoctors() {
+            try {
+                const approvedDoctors = await adminFetch('/doctors/approved');
+                const tbody = document.getElementById('approved-doctors-table-body');
+                if (!tbody) return;
+
+                if (approvedDoctors.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center;">No approved doctors yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = approvedDoctors.map(d => `
+                    <tr>
+                        <td>#${d.id}</td> 
+                        <td>${d.full_name}</td>
+                        <td>${d.specialty}</td>
+                        <td>${d.email}</td>
+                        <td class="action-links">
+                            <a href="${d.document_url !== '#' ? 'http://127.0.0.1:8000/' + d.document_url : '#'}" target="_blank" class="link-btn" title="View Document">📄 Doc</a>
+                            <button type="button" class="link-btn" onclick="openEditDoctor('${d.id}', '${d.full_name}', '${d.email}', '${d.specialty}')">Edit</button>
+                            <button type="button" class="link-btn del" onclick="deleteDoctor('${d.id}')">Remove</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { 
+                if(err.message !== "Unauthorized") console.error("Error fetching approved doctors:", err); 
+            }
+        }
+
+        async function approveDoctor(id) {
+            if (await customConfirm(`Approve this doctor?`, 'success')) {
+                try {
+                    await adminFetch(`/doctors/${id}/approve`, { method: 'PUT' });
+                    showToast(`Doctor approved successfully.`, 'success');
+                    fetchPendingDoctors(); 
+                    fetchApprovedDoctors();
+                } catch (err) {
+                    if(err.message !== "Unauthorized") showToast("Error approving doctor: " + err.message, 'error');
+                }
+            }
+        }
+
+        async function deleteDoctor(id) {
+            if (await customConfirm(`Reject and delete this doctor?`, 'danger')) {
+                try {
+                    await adminFetch(`/doctors/${id}`, { method: 'DELETE' });
+                    showToast(`Doctor deleted successfully.`, 'success');
+                    fetchPendingDoctors();
+                    fetchApprovedDoctors();
+                } catch (err) {
+                    if(err.message !== "Unauthorized") showToast("Error deleting doctor: " + err.message, 'error');
+                }
+            }
+        }
+
+        // --- Admins ---
+        // --- Admins ---
+        async function fetchAdmins() {
+            try {
+                const admins = await adminFetch('/admins');
+                const tbody = document.getElementById('admins-table-body');
+                tbody.innerHTML = admins.map(a => `
+                    <tr>
+                        <td>#${a.id}</td>
+                        <td>${a.name}</td>
+                        <td>${a.email}</td>
+                        <td class="action-links">
+                            <!-- 🛠️ تم إضافة علامات التنصيص هنا حوالين الـ ID -->
+                            <button class="link-btn del" onclick="deleteAdmin('${a.id}')">Remove</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) { 
+                if(err.message !== "Unauthorized") console.error(err); 
+            }
+        }
+
+        async function deleteAdmin(id) {
+            if (await customConfirm(`Remove Admin #${id}? This action cannot be undone.`, 'danger')) {
+                try {
+                    await adminFetch(`/admins/${id}`, { method: 'DELETE' });
+                    showToast(`Admin ${name} removed.`, 'success');
+                    fetchAdmins();
+                } catch (err) {
+                    if(err.message !== "Unauthorized") showToast("Error deleting admin: " + err.message, 'error');
+                }
+            }
+        }
+
+        document.getElementById('add-admin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('admin-name').value;
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            try {
+                await adminFetch(`/admins?email=${email}&password=${password}&name=${name}`, { method: 'POST' });
+                showToast(`Admin ${name} created successfully.`, 'success');
+                closeModal('addAdminModal');
+                e.target.reset();
+                fetchAdmins();
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        });
+
+        // --- دوال فتح الموديلز ---
+        function openEditParent(id, name, email) {
+            document.getElementById('edit-p-id').value = id;
+            document.getElementById('edit-p-name').value = name;
+            document.getElementById('edit-p-email').value = email;
+            document.getElementById('edit-p-password').value = '';
+            openModal('editParentModal');
+        }
+
+        function openEditDoctor(id, name, email, specialty) {
+            document.getElementById('edit-d-id').value = id;
+            document.getElementById('edit-d-name').value = name;
+            document.getElementById('edit-d-email').value = email;
+            document.getElementById('edit-d-specialty').value = specialty;
+            document.getElementById('edit-d-password').value = '';
+            openModal('editDoctorModal');
+        }
+
+        // --- 1. إضافة ولي أمر ---
+        document.getElementById('add-parent-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                full_name: document.getElementById('add-p-name').value,
+                email: document.getElementById('add-p-email').value,
+                password: document.getElementById('add-p-password').value
+            };
+            try {
+                await adminFetch(`/parents/direct`, { method: 'POST', body: JSON.stringify(payload) });
+                showToast('Parent added and verified successfully!', 'success');
+                closeModal('addParentModal');
+                e.target.reset();
+                fetchParents();
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        });
+
+        // --- 2. تعديل ولي أمر ---
+        document.getElementById('edit-parent-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-p-id').value;
+            const payload = {
+                full_name: document.getElementById('edit-p-name').value,
+                email: document.getElementById('edit-p-email').value,
+                password: document.getElementById('edit-p-password').value || null
+            };
+            try {
+                await adminFetch(`/parents/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+                showToast('Parent updated successfully!', 'success');
+                closeModal('editParentModal');
+                fetchParents();
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        });
+
+        // --- 3. تعديل دكتور ---
+        document.getElementById('edit-doctor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-d-id').value;
+            const payload = {
+                full_name: document.getElementById('edit-d-name').value,
+                email: document.getElementById('edit-d-email').value,
+                specialty: document.getElementById('edit-d-specialty').value,
+                password: document.getElementById('edit-d-password').value || null
+            };
+            try {
+                await adminFetch(`/doctors/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+                showToast('Doctor updated successfully!', 'success');
+                closeModal('editDoctorModal');
+                fetchApprovedDoctors();
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        });
+
+        document.getElementById('add-doctor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                full_name: document.getElementById('add-d-name').value,
+                email: document.getElementById('add-d-email').value,
+                specialty: document.getElementById('add-d-specialty').value,
+                password: document.getElementById('add-d-password').value
+            };
+            try {
+                await adminFetch(`/doctors/direct`, { method: 'POST', body: JSON.stringify(payload) });
+                showToast('Doctor added and approved successfully!', 'success');
+                closeModal('addDoctorModal');
+                e.target.reset();
+                fetchApprovedDoctors();
+            } catch (err) { 
+                if(err.message !== "Unauthorized") showToast(err.message, 'error'); 
+            }
+        });
+    </script>
+</body>
+
+</html>

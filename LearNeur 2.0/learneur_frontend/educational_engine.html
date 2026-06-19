@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 🛡️ منع التخزين المؤقت (No-Cache Security) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>LearNeur - المحرك التعليمي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;900&family=Tajawal:wght@700;900&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === MAGICAL CLAYMORPHISM & SENSORY THEME === */
+        :root {
+            --bg: #EBF8FF;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5;
+            --success: #48BB78;
+            --error: #F56565;
+            
+            /* Clay Physics Variables */
+            --clay-depth: #CBD5E0;
+            --clay-highlight: rgba(255, 255, 255, 0.9);
+            --clay-inner-shadow: rgba(0, 0, 0, 0.05);
+            --clay-drop-shadow: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            margin: 0; padding: 0; background-color: var(--bg);
+            font-family: 'Tajawal', 'Nunito', sans-serif; color: var(--text-main);
+            min-height: 100vh; min-height: 100dvh; width: 100vw; 
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start; 
+            overflow-x: hidden; overflow-y: auto;
+            user-select: none; -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            position: relative;
+        }
+
+        /* === ☁️ CALMING ANIMATED SKY BACKGROUND === */
+        .sky-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #90CDF4 0%, #EBF8FF 100%);
+            z-index: -2; overflow: hidden; pointer-events: none;
+        }
+        .cloud {
+            position: absolute; background: #FFFFFF; border-radius: 200px;
+            opacity: 0.8; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+            animation: drift linear infinite;
+        }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: #FFFFFF; border-radius: 50%; }
+        .c1 { width: 150px; height: 50px; top: 10%; animation-duration: 50s; }
+        .c1::before { width: 70px; height: 70px; top: -30px; left: 20px; }
+        .c1::after { width: 50px; height: 50px; top: -20px; right: 25px; }
+        .c2 { width: 220px; height: 70px; top: 40%; animation-duration: 65s; opacity: 0.5; transform: scale(0.8); animation-delay: -25s; }
+        .c2::before { width: 90px; height: 90px; top: -40px; left: 30px; }
+        .c2::after { width: 70px; height: 70px; top: -30px; right: 35px; }
+        .c3 { width: 120px; height: 40px; top: 80%; animation-duration: 35s; opacity: 0.9; transform: scale(1.2); animation-delay: -10s; }
+        .c3::before { width: 50px; height: 50px; top: -20px; left: 15px; }
+        .c3::after { width: 40px; height: 40px; top: -15px; right: 15px; }
+        @keyframes drift { from { left: -300px; } to { left: 100vw; } }
+
+        /* === ENGINE LAYOUT === */
+        .engine-container {
+            width: 100%; max-width: 900px; 
+            min-height: 100vh; min-height: 100dvh;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding: clamp(1rem, 4vw, 2rem); padding-bottom: 3rem; box-sizing: border-box; z-index: 10;
+        }
+
+        /* === 3D WHITEBOARD / FLASHCARD === */
+        .neu-panel {
+            border-radius: 45px; 
+            background: #FFFFFF; width: 100%;
+            border: 8px solid #FFF;
+            box-shadow: 0 18px 0 var(--clay-depth), 0 30px 40px var(--clay-drop-shadow);
+            padding: clamp(1.5rem, 5vw, 3rem); box-sizing: border-box; text-align: center;
+            position: relative;
+            margin: auto 0;
+            animation: bounceInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Top Progress Bar & Exit */
+        .top-bar { 
+            width: 100%; display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 2rem; margin-top: 1rem; background: rgba(255,255,255,0.6); padding: 1rem; 
+            border-radius: 30px; border: 4px solid #FFF; box-shadow: 0 8px 0 var(--clay-depth);
+            position: relative; z-index: 50; 
+        }
+        
+        #exit-btn { 
+            background: #FC8181; color: #FFF; border: 4px solid #FFF; outline: none;
+            box-shadow: 0 6px 0 #E53E3E, 0 10px 15px rgba(0,0,0,0.1);
+            padding: 0.5rem 1.2rem; border-radius: 20px; font-family: 'Tajawal', sans-serif;
+            font-weight: 900; font-size: clamp(1rem, 3vw, 1.5rem); cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        #exit-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #E53E3E; }
+
+        .progress-container { flex: 1; height: 22px; border-radius: 15px; margin: 0 1.5rem; background: #EDF2F7; box-shadow: inset 0 5px 10px rgba(0,0,0,0.08); overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #4FD1C5, #38B2AC); border-radius: 15px; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 -4px 0 rgba(0,0,0,0.15); }
+        
+        #counter-txt { font-family: 'Fredoka One', cursive; font-size: clamp(1rem, 3vw, 1.5rem); color: #2B6CB0; background: #FFF; padding: 0.3rem 1rem; border-radius: 15px; box-shadow: 0 4px 0 #CBD5E0; }
+
+        /* === EXERCISE CONTENT === */
+        .prompt-text { 
+            font-family: 'Tajawal', sans-serif; font-size: clamp(1.5rem, 5vw, 2.5rem); 
+            font-weight: 900; margin: 0 0 1.5rem 0; color: #2B6CB0; text-shadow: 2px 2px 0px #FFF;
+        }
+        
+        .content-display { 
+            font-size: clamp(3rem, 8vw, 6rem); font-family: 'Fredoka One', cursive; font-weight: 900; 
+            margin: 1.5rem 0; color: #2C5282; min-height: 140px; display: flex; align-items: center; justify-content: center; gap: 20px;
+            background: #F7FAFC; border: 6px dashed #90CDF4; border-radius: 35px;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.05); flex-wrap: wrap; padding: 1rem;
+        }
+        .exercise-icon { font-size: clamp(3.5rem, 10vw, 7rem); animation: float 4s ease-in-out infinite; filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));}
+
+        /* === CHUBBY CLAY BUTTONS === */
+        .choices-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); 
+            gap: 1.2rem; width: 100%; margin-top: 1.5rem; 
+        }
+        
+        .neu-btn {
+            border-radius: 30px; background: #FFFFFF; border: 6px solid #FFF;
+            box-shadow: inset -5px -5px 15px var(--clay-inner-shadow), inset 5px 5px 15px var(--clay-highlight), 0 8px 0 var(--clay-depth), 0 10px 15px var(--clay-drop-shadow);
+            cursor: pointer; transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: clamp(1.2rem, 4vw, 2.2rem); padding: clamp(0.8rem, 2vw, 1.5rem); text-align: center; box-sizing: border-box;
+            font-family: 'Fredoka One', 'Tajawal', sans-serif; color: #2D3748; line-height: 1.3;
+        }
+
+        .neu-btn:active, .neu-btn.active-tap {
+            transform: translateY(6px) scale(0.97) !important;
+            box-shadow: inset -5px -5px 15px var(--clay-inner-shadow), inset 5px 5px 15px var(--clay-highlight), 0 2px 0 var(--clay-depth), 0 4px 8px var(--clay-drop-shadow) !important;
+            color: var(--primary);
+        }
+
+        .audio-trigger-btn { 
+            font-size: clamp(2rem, 5vw, 3rem); padding: 0; width: clamp(60px, 15vw, 80px); height: clamp(60px, 15vw, 80px); margin: -40px auto 1.5rem auto; 
+            background: #F6E05E; border-color: #FFF; box-shadow: 0 8px 0 #D69E2E, 0 15px 20px rgba(0,0,0,0.15);
+            border-radius: 50%; color: #FFF; text-shadow: 0 4px 0 #D69E2E;
+        }
+        .audio-trigger-btn:active { box-shadow: 0 2px 0 #D69E2E !important; transform: translateY(6px) !important; }
+
+        .action-area { width: 100%; display: flex; justify-content: center; margin-top: 2rem; }
+        .submit-activity-btn { 
+            padding: 1rem 3rem; border-radius: 40px; background: #4FD1C5; color: #FFF; 
+            box-shadow: 0 10px 0 #319795, 0 15px 25px rgba(0,0,0,0.15); border: 6px solid #FFF;
+        }
+        .submit-activity-btn:active { box-shadow: 0 3px 0 #319795 !important; transform: translateY(7px) !important; color: #FFF !important; }
+
+        .wrong-fade { opacity: 0.3; pointer-events: none; transform: scale(0.9); filter: grayscale(1); box-shadow: 0 2px 0 var(--clay-depth) !important; transition: all 0.4s ease; }
+        
+        .right-success { 
+            background: #68D391 !important; 
+            border: 6px solid #FFF !important; 
+            color: #FFF !important; 
+            text-shadow: 0 3px 0 #38A169 !important;
+            box-shadow: 0 10px 0 #38A169, 0 15px 20px rgba(0,0,0,0.2) !important;
+            animation: bounceWin 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; 
+            pointer-events: none;
+        }
+
+        /* === 🛡️ MODALS (Alert & Confirm) === */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .hidden { display: none !important; }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes bounceWin { 0% { transform: scale(1); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1); } }
+        @keyframes bounceInUp { 0% { opacity: 0; transform: translateY(100px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-12px) rotate(-3deg); } 75% { transform: translateX(12px) rotate(3deg); } }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+    </style>
+</head>
+<body>
+
+    <div class="sky-bg">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+    </div>
+
+    <div class="engine-container">
+        
+        <div class="top-bar">
+            <button class="back-btn" id="exit-btn">❌ خروج</button>
+            <div class="progress-container">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <div id="counter-txt">1 / 15</div>
+        </div>
+
+        <div class="neu-panel" style="display: flex; flex-direction: column; justify-content: center;">
+            <div class="neu-btn audio-trigger-btn" id="speak-prompt-btn">🔊</div>
+            <h1 class="prompt-text" id="exercise-prompt">جاري تحميل التمرين...</h1>
+            
+            <div class="content-display" id="exercise-content">
+                <span id="target-text"></span>
+                <span class="exercise-icon" id="target-icon"></span>
+            </div>
+
+            <div class="choices-grid" id="choices-container"></div>
+
+            <div class="action-area hidden" id="action-container">
+                <div class="neu-btn submit-activity-btn" id="next-stage-btn">التالي ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🛡️ Custom Confirm Modal -->
+    <div id="custom-confirm-modal" class="modal-overlay hidden">
+        <div class="neu-panel" style="max-width: 400px; padding: 2rem; margin: 0 1.5rem;">
+            <h3 style="color: var(--error); margin: 0 0 1rem 0; font-family: 'Tajawal', sans-serif; font-size: 1.8rem;">⚠️ تنبيه</h3>
+            <p style="margin: 0 0 2rem 0; font-size: 1.2rem; font-weight: 700; color: var(--text-main);">هل تريد بالتأكيد مغادرة الركن التعليمي؟ لن يتم حفظ التقدم الحالي.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="confirm-yes-btn" class="neu-btn" style="padding: 0.8rem 2rem; background: var(--error); color: white; border-color: white; font-size: 1.2rem; flex: 1;">خروج</button>
+                <button id="confirm-no-btn" class="neu-btn" style="padding: 0.8rem 2rem; font-size: 1.2rem; flex: 1;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🛡️ Custom Alert Modal -->
+    <div id="custom-alert-modal" class="modal-overlay hidden">
+        <div class="neu-panel" style="max-width: 400px; padding: 2rem; margin: 0 1.5rem;">
+            <h3 style="color: var(--primary); margin: 0 0 1rem 0; font-family: 'Tajawal', sans-serif; font-size: 1.8rem;">رسالة</h3>
+            <p id="custom-alert-text" style="margin: 0 0 2rem 0; font-size: 1.2rem; font-weight: 700; color: var(--text-main);"></p>
+            <button id="alert-ok-btn" class="neu-btn" style="padding: 0.8rem 2rem; background: var(--primary); color: white; border-color: white; font-size: 1.2rem; width: 100%;">حسناً</button>
+        </div>
+    </div>
+
+    <!-- 🛡️ Anti-Tampering Scripts -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        document.onkeydown = function(e) {
+            if (e.key === "F12" || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
+               (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        // 🛡️ Back Button Trap -> Shows Custom Modal
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.pushState(null, "", window.location.href);
+            document.getElementById('exit-btn').click(); 
+        };
+
+        // 🛡️ Custom Modals Logic
+        function showCustomAlert(message, onOkCallback) {
+            document.getElementById('custom-alert-text').innerText = message;
+            const modal = document.getElementById('custom-alert-modal');
+            const okBtn = document.getElementById('alert-ok-btn');
+            modal.classList.remove('hidden');
+            
+            okBtn.onclick = function() {
+                modal.classList.add('hidden');
+                if(onOkCallback) onOkCallback();
+            };
+        }
+
+        function showCustomConfirm(message, onYesCallback) {
+            const modal = document.getElementById('custom-confirm-modal');
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            const noBtn = document.getElementById('confirm-no-btn');
+            modal.classList.remove('hidden');
+
+            yesBtn.onclick = function() {
+                modal.classList.add('hidden');
+                if(onYesCallback) onYesCallback();
+            };
+
+            noBtn.onclick = function() {
+                modal.classList.add('hidden');
+            };
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE_URL = CONFIG.API_BASE_URL;
+            const token = localStorage.getItem('token');
+            
+            let childId = sessionStorage.getItem('selectedChildId') || localStorage.getItem('selectedChildId');
+            
+            if (window.location.search) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if(urlParams.get('childId')) {
+                    childId = urlParams.get('childId');
+                    sessionStorage.setItem('selectedChildId', childId);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            }
+
+            const exercisesRaw = sessionStorage.getItem('currentEducationalExercises');
+            const moduleTitle = sessionStorage.getItem('educationalModuleTitle') || 'الركن التعليمي';
+
+            // استخدام الـ Alert المخصص بدلاً من alert()
+            if (!exercisesRaw || !childId || !token) {
+                showCustomAlert("انتهت الجلسة التعليمية.", () => {
+                    window.location.replace('child_profile.html');
+                });
+                return;
+            }
+
+            const exercises = JSON.parse(exercisesRaw);
+            
+            let State = {
+                currentIndex: 0,
+                totalExercises: exercises.length,
+                startTime: Date.now(),
+                totalClicks: 0,
+                franticClicks: 0,
+                clickTimestamps: [],
+                isWaitingNext: false
+            };
+
+            const uiPrompt = document.getElementById('exercise-prompt');
+            const uiTargetText = document.getElementById('target-text');
+            const uiTargetIcon = document.getElementById('target-icon');
+            const uiChoices = document.getElementById('choices-container');
+            const uiActionArea = document.getElementById('action-container');
+            const uiNextBtn = document.getElementById('next-stage-btn');
+            const uiProgress = document.getElementById('progress-fill');
+            const uiCounter = document.getElementById('counter-txt');
+
+            function speakCurrentExercise() {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const currentEx = exercises[State.currentIndex];
+                    
+                    const msgAr = new SpeechSynthesisUtterance(currentEx.prompt_ar);
+                    msgAr.lang = 'ar-EG';
+                    msgAr.rate = 0.95;
+                    
+                    window.speechSynthesis.speak(msgAr);
+
+                    msgAr.onend = () => {
+                        if (currentEx.content && !currentEx.content.includes('_')) {
+                            const msgEn = new SpeechSynthesisUtterance(currentEx.content.replace(/[^a-zA-Z ]/g, ""));
+                            msgEn.lang = 'en-US';
+                            msgEn.rate = 0.85;
+                            window.speechSynthesis.speak(msgEn);
+                        }
+                    };
+                }
+            }
+
+            document.addEventListener('click', () => {
+                State.totalClicks++;
+                const now = Date.now();
+                State.clickTimestamps.push(now);
+                State.clickTimestamps = State.clickTimestamps.filter(t => now - t <= 1200);
+                if (State.clickTimestamps.length >= 3) {
+                    State.franticClicks++;
+                    State.clickTimestamps = [];
+                }
+            });
+
+            function renderExercise() {
+                State.isWaitingNext = false;
+                uiChoices.innerHTML = '';
+                uiActionArea.classList.add('hidden');
+                
+                if (State.currentIndex >= State.totalExercises) {
+                    triggerCompletion();
+                    return;
+                }
+
+                uiCounter.innerText = `${State.currentIndex + 1} / ${State.totalExercises}`;
+                uiProgress.style.width = `${(State.currentIndex / State.totalExercises) * 100}%`;
+
+                const ex = exercises[State.currentIndex];
+                
+                uiPrompt.innerText = ex.prompt_ar;
+                uiTargetText.innerText = ex.content || '';
+                uiTargetIcon.innerText = ex.icon || '';
+
+                setTimeout(speakCurrentExercise, 300);
+
+                if (ex.choices && Array.isArray(ex.choices) && ex.choices.length > 0) {
+                    ex.choices.forEach(choice => {
+                        const btn = document.createElement('div');
+                        btn.className = 'neu-btn choice-item';
+                        btn.innerText = choice;
+                        
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (State.isWaitingNext) return;
+
+                            if (choice.trim() === ex.answer.trim()) {
+                                State.isWaitingNext = true;
+                                btn.classList.add('right-success');
+                                if ('speechSynthesis' in window) {
+                                    window.speechSynthesis.cancel();
+                                    const successVoice = new SpeechSynthesisUtterance("ممتاز! إجابة صحيحة");
+                                    successVoice.lang = 'ar-EG';
+                                    window.speechSynthesis.speak(successVoice);
+                                }
+                                setTimeout(() => {
+                                    State.currentIndex++;
+                                    renderExercise();
+                                }, 1500);
+                            } else {
+                                btn.classList.add('animate-shake');
+                                setTimeout(() => btn.classList.remove('animate-shake'), 300);
+                                btn.classList.add('wrong-fade');
+                            }
+                        });
+                        uiChoices.appendChild(btn);
+                    });
+                } else {
+                    uiActionArea.classList.remove('hidden');
+                }
+            }
+
+            async function triggerCompletion() {
+                uiProgress.style.width = '100%';
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const winVoice = new SpeechSynthesisUtterance("عمل رائع! لقد أكملت الركن التعليمي بنجاح.");
+                    winVoice.lang = 'ar-EG';
+                    window.speechSynthesis.speak(winVoice);
+                }
+
+                document.querySelector('.engine-container').innerHTML = `
+                    <div class="neu-panel" style="padding: 4rem 2rem; margin: auto 0;">
+                        <h2 style="font-size: clamp(2.5rem, 8vw, 4rem); color: #4FD1C5; margin-bottom: 1rem; animation: float 3s infinite;">بطل متميز! 🌟</h2>
+                        <p style="font-size: clamp(1.2rem, 4vw, 1.5rem); color: var(--text-main); font-weight:800;">لقد أنهيت كافة التمارين بنجاح وجاري حفظ تقدمك الدراسي...</p>
+                    </div>
+                `;
+
+                const telemetryPayload = {
+                    child_id: parseInt(childId), 
+                    game_name: `الركن التعليمي - ${moduleTitle}`,
+                    time_taken_seconds: parseFloat(((Date.now() - State.startTime) / 1000).toFixed(2)),
+                    total_clicks: State.totalClicks,
+                    frantic_clicks: State.franticClicks,
+                    is_completed: true
+                };
+
+                try {
+                    await fetch(`${API_BASE_URL}/game/telemetry`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify(telemetryPayload)
+                    });
+                } catch (err) { console.error("Telemetry report failed:", err); }
+
+                setTimeout(() => {
+                    window.location.replace('child_profile.html');
+                }, 3500);
+            }
+
+            document.getElementById('speak-prompt-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                speakCurrentExercise();
+            });
+
+            uiNextBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                State.currentIndex++;
+                renderExercise();
+            });
+
+            // 🛡️ استخدام Confirm Modal المخصص بدلاً من confirm()
+            document.getElementById('exit-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showCustomConfirm("هل تريد بالتأكيد مغادرة الركن التعليمي؟ لن يتم حفظ التقدم الحالي.", () => {
+                    window.location.replace('child_profile.html');
+                });
+            });
+
+            renderExercise();
+        });
+    </script>
+</body>
+</html>

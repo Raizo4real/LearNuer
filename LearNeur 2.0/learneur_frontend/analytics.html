@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LearNeur - Clinical Analytics Portal</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === Premium Glassmorphism Dual UI Theme === */
+        :root {
+            /* Light Mode (Eye-Care Glass) */
+            --bg-gradient: linear-gradient(135deg, #E2E8F0 0%, #EDF2F7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-bg-hover: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5;     
+            --secondary: #3182CE;   
+            --accent-purple: #805AD5;
+            --success: #38A169;     
+            --warning: #D69E2E;     
+            --danger: #E53E3E;      
+            --sidebar-width: 260px;
+            --dropdown-bg: #F7FAFC;
+        }
+
+        body.dark-mode {
+            /* Premium Dark Mode */
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+            --primary: #4FD1C5;     
+            --secondary: #63B3ED;   
+            --accent-purple: #9F7AEA;
+            --success: #48BB78;     
+            --warning: #ECC94B;     
+            --danger: #F56565;      
+            --dropdown-bg: #1A202C;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        /* === Shared Glassmorphism Layout === */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        
+        body.dark-mode .glass-card {
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* === Mobile Header (Hamburger) === */
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+        }
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .hamburger-btn:active { transform: scale(0.9); }
+
+        /* === Sidebar === */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 2500;
+            border-radius: 0 24px 24px 0;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-item.active a, .sidebar-item a:hover {
+            color: var(--text-main);
+            background: var(--glass-bg-hover);
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        /* === Main Content Area === */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2.5rem;
+            max-width: 1400px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        /* Top Control Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .portal-title h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--text-main), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .portal-title p {
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .child-dropdown {
+            background: var(--dropdown-bg);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .child-dropdown:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: #0F2027;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-export:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Executive Summary KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .kpi-card {
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+        }
+
+        .kpi-card.completion::before { background: var(--secondary); }
+        .kpi-card.anxiety::before { background: var(--accent-purple); }
+
+        .kpi-title {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            width: max-content;
+        }
+
+        .badge.normal { background: rgba(72, 187, 120, 0.15); color: var(--success); }
+        .badge.mild { background: rgba(236, 201, 75, 0.15); color: var(--warning); }
+        .badge.high { background: rgba(245, 101, 121, 0.15); color: var(--danger); }
+
+        /* Charts Grid Architecture */
+        .charts-container-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media(max-width: 768px) {
+            .charts-container-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chart-box {
+            padding: 1.5rem;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-box h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Domain Breakdown Section */
+        .domain-section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin: 3rem 0 1.2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-main);
+        }
+
+        /* Technical Metric Lists & Data Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .metric-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .metric-table th {
+            background: rgba(128, 128, 128, 0.05);
+            color: var(--text-muted);
+            padding: 1rem 1.25rem;
+            font-weight: 800;
+            border-bottom: 2px solid var(--glass-border);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .metric-table tbody tr:hover {
+            background: var(--glass-bg-hover);
+        }
+
+        .status-pill {
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .status-pill.complete { background: rgba(72, 187, 120, 0.15); color: var(--success); }
+        .status-pill.incomplete { background: rgba(245, 101, 121, 0.15); color: var(--danger); }
+
+        /* 🛡️ Screen Lock Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(25px);
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999; padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            width: 100%; max-width: 450px; border-radius: 24px;
+            padding: 2.5rem 2rem; position: relative; text-align: center;
+        }
+        .input-group { margin-bottom: 1.2rem; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out 2; }
+
+        /* === Responsive Adaptation Mechanics === */
+        @media (max-width: 1024px) {
+            .mobile-header { display: flex; }
+            .sidebar {
+                left: -100%;
+                width: 280px;
+            }
+            .sidebar.active { left: 0; }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem;
+                padding-top: 5.5rem;
+            }
+            .sidebar-overlay {
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2400; backdrop-filter: blur(3px);
+            }
+            .sidebar-overlay.active { display: block; }
+        }
+        
+        /* === Print Media Optimization Architecture === */
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .sidebar, .top-bar, .controls-wrapper, .btn-export, .mobile-header { display: none !important; }
+            .main-content { margin-left: 0 !important; width: 100% !important; padding: 0 !important; }
+            .glass-card { background: #ffffff !important; border: 1px solid #cbd5e0 !important; box-shadow: none !important; color: #000000 !important; backdrop-filter: none !important; page-break-inside: avoid; }
+            .kpi-card::before { display: none !important; }
+            .metric-table th { background: #f7fafc !important; color: #2d3748 !important; border-bottom: 2px solid #edf2f7 !important; }
+            .metric-table td { border-bottom: 1px solid #edf2f7 !important; color: #2d3748 !important; }
+            .kpi-value, .chart-box h2, .domain-section-title { color: #000000 !important; }
+            .badge, .status-pill { border: 1px solid #cbd5e0 !important; background: transparent !important; color: #000000 !important; }
+            .charts-container-grid { grid-template-columns: 1fr !important; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="mobile-header glass-card">
+        <div class="sidebar-brand" style="margin: 0; font-size: 1.5rem;">LearNeur</div>
+        <button class="hamburger-btn" id="mobile-menu-btn">☰</button>
+    </div>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <aside class="sidebar glass-card" id="sidebar">
+        <div class="sidebar-brand">LearNeur</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item"><a href="dashboard.html">🏡 Dashboard</a></li>
+            <li class="sidebar-item active"><a href="analytics.html">📊 Analytics Reports</a></li>
+            <li class="sidebar-item"><a href="doctor_directory.html">🏥 Healthcare Hub</a></li>
+            <li class="sidebar-item"><a href="settings.html">⚙️ Settings</a></li>
+            <li class="sidebar-item" style="margin-top: 1rem;">
+                <a id="manual-lock-btn" style="color: var(--danger);">🔒 Lock Screen</a>
+            </li>
+        </ul>
+        <button id="theme-toggle" class="btn-export" style="margin-top: auto; width: 100%; background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); box-shadow: none;">☀️ Light Mode</button>
+    </aside>
+
+    <main class="main-content">
+        
+        <section class="top-bar">
+            <div class="portal-title">
+                <h1 id="portal-header-title">Clinical Progress Dashboard</h1>
+                <p>Real-time cognitive profiling and neuro-telemetry evaluations</p>
+            </div>
+            <div class="controls-wrapper">
+                <select id="child-selector" class="child-dropdown">
+                    </select>
+                <button id="print-report-btn" class="btn-export">📄 Export Medical Report</button>
+            </div>
+        </section>
+
+        <section class="kpi-grid">
+            <div class="glass-card kpi-card focus">
+                <div class="kpi-title">Total Continuous Focus Time</div>
+                <div class="kpi-value" id="kpi-focus">0.0 <span style="font-size:1.2rem; color:var(--text-muted);">mins</span></div>
+            </div>
+            <div class="glass-card kpi-card completion">
+                <div class="kpi-title">Therapeutic Completion Rate</div>
+                <div class="kpi-value" id="kpi-completion">0%</div>
+            </div>
+            <div class="glass-card kpi-card anxiety">
+                <div class="kpi-title">Sensory Load / Anxiety Index</div>
+                <div class="kpi-value" style="font-size:1.8rem;" id="kpi-anxiety-label">Calculating...</div>
+                <div id="kpi-anxiety-badge" class="badge">Baseline Analysis</div>
+            </div>
+        </section>
+
+        <section class="charts-container-grid">
+            <div class="glass-card chart-box">
+                <h2>Learning Velocity & Task Duration</h2>
+                <div class="chart-wrapper">
+                    <canvas id="velocityChart"></canvas>
+                </div>
+            </div>
+            <div class="glass-card chart-box">
+                <h2>Frustration & Sensory Overload Trigger Index</h2>
+                <div class="chart-wrapper">
+                    <canvas id="sensoryTriggerChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="domain-section-title">🧩 Games Corner Analytics Evaluation</h2>
+        <section class="glass-card table-container">
+            <table class="metric-table" id="games-table">
+                <thead>
+                    <tr>
+                        <th>Activity Protocol ID</th>
+                        <th>Continuous Duration</th>
+                        <th>Aggregated Interactions</th>
+                        <th>Frantic Clicks (Anxiety Index)</th>
+                        <th>Clinical Progression</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+        <h2 class="domain-section-title">📚 Educational Corner Core Evaluation</h2>
+        <section class="glass-card table-container">
+            <table class="metric-table" id="educational-table">
+                <thead>
+                    <tr>
+                        <th>Activity Protocol ID</th>
+                        <th>Continuous Duration</th>
+                        <th>Aggregated Interactions</th>
+                        <th>Frantic Clicks (Anxiety Index)</th>
+                        <th>Clinical Progression</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <div class="modal-overlay" id="auto-lock-screen">
+        <div class="modal-content glass-card">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-weight: 900; font-size: 2rem;">🔒 Screen Locked</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 600;">For your child's data security, the dashboard has been locked. Please enter your PIN.</p>
+            
+            <div class="input-group">
+                <input type="password" id="unlock-pin-input" placeholder="••••" maxlength="6" style="text-align: center; font-size: 2rem; letter-spacing: 0.8rem; font-weight: bold; padding: 1rem; background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-main); outline: none; width: 100%;">
+            </div>
+            
+            <p id="unlock-error-msg" style="color: var(--danger); display: none; margin-bottom: 1rem; font-weight: bold;">❌ Invalid PIN, try again.</p>
+            
+            <button id="unlock-btn" class="btn-export" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Unlock Dashboard</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE_URL = CONFIG.API_BASE_URL;
+            const token = localStorage.getItem('token');
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // --- Mobile Hamburger Menu Logic ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            if(mobileBtn) {
+                mobileBtn.addEventListener('click', () => {
+                    sidebar.classList.add('active');
+                    sidebarOverlay.classList.add('active');
+                });
+            }
+
+            if(sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+            }
+
+            // --- Theme Toggle Integration ---
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'light') {
+                document.body.classList.remove('dark-mode');
+                if (themeToggle) themeToggle.textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.add('dark-mode');
+                if (themeToggle) themeToggle.textContent = '☀️ Light Mode';
+                if (!currentTheme) localStorage.setItem('theme', 'dark');
+            }
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    if (document.body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        themeToggle.textContent = '☀️ Light Mode';
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        themeToggle.textContent = '🌙 Dark Mode';
+                    }
+                    updateChartColors(); // Update Chart.js canvas colors immediately
+                });
+            }
+
+            // Secure JWT Gate Realization Validation Execution
+            if (!token) {
+                window.location.replace('Login.html');
+                return;
+            }
+
+            // 🛡️ ================= AUTO-LOCK SECURITY SYSTEM ================= 🛡️
+            let idleTimer;
+            const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+            const lockScreen = document.getElementById('auto-lock-screen');
+            const unlockBtn = document.getElementById('unlock-btn');
+            const unlockPinInput = document.getElementById('unlock-pin-input');
+            const unlockError = document.getElementById('unlock-error-msg');
+            const manualLockBtn = document.getElementById('manual-lock-btn');
+
+            function resetIdleTimer() {
+                if (lockScreen.classList.contains('active')) return;
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(triggerLockScreen, IDLE_TIMEOUT);
+            }
+
+            function triggerLockScreen() {
+                lockScreen.classList.add('active');
+                unlockPinInput.value = '';
+                unlockError.style.display = 'none';
+                unlockPinInput.focus();
+            }
+
+            ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => 
+                window.addEventListener(evt, resetIdleTimer, true)
+            );
+            resetIdleTimer();
+
+            if(manualLockBtn) {
+                manualLockBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    triggerLockScreen();
+                    if(sidebar.classList.contains('active')) {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+            unlockBtn.addEventListener('click', async () => {
+                const pin = unlockPinInput.value;
+                if(pin.length < 4) {
+                    unlockError.innerText = "PIN must be at least 4 digits.";
+                    unlockError.style.display = 'block';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/verify-pin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ pin: pin })
+                    });
+                    
+                    if(response.ok) {
+                        lockScreen.classList.remove('active');
+                        unlockError.style.display = 'none';
+                        resetIdleTimer();
+                    } else {
+                        unlockError.innerText = "❌ Invalid PIN. Please try again.";
+                        unlockError.style.display = 'block';
+                        lockScreen.querySelector('.modal-content').classList.add('animate-shake');
+                        setTimeout(() => lockScreen.querySelector('.modal-content').classList.remove('animate-shake'), 300);
+                    }
+                } catch (err) {
+                    unlockError.innerText = "Network error. Try again.";
+                    unlockError.style.display = 'block';
+                }
+            });
+
+            unlockPinInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') unlockBtn.click();
+            });
+            // ===============================================================
+
+            let velocityChartRef = null;
+            let sensoryChartRef = null;
+
+            const selectorNode = document.getElementById('child-selector');
+            const printBtnNode = document.getElementById('print-report-btn');
+
+            async function initializePortal() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/children`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    let children = [];
+                    if (response.ok) {
+                        children = await response.json();
+                    }
+                    
+                    // 🛡️ Empty State (No mock data)
+                    if (children.length === 0) {
+                        selectorNode.innerHTML = '<option value="">No children profiles</option>';
+                        processAndRenderTelemetry([]);
+                        return;
+                    }
+
+                    selectorNode.innerHTML = '';
+                    children.forEach(child => {
+                        const opt = document.createElement('option');
+                        opt.value = child.id;
+                        opt.textContent = child.first_name;
+                        selectorNode.appendChild(opt);
+                    });
+
+                    // 🛡️ Read selected child from sessionStorage if available
+                    const savedChildId = sessionStorage.getItem('selectedChildId');
+                    if (savedChildId && children.some(c => String(c.id) === String(savedChildId))) {
+                        selectorNode.value = savedChildId;
+                        executeTelemetryFetchPipeline(savedChildId);
+                    } else {
+                        executeTelemetryFetchPipeline(children[0].id);
+                    }
+
+                } catch (error) {
+                    console.error("Fetch children error:", error);
+                    selectorNode.innerHTML = '<option value="">No children profiles</option>';
+                    processAndRenderTelemetry([]);
+                }
+            }
+
+            selectorNode.addEventListener('change', (e) => {
+                if(e.target.value) {
+                    sessionStorage.setItem('selectedChildId', e.target.value);
+                    executeTelemetryFetchPipeline(e.target.value);
+                }
+            });
+
+            const gameNamesFriendly = {
+                "nv_sensory": "Sensory Canvas Protocol",
+                "nv_shadow": "Visual Shadow Configuration",
+                "nv_sort": "Color Ingestion Buckets",
+                "nv_music": "Acoustic Xylophone Match",
+                "ms_missing": "Contextual Visual Completion",
+                "ms_emotion": "Dynamic Face Feature Builder",
+                "ms_sounds": "Auditory Phonic Discrimination",
+                "ms_actions": "Active Verb Coordination",
+                "vb_social": "Pragmatic Social Scenario Branching",
+                "vb_sequence": "Chronological Sequential Timeline",
+                "vb_opposites": "Abstract Opposites Association",
+                "vb_riddle": "Auditory Semantic Inference Riddle",
+                "ta_aac": "Smart AAC Sentence Builder Strip",
+                "ta_simon": "Simon Sequential Short-Term Memory",
+                "ta_routine": "Vertical Behavioral Schedule Planner",
+                "ta_smart_sort": "Advanced Categorization Matrix Sorting"
+            };
+
+            async function executeTelemetryFetchPipeline(childId) {
+                if (!childId) return;
+                try {
+                    const response = await fetch(`${API_BASE_URL}/game/telemetry?child_id=${childId}`, {
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) throw new Error("No telemetry data");
+                    const data = await response.json();
+
+                    if (!data || data.length === 0) {
+                        processAndRenderTelemetry([]);
+                    } else {
+                        processAndRenderTelemetry(data);
+                    }
+
+                } catch (err) {
+                    // 🛡️ Fallback to empty state on error (No mock data)
+                    processAndRenderTelemetry([]);
+                }
+            }
+
+            function processAndRenderTelemetry(records) {
+                renderCalculatedKPIs(records);
+                renderDynamicCharts(records);
+                renderTechnicalMetricTables(records);
+            }
+
+            function renderCalculatedKPIs(records) {
+                const badgeElement = document.getElementById('kpi-anxiety-badge');
+                const labelElement = document.getElementById('kpi-anxiety-label');
+                
+                if (!records || records.length === 0) {
+                    document.getElementById('kpi-focus').innerHTML = `0.0 <span style="font-size:1.2rem; color:var(--text-muted);">mins</span>`;
+                    document.getElementById('kpi-completion').textContent = `0%`;
+                    labelElement.textContent = "No Telemetry Logged";
+                    badgeElement.textContent = "Awaiting Session";
+                    badgeElement.className = "badge normal";
+                    return;
+                }
+
+                let totalTimeSeconds = 0;
+                let completedSessions = 0;
+                let totalClicks = 0;
+                let totalFranticClicks = 0;
+
+                records.forEach(session => {
+                    totalTimeSeconds += parseFloat(session.time_taken_seconds) || 0;
+                    totalClicks += parseInt(session.total_clicks) || 0;
+                    totalFranticClicks += parseInt(session.frantic_clicks) || 0;
+                    if (session.is_completed === true) completedSessions++;
+                });
+
+                const focusMinutes = (totalTimeSeconds / 60).toFixed(1);
+                document.getElementById('kpi-focus').innerHTML = `${focusMinutes} <span style="font-size:1.2rem; color:var(--text-muted);">mins</span>`;
+
+                const rawCompletionRate = Math.round((completedSessions / records.length) * 100) || 0;
+                document.getElementById('kpi-completion').textContent = `${rawCompletionRate}%`;
+
+                const anxietyRatio = totalClicks > 0 ? (totalFranticClicks / totalClicks) : 0;
+
+                badgeElement.className = "badge"; 
+                if (anxietyRatio >= 0.15) {
+                    labelElement.textContent = "High Load Triggered";
+                    badgeElement.textContent = "Overload / Threat State";
+                    badgeElement.classList.add('high');
+                } else if (anxietyRatio >= 0.05) {
+                    labelElement.textContent = "Mild Hyper-Focus / Stress";
+                    badgeElement.textContent = "Elevated Adaptation";
+                    badgeElement.classList.add('mild');
+                } else {
+                    labelElement.textContent = "Regulated / Stable Baseline";
+                    badgeElement.textContent = "Optimal Integration";
+                    badgeElement.classList.add('normal');
+                }
+            }
+
+            // Function to update Chart UI based on Theme
+            function updateChartColors() {
+                if (!velocityChartRef && !sensoryChartRef) return;
+                
+                const isDark = document.body.classList.contains('dark-mode');
+                const textColor = isDark ? '#A0AEC0' : '#718096';
+                const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+                
+                if (velocityChartRef && velocityChartRef.options) {
+                    velocityChartRef.options.scales.x.ticks.color = textColor;
+                    velocityChartRef.options.scales.y.ticks.color = textColor;
+                    velocityChartRef.options.scales.x.grid.color = gridColor;
+                    velocityChartRef.options.scales.y.grid.color = gridColor;
+                    velocityChartRef.update();
+                }
+                if (sensoryChartRef && sensoryChartRef.options) {
+                    sensoryChartRef.options.scales.x.ticks.color = textColor;
+                    sensoryChartRef.options.scales.y.ticks.color = textColor;
+                    sensoryChartRef.options.scales.x.grid.color = gridColor;
+                    sensoryChartRef.options.scales.y.grid.color = gridColor;
+                    sensoryChartRef.update();
+                }
+            }
+
+            function renderDynamicCharts(records) {
+                if (velocityChartRef) velocityChartRef.destroy();
+                if (sensoryChartRef) sensoryChartRef.destroy();
+
+                const velocityChartContainer = document.getElementById('velocityChart');
+                const sensoryChartContainer = document.getElementById('sensoryTriggerChart');
+
+                if (!records || records.length === 0) {
+                    velocityChartContainer.getContext('2d').clearRect(0, 0, velocityChartContainer.width, velocityChartContainer.height);
+                    sensoryChartContainer.getContext('2d').clearRect(0, 0, sensoryChartContainer.width, sensoryChartContainer.height);
+                    return;
+                }
+
+                const velocityLabels = records.map((_, index) => `Session ${index + 1}`);
+                const durationData = records.map(r => parseFloat(r.time_taken_seconds) || 0);
+                const activityLabels = records.map(r => gameNamesFriendly[r.game_name] || r.game_name || "Unknown Protocol");
+                const franticData = records.map(r => parseInt(r.frantic_clicks) || 0);
+
+                const isDark = document.body.classList.contains('dark-mode');
+                const textColor = isDark ? '#A0AEC0' : '#718096';
+                const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
+                const ctxVelocity = velocityChartContainer.getContext('2d');
+                velocityChartRef = new Chart(ctxVelocity, {
+                    type: 'line',
+                    data: {
+                        labels: velocityLabels,
+                        datasets: [{
+                            label: 'Task Duration (Seconds)',
+                            data: durationData,
+                            borderColor: '#4FD1C5',
+                            backgroundColor: 'rgba(79, 209, 197, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#63B3ED',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: gridColor }, ticks: { color: textColor } },
+                            y: { grid: { color: gridColor }, ticks: { color: textColor }, beginAtZero: true }
+                        }
+                    }
+                });
+
+                const ctxSensory = sensoryChartContainer.getContext('2d');
+                sensoryChartRef = new Chart(ctxSensory, {
+                    type: 'bar',
+                    data: {
+                        labels: activityLabels,
+                        datasets: [{
+                            label: 'Frantic Clicks Burst Quantities',
+                            data: franticData,
+                            backgroundColor: 'rgba(245, 101, 101, 0.75)',
+                            borderColor: '#F56565',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: textColor, autoSkip: false, maxRotation: 45, minRotation: 45 } },
+                            y: { grid: { color: gridColor }, ticks: { color: textColor, stepSize: 1 }, beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            function renderTechnicalMetricTables(records) {
+                const gamesBody = document.querySelector('#games-table tbody');
+                const eduBody = document.querySelector('#educational-table tbody');
+
+                const GAMES_INDEX = ["nv_sensory", "nv_shadow", "nv_sort", "nv_music", "ms_emotion", "ms_sounds", "vb_sequence", "ta_simon"];
+                const EDUCATION_INDEX = ["ms_missing", "ms_actions", "vb_social", "vb_opposites", "vb_riddle", "ta_aac", "ta_routine", "ta_smart_sort"];
+
+                gamesBody.innerHTML = '';
+                eduBody.innerHTML = '';
+
+                if (!records || records.length === 0) {
+                    const fallbackRow = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No logs documented for this structural node profile.</td></tr>`;
+                    gamesBody.innerHTML = fallbackRow;
+                    eduBody.innerHTML = fallbackRow;
+                    return;
+                }
+
+                records.forEach(session => {
+                    const totalTime = parseFloat(session.time_taken_seconds) || 0;
+                    const minutesStr = String(Math.floor(totalTime / 60)).padStart(2, '0');
+                    const secondsStr = String(Math.round(totalTime % 60)).padStart(2, '0');
+                    const durationFormat = `${minutesStr}:${secondsStr}`;
+
+                    const franticCount = parseInt(session.frantic_clicks) || 0;
+                    const totalCount = parseInt(session.total_clicks) || 0;
+
+                    const statusPill = session.is_completed === true
+                        ? `<span class="status-pill complete">SUCCESS</span>`
+                        : `<span class="status-pill incomplete">ABANDONED</span>`;
+
+                    const rowHtml = `
+                        <tr>
+                            <td style="font-weight:700; color:var(--primary);">${gameNamesFriendly[session.game_name] || session.game_name || 'Unknown Activity'}</td>
+                            <td>${durationFormat}</td>
+                            <td>${totalCount}</td>
+                            <td style="color:${franticCount > 4 ? 'var(--danger)' : 'var(--text-main)'}; font-weight:bold;">${franticCount}</td>
+                            <td>${statusPill}</td>
+                        </tr>
+                    `;
+
+                    if (GAMES_INDEX.includes(session.game_name)) {
+                        gamesBody.insertAdjacentHTML('beforeend', rowHtml);
+                    } else if (EDUCATION_INDEX.includes(session.game_name)) {
+                        eduBody.insertAdjacentHTML('beforeend', rowHtml);
+                    } else {
+                        gamesBody.insertAdjacentHTML('beforeend', rowHtml);
+                    }
+                });
+            }
+
+            printBtnNode.addEventListener('click', () => { window.print(); });
+
+            initializePortal();
+        });
+
+        // Highlights Active link in Sidebar
+        const currentPage = window.location.pathname.split('/').pop();
+        document.querySelectorAll('.sidebar-item a').forEach(link => {
+            link.classList.remove('active');
+            link.parentElement.classList.remove('active');
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+                link.parentElement.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

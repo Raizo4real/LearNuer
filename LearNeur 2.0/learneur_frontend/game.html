@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 🛡️ منع التخزين المؤقت (No-Cache Security) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <title>LearNeur - Therapeutic Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;800;900&family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === MAGICAL CLAYMORPHISM & SENSORY THEME === */
+        :root {
+            --bg: #EBF8FF; /* Soft Sky Background Fallback */
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5; /* Teal for progress/accents */
+            --success: #48BB78;
+            --error: #F56565;
+            
+            /* Clay Highlights & Shadows */
+            --clay-depth: #CBD5E0;
+            --clay-highlight: rgba(255, 255, 255, 0.9);
+            --clay-inner-shadow: rgba(0, 0, 0, 0.05);
+            --clay-drop-shadow: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            margin: 0; padding: 0; background-color: var(--bg);
+            font-family: 'Nunito', 'Tajawal', sans-serif; color: var(--text-main);
+            height: 100vh; width: 100vw; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; overflow: hidden;
+            user-select: none; -webkit-user-select: none;
+            -webkit-touch-callout: none; /* 🛡️ Disable callout on mobile */
+            position: relative;
+        }
+
+        /* === ☁️ CALMING ANIMATED SKY BACKGROUND === */
+        .sky-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(180deg, #90CDF4 0%, #EBF8FF 100%);
+            z-index: -2; overflow: hidden; pointer-events: none;
+        }
+        .cloud {
+            position: absolute; background: #FFFFFF; border-radius: 200px;
+            opacity: 0.8; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));
+            animation: drift linear infinite;
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute; background: #FFFFFF; border-radius: 50%;
+        }
+        .c1 { width: 150px; height: 50px; top: 15%; animation-duration: 50s; }
+        .c1::before { width: 70px; height: 70px; top: -30px; left: 20px; }
+        .c1::after { width: 50px; height: 50px; top: -20px; right: 25px; }
+        
+        .c2 { width: 220px; height: 70px; top: 45%; animation-duration: 65s; opacity: 0.5; transform: scale(0.8); animation-delay: -25s; }
+        .c2::before { width: 90px; height: 90px; top: -40px; left: 30px; }
+        .c2::after { width: 70px; height: 70px; top: -30px; right: 35px; }
+        
+        .c3 { width: 120px; height: 40px; top: 75%; animation-duration: 35s; opacity: 0.9; transform: scale(1.2); animation-delay: -10s; }
+        .c3::before { width: 50px; height: 50px; top: -20px; left: 15px; }
+        .c3::after { width: 40px; height: 40px; top: -15px; right: 15px; }
+
+        @keyframes drift { from { left: -300px; } to { left: 100vw; } }
+
+        /* === 🧱 CLAYMORPHIC CORE COMPONENTS (Replacing Neumorphism) === */
+        /* Re-routing JS classes to new Clay designs */
+        .neu-panel {
+            border-radius: 35px; 
+            background: #FFFFFF;
+            border: 6px solid #FFF;
+            box-shadow: 
+                0 12px 0 var(--clay-depth), 
+                0 20px 25px var(--clay-drop-shadow);
+        }
+        
+        .neu-pressed {
+            border-radius: 30px; 
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border: 4px solid #FFF;
+            box-shadow: 
+                inset 5px 5px 15px rgba(0,0,0,0.08), 
+                inset -5px -5px 15px #FFF;
+        }
+
+        .neu-btn {
+            border-radius: 35px; 
+            background: #FFFFFF;
+            border: 6px solid #FFF;
+            box-shadow: 
+                inset -5px -5px 15px var(--clay-inner-shadow), 
+                inset 5px 5px 15px var(--clay-highlight), 
+                0 12px 0 var(--clay-depth), 
+                0 18px 25px var(--clay-drop-shadow);
+            cursor: pointer; 
+            transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; text-align: center;
+            font-family: 'Fredoka One', cursive;
+            color: var(--text-main);
+        }
+
+        /* The Squishy Press-Down Effect */
+        .neu-btn:active, .neu-btn.active-tap {
+            transform: translateY(8px) scale(0.97) !important;
+            box-shadow: 
+                inset -5px -5px 15px var(--clay-inner-shadow), 
+                inset 5px 5px 15px var(--clay-highlight), 
+                0 4px 0 var(--clay-depth), 
+                0 8px 12px var(--clay-drop-shadow) !important;
+            color: var(--primary);
+        }
+
+        /* === SYSTEM OVERLAYS & LAYOUT === */
+        .kiosk-lock { 
+            position: fixed; top: 20px; right: 25px; font-size: 1.8rem; opacity: 0.3; cursor: pointer; 
+            z-index: 5000; transition: all 0.3s ease; background: #FFF; padding: 10px; border-radius: 50%;
+            box-shadow: 0 4px 0 var(--clay-depth); border: 2px solid #FFF;
+        }
+        .kiosk-lock:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 6px 0 var(--clay-depth); }
+        .kiosk-lock:active { transform: translateY(4px); box-shadow: 0 0 0 var(--clay-depth); }
+
+        #system-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, rgba(235, 248, 255, 0.95), rgba(190, 227, 248, 0.95)); 
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 4000; 
+        }
+        
+        .start-btn { 
+            padding: clamp(1rem, 3vw, 2rem) clamp(3rem, 6vw, 5rem); 
+            font-size: clamp(2rem, 5vw, 3.5rem); 
+            color: #2B6CB0; 
+            border-radius: 50px; 
+            background: #FDE047; /* Yellow Play Button */
+        }
+
+        #game-container { 
+            width: 100%; height: 100%; max-width: 1400px; display: none; position: relative; 
+            padding: clamp(1rem, 3vw, 2rem); box-sizing: border-box; flex-direction: column; align-items: center; 
+            z-index: 10;
+        }
+
+        /* Typography & Progress */
+        h1.game-prompt { 
+            font-family: 'Fredoka One', cursive; 
+            font-size: clamp(1.8rem, 4vw, 3.2rem); 
+            text-align: center; color: #2B6CB0; margin: 0 0 2rem 0; padding: 0 1rem; 
+            width: 100%; min-height: 80px; display: flex; align-items: center; justify-content: center; 
+            text-shadow: 3px 3px 0px #FFF, 5px 5px 15px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+        
+        #boot-title { text-shadow: 4px 4px 0px #FFF, 8px 8px 20px rgba(0,0,0,0.15); }
+
+        .progress-bar { 
+            width: clamp(200px, 50vw, 400px); height: 25px; border-radius: 20px; 
+            margin-top: 1rem; margin-bottom: 2rem; overflow: hidden; 
+            background: rgba(255,255,255,0.6); border: 4px solid #FFF;
+        }
+        .progress-fill { 
+            height: 100%; width: 0%; background: var(--primary); 
+            border-radius: 15px; box-shadow: inset 0 -5px 0 rgba(0,0,0,0.15);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        /* Animations */
+        @keyframes pulseSuccess { 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7); } 
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); box-shadow: 0 0 0 25px rgba(72, 187, 120, 0); } 
+        }
+        @keyframes shakeError { 
+            0%, 100% { transform: translateX(0) scale(0.95); } 
+            25% { transform: translateX(-15px) scale(0.95) rotate(-5deg); } 
+            75% { transform: translateX(15px) scale(0.95) rotate(5deg); } 
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        .anim-success { animation: pulseSuccess 0.6s ease-out; color: var(--success) !important; border-color: var(--success) !important; }
+        .anim-error { animation: shakeError 0.4s ease-in-out; color: var(--error) !important; border-color: var(--error) !important;}
+        .hidden { display: none !important; }
+
+        /* === SPECIFIC GAME LAYOUTS (CLAY UPGRADES) === */
+        
+        /* Sensory Canvas */
+        .sensory-item { 
+            position: absolute; border-radius: 50%; font-size: clamp(3rem, 6vw, 5rem); cursor: pointer; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; justify-content: center; 
+            background: #FFF; border: 4px solid #FFF;
+            box-shadow: 0 8px 0 var(--clay-depth), 0 15px 20px rgba(0,0,0,0.1); 
+        }
+        .sensory-item:active { transform: translateY(6px) scale(0.9); box-shadow: 0 2px 0 var(--clay-depth); }
+        .sensory-item.popped { transform: scale(1.8); opacity: 0; pointer-events: none; }
+
+        /* Shadow Match */
+        .shadow-target { 
+            width: clamp(150px, 30vw, 250px); height: clamp(150px, 30vw, 250px); font-size: clamp(6rem, 12vw, 10rem); 
+            filter: brightness(0) opacity(0.2); margin-bottom: 3rem; display: flex; align-items: center; justify-content: center; 
+        }
+        .source-grid { display: flex; gap: clamp(1.5rem, 3vw, 2.5rem); justify-content: center; flex-wrap: wrap; width: 100%; }
+        .source-item { width: clamp(90px, 20vw, 140px); height: clamp(90px, 20vw, 140px); font-size: clamp(3.5rem, 7vw, 5.5rem); }
+
+        /* Color Buckets */
+        .bucket-container { display: flex; gap: clamp(1.5rem, 3vw, 3rem); margin-bottom: 3rem; width: 100%; justify-content: center; flex-wrap: wrap;}
+        .bucket { 
+            width: clamp(120px, 25vw, 180px); height: clamp(140px, 30vw, 200px); display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-start; padding-top: 1rem; font-size: clamp(1.2rem, 2.5vw, 1.8rem); font-family: 'Fredoka One', cursive; 
+            border-top: none; border-bottom-left-radius: 50px; border-bottom-right-radius: 50px; background: #FFF;
+            box-shadow: 0 15px 0 var(--clay-depth), inset 0 -20px 20px rgba(0,0,0,0.05);
+        }
+        .bucket-item { font-size: clamp(2rem, 4vw, 3.5rem); margin-top: 10px; animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* Music Xylophone */
+        .xylo-bar { 
+            width: clamp(60px, 12vw, 100px); height: clamp(200px, 40vh, 350px); border-radius: 30px; margin: 0 10px; 
+            cursor: pointer; transition: transform 0.15s, filter 0.15s; display: flex; align-items: flex-end; justify-content: center; 
+            padding-bottom: 2rem; font-size: 2rem; border: 6px solid #FFF; 
+            box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 15px rgba(255,255,255,0.6), 0 12px 0 var(--clay-depth);
+        }
+        .xylo-bar:active, .xylo-active { 
+            transform: translateY(10px); box-shadow: 0 2px 0 var(--clay-depth); filter: brightness(1.2);
+        }
+
+        /* Standard Grids (Quizzes/Opposites) */
+        .standard-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(150px, 30vw, 220px), 1fr)); 
+            gap: clamp(1.5rem, 3vw, 2.5rem); width: 90%; max-width: 900px; 
+        }
+        .grid-item { padding: clamp(1.5rem, 3vw, 2.5rem); font-size: clamp(3rem, 6vw, 5rem); display: flex; flex-direction: column; gap: 10px; }
+        .grid-text { font-size: clamp(1.2rem, 2.5vw, 1.8rem); color: var(--text-main); font-family: 'Fredoka One', cursive;}
+
+        /* Face Builder */
+        .face-base { 
+            width: clamp(200px, 40vw, 300px); height: clamp(200px, 40vw, 300px); border-radius: 50%; background: #FDE047 !important; 
+            border: 10px solid #FFF !important; position: relative; margin-bottom: 3rem; 
+            box-shadow: inset -10px -10px 20px rgba(214, 158, 46, 0.3), 0 15px 0 #D69E2E, 0 20px 25px rgba(0,0,0,0.15) !important; 
+        }
+        .face-slot { 
+            position: absolute; background: rgba(255,255,255,0.3); border: 4px dashed #D69E2E; border-radius: 30px; 
+            display: flex; align-items: center; justify-content: center; font-size: clamp(3rem, 6vw, 5rem); transition: all 0.3s; 
+            box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
+        }
+        .f-eyes { top: 20%; left: 15%; width: 70%; height: clamp(60px, 12vw, 90px); }
+        .f-mouth { bottom: 15%; left: 25%; width: 50%; height: clamp(50px, 10vw, 80px); }
+
+        /* Scenario/Social */
+        .scenario-box { width: 90%; max-width: 800px; padding: clamp(2rem, 4vw, 3rem); font-size: clamp(1.5rem, 3vw, 2.5rem); text-align: center; margin-bottom: 3rem; font-family: 'Fredoka One', cursive; color: #2B6CB0; }
+        .scenario-choices { display: flex; gap: clamp(1.5rem, 3vw, 3rem); justify-content: center; width: 100%; flex-wrap: wrap; }
+        .scenario-btn { width: clamp(200px, 40vw, 320px); padding: 2rem; font-size: clamp(1.2rem, 2.5vw, 1.8rem); flex-direction: column; gap: 1rem; }
+
+        /* Timeline / Routines */
+        .timeline-slots { display: flex; gap: clamp(0.5rem, 2vw, 1.5rem); margin-bottom: 3rem; align-items: center; flex-wrap: wrap; justify-content: center;}
+        .t-slot { width: clamp(100px, 20vw, 160px); height: clamp(100px, 20vw, 160px); font-size: clamp(3rem, 6vw, 5rem); display: flex; align-items: center; justify-content: center; position: relative; background: #FFF;}
+        .t-arrow { font-size: clamp(1.5rem, 3vw, 2.5rem); color: #FFF; text-shadow: 0 4px 0 var(--clay-depth); margin: 0 5px; font-weight: 900;}
+
+        /* AAC Sentence Strip */
+        .aac-strip { 
+            width: 95%; max-width: 1000px; min-height: 140px; margin-bottom: 3rem; 
+            display: flex; align-items: center; padding: 1rem 2rem; gap: 1.5rem; overflow-x: auto; 
+            border: 6px solid #FFF; background: rgba(255,255,255,0.5); border-radius: 40px;
+        }
+        .aac-word { 
+            padding: 15px 30px; font-size: clamp(1.5rem, 3vw, 2.5rem); pointer-events: none; border-radius: 25px; 
+            font-family: 'Fredoka One', cursive; animation: bounceIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Simon Memory Grid */
+        .simon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 3vw, 2.5rem); padding: clamp(1.5rem, 4vw, 3rem); border-radius: 50px; background: rgba(255,255,255,0.4); border: 8px solid #FFF;}
+        .s-pad { 
+            width: clamp(100px, 25vw, 180px); height: clamp(100px, 25vw, 180px); border-radius: 40px; font-size: 4rem; 
+            opacity: 0.9; transition: all 0.1s; border: 6px solid #FFF; box-shadow: 0 10px 0 var(--clay-depth);
+        }
+        .s-pad:active { transform: translateY(8px); box-shadow: 0 2px 0 var(--clay-depth); }
+        .s-active { opacity: 1; transform: scale(1.05) translateY(-5px); box-shadow: 0 15px 30px currentColor, 0 15px 0 var(--clay-depth); border: 6px solid white; filter: brightness(1.2);}
+
+        /* ==========================================
+           CUSTOM FIXED MODAL VANILLA CSS (Dark Mode Preserved)
+           ========================================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .modal-card {
+            background: #1e293b; color: #ffffff; width: 100%; max-width: 420px;
+            padding: 2.5rem 2rem; border-radius: 35px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 4px solid #334155; text-align: center; box-sizing: border-box; margin: 0 1rem;
+        }
+        .modal-card h3 { margin: 0 0 0.5rem 0; font-size: 1.8rem; color: #2dd4bf; font-weight: 800; font-family: 'Tajawal', sans-serif;}
+        .modal-card p { margin: 0 0 1.5rem 0; font-size: 1.1rem; color: #94a3b8; line-height: 1.5; font-family: 'Tajawal', sans-serif;}
+        .modal-input {
+            width: 100%; text-align: center; padding: 1rem; background: #0f172a;
+            border: 3px solid #334155; border-radius: 20px; color: #ffffff; font-size: 1.8rem;
+            font-weight: bold; letter-spacing: 0.3em; box-sizing: border-box; margin-bottom: 1rem;
+            transition: border-color 0.2s; font-family: 'Nunito', sans-serif;
+        }
+        .modal-input:focus { outline: none; border-color: #2dd4bf; }
+        .modal-input::placeholder { font-size: 1.2rem; letter-spacing: normal; color: #475569; font-family: 'Tajawal', sans-serif;}
+        .modal-btn {
+            width: 100%; padding: 1rem; background: #2dd4bf; color: #0f172a;
+            border: none; border-radius: 20px; font-size: 1.2rem; font-weight: 900;
+            cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 0.5rem; font-family: 'Tajawal', sans-serif;
+        }
+        .modal-btn:hover { background: #14b8a6; transform: scale(1.02);}
+        .modal-link { background: none; border: none; color: #2dd4bf; text-decoration: underline; font-size: 1rem; cursor: pointer; margin-top: 1rem; display: inline-block; font-family: 'Tajawal', sans-serif; font-weight: bold;}
+        .modal-cancel { background: none; border: none; color: #64748b; font-size: 1rem; cursor: pointer; margin-top: 0.5rem; display: inline-block; font-family: 'Tajawal', sans-serif; font-weight: bold;}
+        .modal-error { color: #f87171; font-size: 1rem; font-weight: bold; margin-bottom: 1rem; text-align: center; font-family: 'Tajawal', sans-serif;}
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .animate-shake { animation: shake 0.3s ease-in-out 2; }
+        .dir-rtl { direction: rtl; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="sky-bg">
+        <div class="cloud c1"></div>
+        <div class="cloud c2"></div>
+        <div class="cloud c3"></div>
+    </div>
+
+    <div class="kiosk-lock" id="lock-btn" title="Exit">🔒</div>
+
+    <div id="system-overlay">
+        <h1 class="game-prompt" style="font-size: clamp(3rem, 8vw, 5.5rem);" id="boot-title">Therapy Engine</h1>
+        <div class="neu-btn start-btn" id="btn-begin">Play ▶️</div>
+    </div>
+
+    <div id="game-container">
+        <div class="progress-bar neu-pressed"><div class="progress-fill" id="progress-fill"></div></div>
+        <h1 class="game-prompt" id="prompt-txt"></h1>
+        <div id="render-zone" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+    </div>
+
+    <div id="pin-modal" class="modal-overlay hidden">
+        <div id="pin-modal-content" class="modal-card dir-rtl">
+            <h3>🔒 بيئة الطفل مغلقة</h3>
+            <p>أدخل رمز الـ PIN الخاص بولي الأمر للعودة للوحة التحكم</p>
+            <input type="password" id="parent-pin-input" maxlength="6" placeholder="••••" class="modal-input" />
+            <div id="pin-error-msg" class="modal-error hidden">❌ الرمز غير صحيح! تم رفض الدخول.</div>
+            <button id="confirm-pin-btn" class="modal-btn">تأكيد وفك القفل</button>
+            <button onclick="openForgotPinModal()" class="modal-link">نسيت رمز الـ PIN؟</button>
+            <br>
+            <button onclick="closePinModal()" class="modal-cancel">إلغاء</button>
+        </div>
+    </div>
+
+    <div id="forgot-pin-modal" class="modal-overlay hidden">
+        <div class="modal-card dir-rtl">
+            <h3>🔑 استعادة رمز الـ PIN</h3>
+            
+            <div id="otp-step-1">
+                <p>سنقوم بإرسال كود مكون من 6 أرقام إلى إيميلك المسجل لإعادة تعيين الـ PIN.</p>
+                <input type="email" id="parent-email-input" placeholder="name@example.com" class="modal-input" style="font-size:1.1rem; text-align:left; direction:ltr;" />
+                <button onclick="requestOTP()" id="send-otp-btn" class="modal-btn">إرسال كود التحقق</button>
+                <br>
+                <button onclick="closeForgotPinModal(); openPinModal();" class="modal-cancel">العودة لشاشة القفل</button>
+            </div>
+
+            <div id="otp-step-2" class="hidden">
+                <p>أدخل الكود المرسل لإيميلك واكتب الـ PIN الجديد.</p>
+                <input type="text" id="otp-code-input" maxlength="6" placeholder="كود التحقق (6 أرقام)" class="modal-input" style="font-size:1.2rem;" />
+                <input type="password" id="new-pin-input" maxlength="6" placeholder="الـ PIN الجديد" class="modal-input" style="font-size:1.2rem;" />
+                <button onclick="resetPinWithOTP()" id="reset-pin-btn" class="modal-btn">تحديث الـ PIN الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🛡️ Anti-Tampering Scripts -->
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        document.onkeydown = function(e) {
+            if (e.key === "F12" || 
+               (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || 
+               (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        };
+
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.pushState(null, "", window.location.href);
+            document.getElementById('lock-btn').click(); 
+        };
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const API_BASE_URL = CONFIG.API_BASE_URL;
+            const token = localStorage.getItem('token');
+            
+            // 🛡️ السحب الآمن لبيانات اللعبة من الـ Session Storage لمنع الـ IDOR
+            let childId = sessionStorage.getItem('selectedChildId') || localStorage.getItem('selectedChildId');
+            let gameType = sessionStorage.getItem('selectedGameType') || 'nv_sensory';
+            
+            // لو حد بالغلط كتب الـ ID في الرابط، بنسحبه ونمسح الرابط فوراً
+            if (window.location.search) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if(urlParams.get('childId')) childId = urlParams.get('childId');
+                if(urlParams.get('gameType')) gameType = urlParams.get('gameType');
+                
+                sessionStorage.setItem('selectedChildId', childId);
+                sessionStorage.setItem('selectedGameType', gameType);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            if (!childId || !token) { alert("Session expired."); window.location.href = 'child_hub.html'; return; }
+
+            const POOLS = {
+                "nv_sensory": ["⭐","🔵","🟩","🔺","🔶","🔷","🤍","🎈","🫧","🎵"],
+                "nv_shadow": ["🍎","🚗","🧸","🐶","🐱","✈️","⚽","👟","🎒","🔑","📖","🐢"],
+                "nv_sort": [
+                    {c:'Red', cHex:'#FC8181', items:['🍎','🚗','🎈','🍓']}, {c:'Blue', cHex:'#63B3ED', items:['💧','🚙','🐳','👖']},
+                    {c:'Green', cHex:'#68D391', items:['🌿','🍏','🐸','🐢']}, {c:'Yellow', cHex:'#F6E05E', items:['☀️','🍌','⭐','🐥']}
+                ],
+                "nv_music": [{c:'#FC8181', f:261.6},{c:'#F6E05E', f:329.6},{c:'#68D391', f:392.0},{c:'#63B3ED', f:523.2}],
+                "ms_missing": [
+                    {p:"The sky is missing the...", a:"☀️", w:["🚗","👟"]}, {p:"The fish needs...", a:"💧", w:["🔥","🌳"]},
+                    {p:"The bed is for...", a:"🛌", w:["⚽","🍽️"]}, {p:"The shoe goes on the...", a:"🦶", w:["✋","👂"]},
+                    {p:"I eat with a...", a:"🥄", w:["✏️","🔑"]}, {p:"I read a...", a:"📖", w:["📱","⚽"]},
+                    {p:"A bird flies in the...", a:"☁️", w:["🌊","🔥"]}, {p:"I wear a hat on my...", a:"👦", w:["🦶","✋"]},
+                    {p:"A car drives on the...", a:"🛣️", w:["☁️","🌊"]}, {p:"I drink...", a:"🥛", w:["🍔","🍕"]}
+                ],
+                "ms_emotion": [
+                    {p:"Happy", e:"^ ^", m:"‿"}, {p:"Sad", e:"T T", m:"︵"}, {p:"Surprised", e:"O O", m:"O"},
+                    {p:"Angry", e:"Ò Ó", m:"︹"}, {p:"Sleepy", e:"- -", m:"zZ"}, {p:"Cool", e:"🕶️", m:"‿"}
+                ],
+                "ms_sounds": [
+                    {a:"🐮", n:"Cow", s:"Moo", f:150}, {a:"🐶", n:"Dog", s:"Woof", f:300}, {a:"🐱", n:"Cat", s:"Meow", f:600}, {a:"🐷", n:"Pig", s:"Oink", f:200},
+                    {a:"🦆", n:"Duck", s:"Quack", f:400}, {a:"🐸", n:"Frog", s:"Ribbit", f:250}, {a:"🚗", n:"Car", s:"Vroom", f:100}, {a:"✈️", n:"Plane", s:"Swoosh", f:800},
+                    {a:"🚂", n:"Train", s:"Choo Choo", f:120}, {a:"🔔", n:"Bell", s:"Ding", f:900}
+                ],
+                "ms_actions": [
+                    {a:"🏃", n:"Running", w:["Sleeping","Eating"]}, {a:"🛌", n:"Sleeping", w:["Walking","Swimming"]},
+                    {a:"🍽️", n:"Eating", w:["Reading","Running"]}, {a:"📖", n:"Reading", w:["Swimming","Eating"]},
+                    {a:"🏊", n:"Swimming", w:["Sleeping","Writing"]}, {a:"✍️", n:"Writing", w:["Running","Sleeping"]},
+                    {a:"💃", n:"Dancing", w:["Reading","Eating"]}, {a:"🎤", n:"Singing", w:["Writing","Sleeping"]},
+                    {a:"🚶", n:"Walking", w:["Swimming","Eating"]}, {a:"🚿", n:"Showering", w:["Reading","Running"]}
+                ],
+                "vb_social": [
+                    {s:"Your friend is crying.", c:{t:"Comfort them", i:"🫂"}, w:{t:"Laugh at them", i:"😂"}},
+                    {s:"Someone says hello.", c:{t:"Say Hi back", i:"👋"}, w:{t:"Walk away", i:"🚶"}},
+                    {s:"You broke a toy.", c:{t:"Say sorry", i:"🥺"}, w:{t:"Hide it", i:"🙈"}},
+                    {s:"You want to play.", c:{t:"Ask nicely", i:"🗣️"}, w:{t:"Grab the toy", i:"😠"}},
+                    {s:"Someone gives a gift.", c:{t:"Say Thank You", i:"🙏"}, w:{t:"Throw it", i:"🗑️"}},
+                    {s:"A friend falls down.", c:{t:"Help them up", i:"🤝"}, w:{t:"Point and stare", i:"👀"}},
+                    {s:"You feel very angry.", c:{t:"Take deep breaths", i:"😮‍💨"}, w:{t:"Yell loudly", i:"🗯️"}},
+                    {s:"You don't understand.", c:{t:"Ask for help", i:"🙋"}, w:{t:"Give up", i:"😞"}}
+                ],
+                "vb_sequence": [
+                    {p:"How a flower grows", s:["🌱","🌿","🌻"]}, {p:"Making a sandwich", s:["🍞","🧀","🥪"]},
+                    {p:"Butterfly life cycle", s:["🥚","🐛","🦋"]}, {p:"Day to night", s:["🌅","☀️","🌙"]},
+                    {p:"Building a snowman", s:["❄️","⛄","🧣"]}, {p:"Eating an apple", s:["🍎","🍏","🍎‍🍏"]},
+                    {p:"Writing a letter", s:["✏️","✉️","📫"]}, {p:"Washing hands", s:["👐","🧼","✨"]}
+                ],
+                "vb_opposites": [
+                    {p:"Opposite of HOT", a:"🧊", w:["🔥","☀️"]}, {p:"Opposite of FAST", a:"🐢", w:["🐆","🚀"]},
+                    {p:"Opposite of BIG", a:"🐜", w:["🐘","🐳"]}, {p:"Opposite of DAY", a:"🌙", w:["☀️","☁️"]},
+                    {p:"Opposite of HAPPY", a:"😢", w:["😄","🥳"]}, {p:"Opposite of UP", a:"⬇️", w:["⬆️","↗️"]},
+                    {p:"Opposite of OPEN", a:"🚪", w:["🪟","📖"]}, {p:"Opposite of WET", a:"🌵", w:["💧","🌊"]},
+                    {p:"Opposite of LOUD", a:"🤫", w:["🔊","📢"]}, {p:"Opposite of YOUNG", a:"👴", w:["👶","👦"]}
+                ],
+                "vb_riddle": [
+                    {p:"I have four legs and bark. What am I?", a:"🐶", w:["🐱","🦊"]},
+                    {p:"I swim in the water and have fins.", a:"🐟", w:["🐦","🦆"]},
+                    {p:"I have wings and fly in the sky.", a:"🐦", w:["🐢","🐍"]},
+                    {p:"I have wheels and drive on the road.", a:"🚗", w:["✈️","🚢"]},
+                    {p:"I have green leaves and grow tall.", a:"🌳", w:["🌻","🌷"]},
+                    {p:"You wear me on your feet.", a:"👟", w:["🧢","🧤"]},
+                    {p:"I open to keep you dry in the rain.", a:"☔", w:["🎒","🧣"]},
+                    {p:"I shine yellow in the sky.", a:"☀️", w:["🌙","⭐"]},
+                    {p:"I am cold and melt in the sun.", a:"⛄", w:["🔥","🌳"]},
+                    {p:"I have pages for you to read.", a:"📖", w:["📱","📺"]}
+                ],
+                "ta_aac": [
+                    {p:"Build: I want Apple", s:["I want","Apple"], w:["Water","Play"]},
+                    {p:"Build: I feel Happy", s:["I feel","Happy"], w:["Sad","Angry"]},
+                    {p:"Build: I want Water", s:["I want","Water"], w:["Break","Apple"]},
+                    {p:"Build: I need a Break", s:["I need","Break"], w:["Play","More"]},
+                    {p:"Build: Let's Play", s:["Let's","Play"], w:["Stop","Eat"]},
+                    {p:"Build: I am Hungry", s:["I am","Hungry"], w:["Thirsty","Tired"]},
+                    {p:"Build: More Please", s:["More","Please"], w:["Stop","No"]},
+                    {p:"Build: I feel Sad", s:["I feel","Sad"], w:["Happy","Excited"]}
+                ],
+                "ta_simon": [{c:'#FC8181'}, {c:'#4FD1C5'}, {c:'#F6E05E'}, {c:'#B794F4'}],
+                "ta_routine": [
+                    {p:"Morning Routine", s:["🛏️","🦷","👕"]}, {p:"Before Dinner", s:["👐","🧼","🍽️"]},
+                    {p:"Bed Time", s:["🛁","📖","😴"]}, {p:"Going to School", s:["🎒","👟","🚌"]},
+                    {p:"Doing Laundry", s:["🧺","🧼","👕"]}, {p:"Making Bed", s:["🛏️","🛌","✨"]},
+                    {p:"Taking a Bath", s:["🛁","🧼","🧴"]}, {p:"Eating Breakfast", s:["🥣","🥛","😋"]}
+                ],
+               "ta_smart_sort": [
+                    {c1:"Healthy", c2:"Junk", i1:["🍎","🥦","🥕"], i2:["🍔","🍕","🍩"]},
+                    {c1:"Animals", c2:"Vehicles", i1:["🐶","🐱","🐮"], i2:["🚗","✈️","🚂"]},
+                    {c1:"Clothes", c2:"Toys", i1:["👕","👖","👟"], i2:["🧸","⚽","🚂"]},
+                    {c1:"Hot", c2:"Cold", i1:["🔥","☀️","☕"], i2:["🧊","⛄","🍦"]},
+                    {c1:"In Sky", c2:"In Water", i1:["☁️","☀️","✈️"], i2:["🐟","🐳","🚢"]},
+                    {c1:"Fruits", c2:"Veggies", i1:["🍎","🍌","🍇"], i2:["🥦","🥕","🧅"]}
+                ]
+            };
+            const GAME_CONFIG = {
+                "nv_sensory": {n:"Sensory Canvas", ctrl:"sensory"}, "nv_shadow": {n:"Shadow Match", ctrl:"shadow"},
+                "nv_sort": {n:"Color Buckets", ctrl:"sort"}, "nv_music": {n:"Xylophone", ctrl:"music"},
+                "ms_missing": {n:"Visual Completion", ctrl:"grid_quiz"}, "ms_emotion": {n:"Face Builder", ctrl:"builder"},
+                "ms_sounds": {n:"Sound Grid", ctrl:"grid_sfx"}, "ms_actions": {n:"Action Match", ctrl:"grid_quiz"},
+                "vb_social": {n:"Social Choices", ctrl:"scenario"}, "vb_sequence": {n:"Timeline", ctrl:"timeline"},
+                "vb_opposites": {n:"Opposites", ctrl:"grid_quiz"}, "vb_riddle": {n:"Riddles", ctrl:"grid_riddle"},
+                "ta_aac": {n:"Sentence Builder", ctrl:"aac"}, "ta_simon": {n:"Memory Flash", ctrl:"simon"},
+                "ta_routine": {n:"Daily Routines", ctrl:"timeline"}, "ta_smart_sort": {n:"Smart Sorting", ctrl:"sort_advanced"}
+            };
+            const currentGame = GAME_CONFIG[gameType];
+            if (!currentGame) { document.getElementById('boot-title').innerText = "Game Error"; return;
+            }
+            document.getElementById('boot-title').innerText = currentGame.n;
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            function playTone(f, type, dur, vol=0.1) {
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + dur);
+            }
+            const SFX = {
+                ding: () => { playTone(600, 'sine', 0.1);
+                setTimeout(()=>playTone(800, 'sine', 0.2), 100); },
+                buzz: () => playTone(150, 'sawtooth', 0.3, 0.05),
+                pop: () => { playTone(800, 'sine', 0.05, 0.2);
+                setTimeout(()=>playTone(1200, 'sine', 0.05, 0.1), 30); },
+                cheer: () => [400, 500, 600, 800, 1000].forEach((f, i) => setTimeout(()=>playTone(f, 'square', 0.1, 0.05), i*80))
+            };
+            function speak(text) {
+                if('speechSynthesis' in window) { window.speechSynthesis.cancel();
+                const msg = new SpeechSynthesisUtterance(text); msg.rate=0.9; msg.pitch=1.1; window.speechSynthesis.speak(msg); }
+            }
+
+            // ==========================================
+            // 3. CORE ENGINE STATE & TELEMETRY
+            // ==========================================
+            let State = { 
+                active: false, 
+                start: 0, 
+                clicks: 0, 
+                frantic: 0, 
+                round: 0, 
+                total: 5, 
+                timestamps: [],
+                inputLocked: false 
+            };
+            const uiPrompt = document.getElementById('prompt-txt');
+            const uiRender = document.getElementById('render-zone');
+            const uiProgress = document.getElementById('progress-fill');
+            
+            function lockGameInputs() {
+                State.inputLocked = true;
+                uiRender.style.pointerEvents = 'none'; 
+            }
+
+            function unlockGameInputs() {
+                State.inputLocked = false;
+                uiRender.style.pointerEvents = 'auto'; 
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!State.active || State.inputLocked) {
+                    if (State.inputLocked) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    return;
+                }
+                
+                State.clicks++;
+
+                if (e.target.tagName === 'BODY' || e.target.id === 'game-container') {
+                    const now = Date.now(); 
+                    State.timestamps.push(now);
+                    State.timestamps = State.timestamps.filter(t => now - t <= 1500);
+                    if (State.timestamps.length >= 3) { 
+                        State.frantic++;
+                        State.timestamps = []; 
+                    }
+                }
+            });
+            function updateProgress() { 
+                uiProgress.style.width = `${(State.round / State.total) * 100}%`;
+            }
+            
+            async function triggerWin() {
+                State.active = false;
+                lockGameInputs();
+                SFX.cheer();
+                document.getElementById('system-overlay').style.display = 'flex';
+                document.getElementById('system-overlay').innerHTML = `<h2 style="font-size:clamp(3rem,8vw,5rem);color:var(--primary);animation:float 2s infinite;">Great Job! 🌟</h2>`;
+                document.getElementById('game-container').style.display = 'none';
+                
+                const payload = {
+                    child_id: parseInt(childId), // 🛡️ Using childId securely from SessionStorage
+                    game_name: currentGame.n,
+                    time_taken_seconds: parseFloat(((Date.now() - State.start) / 1000).toFixed(2)),
+                    total_clicks: State.clicks, 
+                    frantic_clicks: State.frantic, 
+                    is_completed: true
+                };
+                
+                try { 
+                    await fetch(`${API_BASE_URL}/game/telemetry`, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                        body: JSON.stringify(payload) 
+                    });
+                } catch (err) {
+                    console.error("Failed to post telemetry payload:", err);
+                }
+                // 🛡️ Clean redirect to child profile without URL parameters
+                setTimeout(() => { window.location.href = 'child_profile.html'; }, 3000);
+            }
+
+            const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
+            const Controllers = {
+                "sensory": () => {
+                    uiPrompt.innerText = "Pop the shapes!";
+                    speak(uiPrompt.innerText);
+                    uiProgress.parentElement.classList.add('hidden');
+                    let popped = 0, goal = 15;
+                    unlockGameInputs();
+                    function spawn() {
+                        if(!State.active) return;
+                        const el = document.createElement('div'); el.className = 'sensory-item';
+                        const s = 60 + Math.random()*60; el.style.width=`${s}px`; el.style.height=`${s}px`;
+                        el.style.left=`${10+Math.random()*80}%`; el.style.bottom=`-100px`;
+                        el.innerText = POOLS[gameType][Math.floor(Math.random()*POOLS[gameType].length)];
+                        uiRender.appendChild(el);
+                        const anim = el.animate([{transform:`translateY(0)`},{transform:`translateY(-110vh)`}],{duration:3000+Math.random()*3000});
+                        anim.onfinish = () => el.remove();
+                        el.addEventListener('click', () => {
+                            if(el.classList.contains('popped') || State.inputLocked) return;
+                            el.classList.add('popped'); SFX.ding(); popped++;
+                            if(popped >= goal) {
+                                lockGameInputs();
+                                triggerWin();
+                            }
+                        });
+                    }
+                    setInterval(spawn, 800);
+                },
+                "shadow": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const tgt = rounds[State.round];
+                        uiPrompt.innerText = "Match the shadow!"; speak("Match it!");
+                        const tgtEl = document.createElement('div'); tgtEl.className = 'shadow-target neu-pressed'; tgtEl.innerText = tgt;
+                        const srcGrid = document.createElement('div'); srcGrid.className = 'source-grid';
+                        const opts = shuffle([tgt, ...shuffle(POOLS[gameType].filter(x=>x!==tgt)).slice(0,2)]);
+                        let activeNode = null;
+
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn source-item'; btn.innerText = opt;
+                            btn.addEventListener('click', () => {
+                                SFX.pop();
+                                document.querySelectorAll('.source-item').forEach(b => b.classList.remove('active-tap'));
+                                btn.classList.add('active-tap'); activeNode = opt;
+                            });
+                            srcGrid.appendChild(btn);
+                        });
+                        tgtEl.addEventListener('click', () => {
+                            if(!activeNode) return;
+                            lockGameInputs(); 
+                            if(activeNode === tgt) { 
+                                SFX.ding(); 
+                                tgtEl.classList.add('anim-success'); 
+                                tgtEl.style.filter="none"; 
+                                setTimeout(()=>{State.round++; load();},1500); 
+                            } else { 
+                                SFX.buzz(); 
+                                tgtEl.classList.add('anim-error'); 
+                                setTimeout(()=>{tgtEl.classList.remove('anim-error'); unlockGameInputs();},400); 
+                            }
+                        });
+                        uiRender.append(tgtEl, srcGrid);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "sort": () => {
+                    const colors = shuffle(POOLS[gameType]).slice(0, 3);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        uiPrompt.innerText = "Sort by color!"; speak(uiPrompt.innerText);
+                        
+                        const bContainer = document.createElement('div'); bContainer.className = 'bucket-container';
+                        const sContainer = document.createElement('div'); sContainer.className = 'source-grid neu-pressed'; sContainer.style.padding="2rem"; sContainer.style.borderRadius="30px";
+                        
+                        let itemsToFind = 3, activeNode = null;
+                        colors.forEach(c => {
+                            const bkt = document.createElement('div'); bkt.className = 'neu-panel bucket'; bkt.style.borderTop=`15px solid ${c.cHex}`; bkt.innerHTML = `${c.c}`;
+                            bkt.addEventListener('click', () => {
+                                if(!activeNode) return;
+                                lockGameInputs(); 
+                                if(activeNode.color === c.c) {
+                                    SFX.ding(); activeNode.btn.style.display='none'; itemsToFind--;
+                                    bkt.innerHTML += `<div class="bucket-item">${activeNode.val}</div>`;
+                                    activeNode=null;
+                                    if(itemsToFind<=0) { 
+                                        setTimeout(()=>{State.round++; load();}, 1000); 
+                                    } else {
+                                        unlockGameInputs(); 
+                                    }
+                                } else { 
+                                    SFX.buzz();
+                                    bkt.classList.add('anim-error'); 
+                                    setTimeout(()=>{bkt.classList.remove('anim-error'); unlockGameInputs();},400); 
+                                }
+                            });
+                            bContainer.appendChild(bkt);
+                            
+                            const srcItem = c.items[Math.floor(Math.random()*c.items.length)];
+                            const btn = document.createElement('div'); btn.className = 'neu-btn source-item'; btn.innerText = srcItem;
+                            btn.addEventListener('click', () => {
+                                SFX.pop(); document.querySelectorAll('.source-item').forEach(b=>b.classList.remove('active-tap'));
+                                btn.classList.add('active-tap'); activeNode = {color: c.c, val: srcItem, btn: btn};
+                            });
+                            sContainer.appendChild(btn);
+                        });
+                        for (let i = sContainer.children.length; i >= 0; i--) { sContainer.appendChild(sContainer.children[Math.random() * i | 0]);
+                        }
+                        uiRender.append(bContainer, sContainer);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "music": () => {
+                    const bars = POOLS[gameType];
+                    uiPrompt.innerText = "Watch and repeat!";
+                    const container = document.createElement('div'); container.className = 'bucket-container';
+                    const nodes = [];
+                    bars.forEach(b => {
+                        const el = document.createElement('div'); el.className = 'neu-btn xylo-bar'; el.style.backgroundColor = b.c; el.style.color = "white";
+                        el.addEventListener('click', () => { 
+                            if(State.active && !State.inputLocked) { 
+                                playTone(b.f, 'sine', 0.4); el.classList.add('xylo-active'); setTimeout(()=>el.classList.remove('xylo-active'), 200); 
+                            }
+                        });
+                        nodes.push(el); container.appendChild(el);
+                    });
+                    uiRender.appendChild(container);
+
+                    function playRound() {
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        lockGameInputs(); 
+                        setTimeout(() => {
+                            const tgt = Math.floor(Math.random()*4);
+                            nodes[tgt].classList.add('xylo-active'); playTone(bars[tgt].f, 'sine', 0.4);
+                            setTimeout(() => {
+                                nodes[tgt].classList.remove('xylo-active'); 
+                                unlockGameInputs(); 
+                                const handler = (e) => {
+                                    if(e.target === nodes[tgt]) { 
+                                        lockGameInputs(); 
+                                        SFX.ding(); State.round++; 
+                                        nodes.forEach(n=>n.removeEventListener('click', handler)); 
+                                        setTimeout(playRound, 1000); 
+                                    } else { 
+                                        lockGameInputs();
+                                        SFX.buzz();
+                                        setTimeout(unlockGameInputs, 400);
+                                    }
+                                };
+                                nodes.forEach(n=>n.addEventListener('click', handler));
+                            }, 500);
+                        }, 1000);
+                    }
+                    playRound();
+                },
+                "grid_quiz": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = r.p || r.a;
+                        if(r.p) speak(r.p);
+                        const grid = document.createElement('div'); grid.className = 'standard-grid';
+                        const opts = shuffle([ {v: r.a||r.n, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn grid-item';
+                            if(gameType==='ms_actions') { btn.innerHTML = `<span class="grid-text">${opt.v}</span>`; }
+                            else { btn.innerText = opt.v; }
+
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                if(opt.c) { 
+                                    SFX.ding(); btn.classList.add('anim-success'); 
+                                    if(gameType==='ms_actions') speak(opt.v); 
+                                    setTimeout(()=>{State.round++; load();}, 1500); 
+                                } else { 
+                                    SFX.buzz(); btn.classList.add('anim-error'); 
+                                    setTimeout(()=>{btn.classList.remove('anim-error'); unlockGameInputs();}, 400);
+                                }
+                            });
+                            grid.appendChild(btn);
+                        });
+                        uiRender.appendChild(grid);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "builder": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round]; uiPrompt.innerText = `Make a ${r.p} face!`; speak(uiPrompt.innerText);
+                        const face = document.createElement('div'); face.className = 'face-base';
+                        const eSlot = document.createElement('div'); eSlot.className = 'face-slot f-eyes';
+                        const mSlot = document.createElement('div');
+                        mSlot.className = 'face-slot f-mouth';
+                        face.append(eSlot, mSlot);
+
+                        const tray = document.createElement('div'); tray.className = 'source-grid neu-pressed'; tray.style.padding="2rem"; tray.style.borderRadius="30px";
+                        const opts = shuffle([ {t:'e', v:r.e, c:true}, {t:'m', v:r.m, c:true}, {t:'e', v:'🥺', c:false}, {t:'m', v:'😮', c:false} ]);
+                        let activeNode = null;
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn source-item'; btn.innerText = opt.v;
+                            btn.addEventListener('click', () => { SFX.pop(); document.querySelectorAll('.source-item').forEach(b=>b.classList.remove('active-tap')); btn.classList.add('active-tap'); activeNode = opt; });
+                            tray.appendChild(btn);
+                        });
+                        const check = () => { if(eSlot.innerText === r.e && mSlot.innerText === r.m) { SFX.ding(); face.classList.add('anim-success'); setTimeout(()=>{State.round++; load();}, 1500);
+                        } };
+                        eSlot.addEventListener('click', () => { if(activeNode && activeNode.t==='e') { SFX.pop(); eSlot.innerText = activeNode.v; check(); } else SFX.buzz(); });
+                        mSlot.addEventListener('click', () => { if(activeNode && activeNode.t==='m') { SFX.pop(); mSlot.innerText = activeNode.v; check(); } else SFX.buzz(); });
+
+                        uiRender.append(face, tray);
+                    }
+                    load();
+                },
+                "grid_sfx": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = `Who says ${r.n}?`; speak(uiPrompt.innerText);
+                        
+                        const grid = document.createElement('div');
+                        grid.className = 'standard-grid';
+                        const opts = shuffle([ r, ...shuffle(POOLS[gameType].filter(x=>x!==r)).slice(0,3) ]);
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn grid-item'; btn.innerText = opt.a;
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                playTone(opt.f, 'sawtooth', 0.5); speak(opt.n);
+                                if(opt === r) { 
+                                    SFX.ding(); btn.classList.add('anim-success'); 
+                                    setTimeout(()=>{State.round++; load();}, 2000); 
+                                } else { 
+                                    btn.classList.add('anim-error'); 
+                                    setTimeout(()=>{btn.classList.remove('anim-error'); unlockGameInputs();}, 400); 
+                                }
+                            });
+                            grid.appendChild(btn);
+                        });
+                        uiRender.appendChild(grid);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "scenario": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = "What should you do?";
+                        
+                        const box = document.createElement('div');
+                        box.className = 'neu-panel scenario-box'; box.innerText = r.s;
+                        speak(r.s);
+
+                        const choices = document.createElement('div'); choices.className = 'scenario-choices';
+                        const opts = shuffle([ {o:r.c, c:true}, {o:r.w, c:false} ]);
+
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn scenario-btn';
+                            btn.innerHTML = `<span style="font-size:4rem">${opt.o.i}</span><span>${opt.o.t}</span>`;
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                if(opt.c) { 
+                                    SFX.ding(); btn.classList.add('anim-success'); speak("Great choice!"); 
+                                    setTimeout(()=>{State.round++; load();}, 2000); 
+                                } else { 
+                                    SFX.buzz(); btn.classList.add('anim-error'); 
+                                    setTimeout(()=>{btn.classList.remove('anim-error'); unlockGameInputs();}, 400); 
+                                }
+                            });
+                            choices.appendChild(btn);
+                        });
+                        uiRender.append(box, choices);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "timeline": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round]; uiPrompt.innerText = r.p; speak(r.p);
+
+                        const slotsCont = document.createElement('div');
+                        slotsCont.className = 'timeline-slots';
+                        const poolCont = document.createElement('div'); poolCont.className = 'source-grid neu-pressed'; poolCont.style.padding="2rem"; poolCont.style.borderRadius="30px";
+                        const slots = [];
+                        for(let i=0; i<3; i++) {
+                            const slot = document.createElement('div');
+                            slot.className = 'neu-panel t-slot';
+                            slot.addEventListener('click', () => { if(slot.innerText) { SFX.pop(); createPool(slot.innerText); slot.innerText = ''; }});
+                            slots.push(slot); slotsCont.appendChild(slot);
+                            if(i<2) { const arr = document.createElement('div'); arr.className='t-arrow'; arr.innerText="➔"; slotsCont.appendChild(arr); }
+                        }
+
+                        function createPool(txt) {
+                            const btn = document.createElement('div');
+                            btn.className = 'neu-btn source-item'; btn.innerText = txt;
+                            btn.addEventListener('click', () => {
+                                SFX.pop(); const eSlot = slots.find(s => s.innerText === '');
+                                if(eSlot) { eSlot.innerText = txt; btn.remove(); check(); }
+                            });
+                            poolCont.appendChild(btn);
+                        }
+                        shuffle([...r.s]).forEach(createPool);
+                        function check() {
+                            const seq = slots.map(s => s.innerText);
+                            if(seq.includes('')) return;
+                            if(JSON.stringify(seq) === JSON.stringify(r.s)) { SFX.ding(); slotsCont.classList.add('anim-success'); setTimeout(()=>{State.round++; load();}, 1500);
+                            }
+                            else { SFX.buzz();
+                                slotsCont.classList.add('anim-error'); setTimeout(()=>{ slotsCont.classList.remove('anim-error'); slots.forEach(s=>{createPool(s.innerText); s.innerText='';}); }, 600); }
+                        }
+                        uiRender.append(slotsCont, poolCont);
+                    }
+                    load();
+                },
+                "grid_riddle": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = "Listen carefully... 👂"; 
+                        
+                        const rpBtn = document.createElement('div');
+                        rpBtn.className = 'neu-btn start-btn'; rpBtn.innerText = "🔊 Replay Audio"; rpBtn.style.marginBottom="3rem";
+                        rpBtn.addEventListener('click', () => { if(!State.inputLocked) speak(r.p); });
+                        speak(r.p);
+                        const grid = document.createElement('div'); grid.className = 'standard-grid';
+                        const opts = shuffle([ {v: r.a, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn grid-item'; btn.innerText = opt.v;
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                if(opt.c) { 
+                                    SFX.ding(); btn.classList.add('anim-success'); 
+                                    setTimeout(()=>{State.round++; load();}, 1500); 
+                                } else { 
+                                    SFX.buzz(); btn.classList.add('anim-error'); 
+                                    setTimeout(()=> { btn.classList.remove('anim-error'); unlockGameInputs(); }, 400); 
+                                }
+                            });
+                            grid.appendChild(btn);
+                        });
+                        uiRender.append(rpBtn, grid);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "aac": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = r.p; speak(r.p);
+
+                        const strip = document.createElement('div');
+                        strip.className = 'aac-strip neu-pressed';
+                        const grid = document.createElement('div'); grid.className = 'source-grid';
+                        let sentence = [];
+
+                        const opts = shuffle([...r.s, ...r.w]);
+                        opts.forEach(w => {
+                            const btn = document.createElement('div'); btn.className = 'neu-btn'; btn.style.padding="20px 30px"; btn.style.fontSize="2rem"; btn.innerText = w;
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                SFX.chime(); speak(w); sentence.push(w);
+                                const wNode = document.createElement('div'); wNode.className = 'neu-panel aac-word'; wNode.innerText = w; strip.appendChild(wNode);
+                                
+                                if(sentence.length === r.s.length) {
+                                    if(JSON.stringify(sentence) === JSON.stringify(r.s)) { 
+                                        SFX.ding(); speak(sentence.join(" ")); strip.classList.add('anim-success'); 
+                                        setTimeout(()=>{State.round++; load();}, 2000); 
+                                    } else { 
+                                        SFX.buzz();
+                                        strip.classList.add('anim-error'); 
+                                        setTimeout(()=>{strip.classList.remove('anim-error'); strip.innerHTML=''; sentence=[]; unlockGameInputs();}, 600); 
+                                    }
+                                } else {
+                                    unlockGameInputs();
+                                }
+                            });
+                            grid.appendChild(btn);
+                        });
+                        uiRender.append(strip, grid);
+                        unlockGameInputs(); 
+                    }
+                    load();
+                },
+                "simon": () => {
+                    uiPrompt.innerText = "Watch carefully!";
+                    const grid = document.createElement('div'); grid.className = 'simon-grid neu-pressed';
+                    const pads = [];
+                    POOLS[gameType].forEach((p, i) => {
+                        const pad = document.createElement('div'); pad.className = 'neu-btn s-pad'; pad.style.backgroundColor = p.c; pad.dataset.id = i;
+                        grid.appendChild(pad); pads.push(pad);
+                    });
+                    uiRender.appendChild(grid);
+
+                    let seq = [], userStep = 0, lens = [2, 3, 4, 5, 6], isPlaying = false;
+                    async function playSeq() {
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        isPlaying = true; lockGameInputs(); 
+                        uiPrompt.innerText = "Watch...";
+                        await new Promise(r=>setTimeout(r, 1000));
+                        seq = []; for(let i=0; i<lens[State.round]; i++) seq.push(Math.floor(Math.random()*4));
+                        for(let id of seq) {
+                            pads[id].classList.add('s-active');
+                            SFX.ding(); 
+                            await new Promise(r=>setTimeout(r, 400));
+                            pads[id].classList.remove('s-active');
+                            await new Promise(r=>setTimeout(r, 100));
+                        }
+                        uiPrompt.innerText = "Your Turn!";
+                        speak("Your turn"); userStep = 0; isPlaying = false;
+                        unlockGameInputs(); 
+                    }
+
+                    pads.forEach(pad => {
+                        pad.addEventListener('click', () => {
+                            if(isPlaying || !State.active || State.inputLocked) return;
+                            lockGameInputs(); 
+                            const id = parseInt(pad.dataset.id);
+                            pad.classList.add('s-active'); SFX.ding(); setTimeout(()=>pad.classList.remove('s-active'), 200);
+                            
+                            if(id === seq[userStep]) {
+                                userStep++;
+                                if(userStep === seq.length) { 
+                                    isPlaying=true; SFX.cheer(); uiPrompt.innerText="Great!"; 
+                                    setTimeout(()=>{State.round++; playSeq();}, 1500); 
+                                } else {
+                                    unlockGameInputs();
+                                }
+                            } else { 
+                                isPlaying=true; SFX.buzz(); uiPrompt.innerText="Oops!"; 
+                                setTimeout(playSeq, 1500); 
+                            }
+                        });
+                    });
+                    playSeq();
+                },
+                "sort_advanced": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round]; uiPrompt.innerText = "Sort the items!"; speak(uiPrompt.innerText);
+
+                        const bCont = document.createElement('div');
+                        bCont.className = 'bucket-container';
+                        const sCont = document.createElement('div'); sCont.className = 'source-grid neu-pressed'; sCont.style.padding="2rem"; sCont.style.borderRadius="30px";
+
+                        let itemsToFind = 4, activeNode = null;
+                        [ {c:r.c1, i:r.i1}, {c:r.c2, i:r.i2} ].forEach((cat, idx) => {
+                            const bkt = document.createElement('div'); bkt.className = 'neu-panel bucket'; bkt.style.borderTop=`15px solid ${idx===0?'var(--primary)':'#F6E05E'}`; bkt.innerText = cat.c;
+                            bkt.addEventListener('click', () => {
+                                if(!activeNode) return;
+                                if(activeNode.cat === cat.c) {
+                                    SFX.ding(); bkt.innerHTML += `<div class="bucket-item">${activeNode.val}</div>`;
+                                    activeNode.btn.style.display='none'; activeNode=null; itemsToFind--;
+                                    if(itemsToFind<=0) setTimeout(()=>{State.round++; load();}, 1000);
+                                } else { 
+                                    SFX.buzz(); bkt.classList.add('anim-error'); setTimeout(()=>bkt.classList.remove('anim-error'),400); 
+                                }
+                            });
+                            bCont.appendChild(bkt);
+                            shuffle(cat.i).slice(0, 2).forEach(item => {
+                                const btn = document.createElement('div'); btn.className = 'neu-btn source-item'; btn.innerText = item;
+                                btn.addEventListener('click', () => {
+                                    SFX.pop(); document.querySelectorAll('.source-item').forEach(b=>b.classList.remove('active-tap'));
+                                    btn.classList.add('active-tap'); activeNode = {cat: cat.c, val: item, btn: btn};
+                                });
+                                sCont.appendChild(btn);
+                            });
+                        });
+                        for (let i = sCont.children.length; i >= 0; i--) { sCont.appendChild(sCont.children[Math.random() * i | 0]);
+                        }
+                        uiRender.append(bCont, sCont);
+                    }
+                    load();
+                }
+            };
+            document.getElementById('btn-begin').addEventListener('click', () => {
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                document.getElementById('system-overlay').style.display = 'none';
+                document.getElementById('game-container').style.display = 'flex';
+                State.active = true; State.start = Date.now();
+                Controllers[currentGame.ctrl]();
+            });
+
+            // ==========================================
+            // KIOSK BACKEND LOCK CONTROLS
+            // ==========================================
+            document.getElementById('lock-btn').addEventListener('click', () => {
+                document.getElementById('pin-modal').classList.remove('hidden');
+                document.getElementById('pin-error-msg').classList.add('hidden');
+                document.getElementById('parent-pin-input').value = '';
+                document.getElementById('parent-pin-input').focus();
+            });
+            window.closePinModal = function() { document.getElementById('pin-modal').classList.add('hidden'); }
+
+            document.getElementById('confirm-pin-btn').addEventListener('click', async () => {
+                const pinValue = document.getElementById('parent-pin-input').value;
+                const token = localStorage.getItem('token');
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/verify-pin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ pin: pinValue })
+                    });
+                    if (response.ok) { 
+                        // 🛡️ Clean redirect
+                        window.location.href = 'child_profile.html'; 
+                    } 
+                    else {
+                        const modalContent = document.getElementById('pin-modal-content');
+                        document.getElementById('pin-error-msg').classList.remove('hidden');
+                        modalContent.classList.add('animate-shake');
+                        setTimeout(() => modalContent.classList.remove('animate-shake'), 300);
+                    }
+                } catch (error) { alert("حدث خطأ في الاتصال بالسيرفر.");
+                }
+            });
+            window.openForgotPinModal = function() {
+                closePinModal();
+                document.getElementById('forgot-pin-modal').classList.remove('hidden');
+                document.getElementById('otp-step-1').classList.remove('hidden');
+                document.getElementById('otp-step-2').classList.add('hidden');
+            }
+            window.closeForgotPinModal = function() { document.getElementById('forgot-pin-modal').classList.add('hidden');
+            }
+
+            window.requestOTP = async function() {
+                const emailValue = document.getElementById('parent-email-input').value;
+                if (!emailValue) return alert("من فضلك اكتب الإيميل أولاً");
+                document.getElementById('send-otp-btn').innerText = "...جاري الإرسال";
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/forgot-pin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: emailValue })
+                    });
+                    if (response.ok) {
+                        document.getElementById('otp-step-1').classList.add('hidden');
+                        document.getElementById('otp-step-2').classList.remove('hidden');
+                    } else { alert("حدث خطأ أثناء إرسال الكود."); }
+                } catch (error) { alert("خطأ في الاتصال بالشبكة.");
+                }
+                finally { document.getElementById('send-otp-btn').innerText = "إرسال كود التحقق";
+                }
+            }
+
+            window.resetPinWithOTP = async function() {
+                const emailInput = document.getElementById('parent-email-input');
+                const otpInput = document.getElementById('otp-code-input');
+                const pinInput = document.getElementById('new-pin-input');
+
+                if (!emailInput || !otpInput || !pinInput) { return; }
+
+                const emailValue = emailInput.value;
+                const otpValue = otpInput.value;
+                const newPinValue = pinInput.value;
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/reset-pin-otp`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: emailValue, otp_code: otpValue, new_pin: newPinValue })
+                    });
+                    if (response.ok) {
+                        alert("🎉 تم إعادة تعيين الـ PIN بنجاح!");
+                        // 🛡️ Clean redirect
+                        window.location.href = 'child_profile.html';
+                    } else {
+                        const errorData = await response.json();
+                        alert(`❌ خطأ: ${errorData.detail || 'كود الـ OTP غير صحيح أو منتهي الصلاحية'}`);
+                    }
+
+                } catch (error) {
+                    console.error("Error resetting PIN:", error);
+                    alert("مشكلة في الاتصال بالسيرفر.");
+                }
+            };
+        });
+    </script>
+</body>
+</html>

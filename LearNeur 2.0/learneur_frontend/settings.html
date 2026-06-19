@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 🛡️ منع التخزين المؤقت (No-Cache Security) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <title>LearNeur - Parent Settings</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === THEME VARIABLES (Premium Glassmorphism) === */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #EBF8FF 0%, #E2E8F0 100%);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5;
+            --danger: #F56565;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+            --glass-bg: rgba(15, 23, 42, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* Ambient Background Mesh */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(100px);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        body::before {
+            width: 40vw;
+            height: 40vw;
+            background: var(--primary);
+            top: -10%;
+            left: -10%;
+        }
+
+        body::after {
+            width: 35vw;
+            height: 35vw;
+            background: #63B3ED;
+            bottom: -10%;
+            right: -10%;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Forms & Inputs */
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-main);
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        [data-theme="dark"] input {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #FFF;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 209, 197, 0.5);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: #FFF;
+            box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.5);
+        }
+
+        /* Avatars */
+        .avatar-grid {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .avatar-box {
+            text-align: center;
+        }
+
+        .avatar-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal-content {
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .animate-shake { animation: shake 0.3s ease-in-out 2; }
+
+        /* === TOAST NOTIFICATIONS === */
+        #toast-container {
+            position: fixed; bottom: 30px; right: 30px; z-index: 4000;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .custom-toast {
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-left: 6px solid var(--primary);
+            color: var(--text-main); padding: 1rem 1.5rem; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); font-weight: 700;
+            display: flex; align-items: center; gap: 12px; min-width: 280px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .custom-toast.error { border-left-color: var(--danger); }
+        .custom-toast.fade-out { animation: fadeOutRight 0.3s ease forwards; }
+        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOutRight { to { opacity: 0; transform: translateX(100%); } }
+    </style>
+</head>
+
+<body data-theme="dark">
+
+    <!-- 🛡️ Initial Security Gate (Loads instantly) -->
+    <div class="modal-overlay" id="initial-pin-gate" style="background: var(--bg-gradient); z-index: 9999;">
+        <div class="glass-card modal-content" style="text-align: center;">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 2rem; border: none;">🔒 Security Check</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 600;">Please enter your Parent PIN to access Settings.</p>
+
+            <div class="input-group">
+                <input type="password" id="gate-pin-input" placeholder="••••" maxlength="6" style="text-align: center; font-size: 2rem; letter-spacing: 0.8rem; font-weight: bold; padding: 1rem;">
+            </div>
+
+            <p id="gate-error-msg" style="color: var(--danger); display: none; margin-bottom: 1rem; font-weight: bold;">❌ Invalid PIN, try again.</p>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-danger" style="flex: 1; background: transparent; border: 2px solid var(--danger); color: var(--danger);" onclick="window.location.href='dashboard.html'">Cancel</button>
+                <button id="gate-unlock-btn" class="btn btn-primary" style="flex: 1;">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>LearNeur Settings</h1>
+            <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+        </div>
+
+        <div class="glass-card">
+            <h2>Profile & Avatars</h2>
+            <div class="avatar-grid">
+                <div class="avatar-box">
+                    <img src="default_parent.png" alt="Parent Avatar" class="avatar-img" id="parent-avatar-img">
+                    <p>Parent Avatar</p>
+
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;"
+                        onchange="previewAvatar(event)">
+
+                    <button class="btn btn-primary" style="padding: 0.4rem 1rem; margin-top:0.5rem;"
+                        onclick="document.getElementById('avatar-upload').click()">Change</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h2>Security & Credentials</h2>
+
+            <div class="input-group">
+                <label>Change Kiosk PIN</label>
+                <div class="flex-row">
+                    <input type="password" id="current-pin" placeholder="Current PIN" maxlength="6"
+                        style="max-width: 150px;">
+                    <input type="password" id="new-pin" placeholder="New PIN" maxlength="6" style="max-width: 150px;">
+                    <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--glass-border); margin: 1.5rem 0;">
+
+            <div class="input-group">
+                <label>Change Password</label>
+                <div class="flex-row">
+                    <button class="btn btn-primary" onclick="openOtpModal('password')">Request OTP to Change
+                        Password</button>
+                </div>
+            </div>
+
+            <hr style="border-color: var(--glass-border); margin: 1.5rem 0;">
+
+            <div class="input-group">
+                <label>Change Email Address</label>
+                <div class="flex-row">
+                    <button class="btn btn-primary" onclick="openOtpModal('email')">Request OTP to Change Email</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="border-color: rgba(245, 101, 101, 0.4);">
+            <h2 style="color: var(--danger); border-color: rgba(245, 101, 101, 0.2);">Danger Zone</h2>
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-danger"
+                    style="background: transparent; border: 2px solid var(--danger); color: var(--danger);"
+                    onclick="logout()">Secure Logout</button>
+                <button class="btn btn-danger" onclick="openOtpModal('delete')">Delete Account</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="otp-modal" class="modal-overlay hidden">
+        <div class="glass-card modal-content">
+            <h2 id="modal-title" style="border: none; padding: 0;">Verification Required</h2>
+            <p id="modal-desc" style="margin-bottom: 1rem; font-size: 0.9rem;">An OTP has been sent to your email.</p>
+
+            <div class="input-group">
+                <label>Enter 6-Digit OTP</label>
+                <input type="text" id="otp-input" maxlength="6" placeholder="123456"
+                    style="font-size: 1.5rem; letter-spacing: 5px; text-align: center;">
+            </div>
+
+            <div id="dynamic-modal-fields"></div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="btn btn-danger" style="flex: 1;" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" style="flex: 1;" onclick="submitOtpAction()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = `${CONFIG.API_BASE_URL}/settings`;
+        const token = localStorage.getItem('token');
+        let currentOtpAction = '';
+
+        if (!token) {
+            window.location.replace('login.html');
+        }
+
+        // --- 🛡️ INITIAL PIN GATE LOGIC ---
+        const gateModal = document.getElementById('initial-pin-gate');
+        const gateInput = document.getElementById('gate-pin-input');
+        const gateBtn = document.getElementById('gate-unlock-btn');
+        const gateError = document.getElementById('gate-error-msg');
+
+        gateInput.focus();
+
+        gateBtn.addEventListener('click', async () => {
+            const pin = gateInput.value;
+            if(pin.length < 4) {
+                gateError.innerText = "PIN must be at least 4 digits.";
+                gateError.style.display = 'block';
+                return;
+            }
+            try {
+                // Fetching the /parent/verify-pin router
+                const response = await fetch(`${CONFIG.API_BASE_URL}/parent/verify-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ pin: pin })
+                });
+
+                if(response.ok) {
+                    gateModal.classList.add('hidden');
+                    gateError.style.display = 'none';
+                    resetIdleTimer(); // ⏳ Start the 1.5 mins timer ONLY after successful login
+                } else {
+                    gateError.innerText = "❌ Invalid PIN. Please try again.";
+                    gateError.style.display = 'block';
+                    gateModal.querySelector('.modal-content').classList.add('animate-shake');
+                    setTimeout(() => gateModal.querySelector('.modal-content').classList.remove('animate-shake'), 300);
+                }
+            } catch (err) {
+                gateError.innerText = "Network error. Try again.";
+                gateError.style.display = 'block';
+            }
+        });
+
+        gateInput.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') gateBtn.click();
+        });
+
+
+        // --- ⏳ AUTO REDIRECT LOGIC (90 Seconds Inactivity) ---
+        let idleTimer;
+        const IDLE_TIMEOUT = 90 * 1000; // 1.5 minutes = 90,000 ms
+
+        function resetIdleTimer() {
+            clearTimeout(idleTimer);
+            // Only count idle time if the initial gate is unlocked
+            if (!gateModal.classList.contains('hidden')) return; 
+
+            idleTimer = setTimeout(() => {
+                window.location.replace('dashboard.html');
+            }, IDLE_TIMEOUT);
+        }
+
+        // Detect any activity to reset the timer
+        ['mousemove', 'keydown', 'scroll', 'touchstart', 'click'].forEach(evt =>
+            window.addEventListener(evt, resetIdleTimer, true)
+        );
+
+
+        // Global Fetch Wrapper
+        async function secureFetch(endpoint, method, body = null) {
+            const options = {
+                method: method,
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+            const data = await response.json();
+
+            if (!response.ok) throw new Error(data.detail || 'An error occurred.');
+            return data;
+        }
+
+        // --- PIN LOGIC ---
+        async function changePin() {
+            const current = document.getElementById('current-pin').value;
+            const newPin = document.getElementById('new-pin').value;
+            if (!current || !newPin) return showToast("Please fill both PIN fields.", "error");
+
+            try {
+                await secureFetch('/change-pin', 'PUT', { current_pin: current, new_pin: newPin });
+                showToast("PIN updated successfully.", "success");
+                document.getElementById('current-pin').value = '';
+                document.getElementById('new-pin').value = '';
+            } catch (err) { showToast(err.message, "error"); }
+        }
+
+        // --- UNIVERSAL OTP MODAL FLOW ---
+        async function openOtpModal(action) {
+            try {
+                // 1. Request OTP from backend
+                await secureFetch('/request-otp', 'POST', { action: action });
+
+                // 2. Setup Modal UI
+                currentOtpAction = action;
+                const dynamicFields = document.getElementById('dynamic-modal-fields');
+                dynamicFields.innerHTML = ''; // Clear old fields
+
+                if (action === 'password') {
+                    document.getElementById('modal-title').innerText = "Change Password";
+                    document.getElementById('modal-title').style.color = "var(--primary)";
+                    dynamicFields.innerHTML = `
+                        <div class="input-group">
+                            <label>New Password</label>
+                            <input type="password" id="modal-new-password" placeholder="Enter new password">
+                        </div>`;
+                } else if (action === 'email') {
+                    document.getElementById('modal-title').innerText = "Change Email";
+                    document.getElementById('modal-title').style.color = "var(--primary)";
+                    dynamicFields.innerHTML = `
+                        <div class="input-group">
+                            <label>New Email Address</label>
+                            <input type="email" id="modal-new-email" placeholder="new@example.com">
+                        </div>`;
+                } else if (action === 'delete') {
+                    document.getElementById('modal-title').innerText = "Delete Account";
+                    document.getElementById('modal-title').style.color = "var(--danger)";
+                    document.getElementById('modal-desc').innerText = "WARNING: This action is irreversible. Enter the OTP to permanently delete your account and all data.";
+                }
+
+                document.getElementById('otp-input').value = '';
+                document.getElementById('otp-modal').classList.remove('hidden');
+
+            } catch (err) { showToast(err.message, "error"); }
+        }
+
+        function closeModal() {
+            document.getElementById('otp-modal').classList.add('hidden');
+        }
+
+        // --- SUBMIT OTP ACTION ---
+        async function submitOtpAction() {
+            const otp = document.getElementById('otp-input').value;
+            if (!otp) return showToast("Please enter the OTP.", "error");
+
+            try {
+                if (currentOtpAction === 'password') {
+                    const newPass = document.getElementById('modal-new-password').value;
+                    await secureFetch('/change-password', 'PUT', { otp_code: otp, new_password: newPass });
+                    showToast("Password changed successfully.", "success");
+                }
+                else if (currentOtpAction === 'email') {
+                    const newEmail = document.getElementById('modal-new-email').value;
+                    await secureFetch('/change-email', 'PUT', { otp_code: otp, new_email: newEmail });
+                    showToast("Email changed successfully. Alerts have been sent.", "success");
+                }
+                else if (currentOtpAction === 'delete') {
+                    await secureFetch('/delete-account', 'DELETE', { otp_code: otp });
+                    alert("Account successfully deleted.");
+                    logout();
+                    return;
+                }
+                closeModal();
+            } catch (err) { showToast(err.message, "error"); }
+        }
+
+        // --- LOGOUT LOGIC ---
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('selectedChildId');
+            window.location.replace('login.html');
+        }
+
+       // --- TOAST NOTIFICATION SYSTEM ---
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.className = `custom-toast ${type}`;
+            const icon = type === 'success' ? '✅' : '❌';
+            toast.innerHTML = `<span style="font-size: 1.2rem;">${icon}</span> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500); 
+        }
+
+        // --- AVATAR UPLOAD LOGIC ---
+        async function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 1. عرض الصورة الجديدة محلياً للمستخدم فوراً
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('parent-avatar-img').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            // 2. رفع الصورة للباك إند
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/upload-avatar`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }, 
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error("Failed to upload avatar");
+                
+                showToast("Profile picture updated successfully!", "success");
+            } catch (err) {
+                showToast(err.message, "error");
+            }
+        }
+
+        // --- FETCH AVATAR ON PAGE LOAD ---
+        async function loadMyAvatar() {
+            try {
+                const data = await secureFetch('/my-avatar', 'GET');
+                if(data.avatar_url && data.avatar_url !== 'default_parent.png') {
+                    // تركيب رابط السيرفر على مسار الصورة بشكل ديناميكي
+                    const SERVER_ROOT = CONFIG.API_BASE_URL.replace('/api', '');
+                    document.getElementById('parent-avatar-img').src = `${SERVER_ROOT}/${data.avatar_url}`;
+                }
+            } catch(e) { 
+                console.log("No custom avatar found, using default."); 
+            }
+        }
+
+        // استدعاء الدالة أول ما الصفحة تفتح (لو الـ PIN مدخل صح)
+        loadMyAvatar();
+    </script>
+</body>
+
+</html>

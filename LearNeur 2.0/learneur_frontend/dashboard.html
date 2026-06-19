@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <title>LearNeur - Parent Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === THEME VARIABLES (Premium Glassmorphism matching Analytics) === */
+        :root {
+            /* Light Mode (Eye-Care Glass) */
+            --bg-gradient: linear-gradient(135deg, #E2E8F0 0%, #EDF2F7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-bg-hover: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5;
+            --primary-hover: #38B2AC;
+            --danger: #F56565;
+            --input-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        body.dark-mode {
+            /* Premium Dark Mode (Exact match to Analytics.html) */
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+            --primary: #4FD1C5;
+            --primary-hover: #81E6D9;
+            --danger: #FC8181;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* === GLOBAL RESET === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+            background-attachment: fixed;
+        }
+
+        /* Ambient Animated Mesh Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(79, 209, 197, 0.08), transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(99, 179, 237, 0.05), transparent 30%);
+            z-index: -1;
+            animation: backgroundDrift 20s infinite alternate linear;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundDrift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(5%, 5%); }
+        }
+
+        /* === Shared Glassmorphism Class === */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        /* === Mobile Header (Hamburger) === */
+        .mobile-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+        }
+        .hamburger-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .hamburger-btn:active { transform: scale(0.9); }
+
+        /* === LAYOUT MODULES === */
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            inset-inline-start: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 2500;
+            border-radius: 0 24px 24px 0;
+            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-brand {
+            color: var(--primary);
+            margin-bottom: 3rem;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar-item a {
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .sidebar-item a:hover,
+        .sidebar-item a.active {
+            color: var(--text-main);
+            background: var(--glass-bg-hover);
+            border-inline-start: 4px solid var(--primary);
+            padding-inline-start: 1.5rem;
+        }
+
+        #theme-toggle {
+            margin-top: auto;
+            width: 100%;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-inline-start: 260px;
+            padding: 2.5rem;
+            max-width: 1400px;
+            width: calc(100% - 260px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .header-actions h1 {
+            font-size: clamp(1.8rem, 3vw, 2.2rem);
+            font-weight: 800;
+            background: linear-gradient(to right, var(--text-main), #63B3ED);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Responsive Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #63B3ED 100%);
+            color: #0F2027;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* === CHILD BUBBLE CARDS === */
+        .children-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.8rem;
+            width: 100%;
+        }
+
+        .child-card {
+            border-radius: 24px;
+            padding: 1.8rem 1.2rem;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .child-card:hover {
+            transform: translateY(-8px);
+            background: var(--glass-bg-hover);
+        }
+
+        .child-avatar {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--bg-gradient);
+            margin-bottom: 1.2rem;
+            padding: 4px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .child-card h3 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+            color: var(--text-main);
+        }
+
+        .child-card p {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            width: 100%;
+        }
+
+        .action-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--glass-bg-hover);
+            transform: scale(1.1);
+        }
+
+        .edit-btn:hover { color: var(--primary); }
+        .delete-btn:hover { color: var(--danger); }
+
+        /* === MODAL & FORMS (Glassmorphic) === */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* 🛡️ Screen Lock Specific Modal Styles */
+        #auto-lock-screen {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(25px);
+            z-index: 9999;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 450px;
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            inset-inline-end: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .close-btn:hover { color: var(--danger); }
+
+        .input-group { margin-bottom: 1.2rem; text-align: start; }
+        .input-group label {
+            display: block; margin-bottom: 0.5rem; font-size: 0.95rem; font-weight: 800;
+            color: var(--text-main); padding-inline-start: 0.5rem; letter-spacing: 0.5px;
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 0.9rem 1.2rem; border: 1px solid var(--glass-border);
+            border-radius: 12px; background: var(--input-bg); color: var(--text-main);
+            font-size: 0.95rem; font-weight: 600; outline: none; transition: border-color 0.3s ease;
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            border-color: var(--primary); background: var(--glass-bg-hover);
+        }
+        .input-group select { appearance: none; cursor: pointer; }
+        .input-group select option { background-color: #1A202C; color: #EDF2F7; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* === RESPONSIVE ARCHITECTURE === */
+        @media (max-width: 1024px) {
+            .mobile-header { display: flex; }
+            .sidebar {
+                left: -100%; /* مخفية برا الشاشة */
+                width: 280px;
+            }
+            .sidebar.active { left: 0; }
+            .main-content {
+                margin-inline-start: 0;
+                width: 100%;
+                padding: 1.5rem;
+                padding-top: 5.5rem; /* عشان الهيدر ميعملش تداخل */
+            }
+            /* شادو خفيف بيظهر لما القائمة تتفتح على الموبايل */
+            .sidebar-overlay {
+                display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); z-index: 2400; backdrop-filter: blur(3px);
+            }
+            .sidebar-overlay.active { display: block; }
+        }
+
+        @media (max-width: 600px) {
+            .header-actions { flex-direction: column; align-items: stretch; text-align: center; }
+            .children-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+
+    <div class="mobile-header glass-card">
+        <div class="sidebar-brand" style="margin: 0;">LearNeur</div>
+        <button class="hamburger-btn" id="mobile-menu-btn">☰</button>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <nav class="sidebar glass-card" id="sidebar">
+        <div class="sidebar-brand">LearNeur</div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-item active"><a href="#" class="active">🏡 Dashboard</a></li>
+            <li class="sidebar-item"><a href="analytics.html">📊 Analytics Reports</a></li>
+            <li class="sidebar-item"><a href="doctor_directory.html">🏥 Healthcare Hub</a></li>
+            <li class="sidebar-item"><a href="settings.html">⚙️ Settings</a></li>
+            <li class="sidebar-item" style="margin-top: 1rem;">
+                <a id="manual-lock-btn" style="color: var(--danger);">🔒 Lock Screen</a>
+            </li>
+        </ul>
+        <button id="theme-toggle" class="btn-primary"
+            style="background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); box-shadow: none; margin-top: auto;">☀️
+            Light Mode</button>
+    </nav>
+
+    <main class="main-content">
+        <div class="header-actions">
+            <h1>Welcome back!</h1>
+            <button id="open-modal" class="btn-primary">➕ Add Child Profile</button>
+        </div>
+
+        <div class="children-grid" id="children-grid">
+            </div>
+    </main>
+
+    <div class="modal-overlay" id="auto-lock-screen">
+        <div class="modal-content glass-card" style="text-align: center;">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-weight: 900; font-size: 2rem;">🔒 Screen Locked</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-weight: 600;">For your child's data security, the dashboard has been locked. Please enter your PIN.</p>
+            
+            <div class="input-group">
+                <input type="password" id="unlock-pin-input" placeholder="••••" maxlength="6" style="text-align: center; font-size: 2rem; letter-spacing: 0.8rem; font-weight: bold; padding: 1rem;">
+            </div>
+            
+            <p id="unlock-error-msg" style="color: var(--danger); display: none; margin-bottom: 1rem; font-weight: bold;">❌ Invalid PIN, try again.</p>
+            
+            <button id="unlock-btn" class="btn-primary" style="width: 100%; padding: 1rem; font-size: 1.1rem;">Unlock Dashboard</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content glass-card">
+            <span class="close-btn" id="close-modal">&times;</span>
+
+            <h2 style="margin-bottom: 1.5rem; text-align: center; color: var(--text-main); font-weight: 800;">New Child Profile</h2>
+
+            <form id="add-child-form">
+                <div class="input-group">
+                    <label>First Name</label>
+                    <input type="text" id="child-name" required placeholder="e.g. Alex">
+                </div>
+                <div class="input-group">
+                    <label>Age</label>
+                    <input type="number" id="child-age" required min="1" max="18">
+                </div>
+
+                <div class="input-group">
+                    <label>Communication Level</label>
+                    <select id="child-comm" required>
+                        <option value="Verbal">Verbal</option>
+                        <option value="Minimal Speech">Minimal Speech</option>
+                        <option value="Non-verbal">Non-verbal</option>
+                        <option value="Tech-Assisted">Tech-Assisted</option>
+                    </select>
+                </div>
+                <div style="text-align: right; margin-top: -0.8rem; margin-bottom: 1.2rem;">
+                    <a href="javascript:void(0)" onclick="openScreeningTest()"
+                        style="color: var(--primary); font-size: 0.85rem; font-weight: 800; text-decoration: underline;">Not
+                        sure? Take a quick assessment 🧠</a>
+                </div>
+                <div class="input-group">
+                    <label>Sensory Sensitivities (Optional)</label>
+                    <textarea id="child-sensory" rows="2" placeholder="e.g. Sensitive to loud noises"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Special Interests (Optional)</label>
+                    <textarea id="child-interests" rows="2" placeholder="e.g. Trains, Outer Space"></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Create Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="screeningTestModal" style="z-index: 3000;">
+        <div class="modal-content glass-card" style="max-width: 500px; padding: 2rem; background: var(--bg-gradient); color: var(--text-main);">
+            <button class="close-btn" onclick="closeScreeningModal()">&times;</button>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="color: var(--primary); font-weight: 900; margin-bottom: 0.5rem;">Autism Screener</h2>
+                
+                <div style="display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem;">
+                    <div style="width: 100%; height: 6px; background: var(--glass-border); border-radius: 10px; overflow: hidden; position: relative;">
+                        <div id="test-progress-line" style="position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: linear-gradient(90deg, #DD6B20, #F6AD55); transition: width 0.4s ease;"></div>
+                    </div>
+                    <span id="test-step-counter" style="margin-top: 0.8rem; font-weight: 800; color: #DD6B20; font-size: 0.9rem;">Question 1 of 10</span>
+                </div>
+            </div>
+
+            <div id="test-question-container" style="min-height: 200px;">
+                <h3 id="test-question-text" style="font-size: 1.15rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem; line-height: 1.5;">Loading question...</h3>
+                <div id="test-options-area" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button id="btn-test-prev" class="btn-test-outline" onclick="prevTestQuestion()" style="display: none;">PREVIOUS</button>
+                <button id="btn-test-next" class="btn-test-solid" onclick="nextTestQuestion()" style="margin-left: auto;" disabled>NEXT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="screeningResultModal" style="z-index: 4000;">
+        <div class="modal-content glass-card" style="text-align: center; max-width: 450px;">
+            <div id="result-icon" style="font-size: 3.5rem; margin-bottom: 0.5rem;">📊</div>
+            <h2 style="color: var(--text-main); font-weight: 900; margin-bottom: 0.5rem;">Screening Result</h2>
+            
+            <div style="background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 1.5rem; margin: 1.5rem 0; box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);">
+                <p style="color: var(--text-muted); font-weight: 800; margin-bottom: 0.5rem; font-size: 0.95rem;">Total Score</p>
+                <div style="font-size: 3rem; font-weight: 900; color: var(--primary); margin-bottom: 1rem; text-shadow: 0 4px 10px rgba(0,0,0,0.2);" id="result-score-display">0/30</div>
+                
+                <div id="result-risk-badge" style="display: inline-block; padding: 0.6rem 1.2rem; border-radius: 20px; font-weight: 800; font-size: 0.9rem;">
+                    Risk Level
+                </div>
+            </div>
+
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 2rem; font-weight: 600;">
+                The profile form has been auto-filled with clinical descriptions based on your answers. You can review and edit them before saving.
+            </p>
+
+            <button class="btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem;" onclick="closeScreeningResultModal()">Review Profile</button>
+        </div>
+    </div>
+
+    <style>
+        /* ستايلات الاختبار المخصصة */
+        .test-step { width: 30px; height: 30px; border-radius: 50%; background: var(--glass-bg); border: 2px solid var(--glass-border); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--text-muted); z-index: 3; transition: 0.3s; }
+        .test-step.active { background: #DD6B20; border-color: #DD6B20; color: #FFF; }
+        .test-step.completed { background: var(--glass-bg); border-color: #DD6B20; color: #DD6B20; }
+        .test-option { background: var(--input-bg); border: 2px solid var(--glass-border); padding: 1rem 1.5rem; border-radius: 12px; font-weight: 700; color: var(--text-main); cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; }
+        .test-option:hover { border-color: #DD6B20; }
+        .test-option.selected { background: #DD6B20; border-color: #DD6B20; color: #FFF; }
+        .test-radio { width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentcolor; display: flex; align-items: center; justify-content: center; }
+        .test-option.selected .test-radio::after { content: ''; width: 10px; height: 10px; background: #FFF; border-radius: 50%; }
+        .btn-test-solid { background: #DD6B20; color: #FFF; border: none; padding: 0.8rem 2rem; border-radius: 30px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-test-solid:disabled { background: #ED8936; opacity: 0.5; cursor: not-allowed; }
+        .btn-test-outline { background: transparent; color: #DD6B20; border: 2px solid #DD6B20; padding: 0.8rem 2rem; border-radius: 30px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const currentTheme = localStorage.getItem('theme');
+            const API_BASE_URL = CONFIG.API_BASE_URL;
+            const token = localStorage.getItem('token');
+
+            // --- Mobile Hamburger Menu Logic ---
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.add('active');
+                sidebarOverlay.classList.add('active');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+            });
+
+            // --- Theme Toggle Logic ---
+            if (currentTheme === 'light') {
+                document.body.classList.remove('dark-mode');
+                if (themeToggle) themeToggle.textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.add('dark-mode');
+                if (themeToggle) themeToggle.textContent = '☀️ Light Mode';
+                if (!currentTheme) localStorage.setItem('theme', 'dark');
+            }
+
+            if (themeToggle) {
+                themeToggle.addEventListener('click', () => {
+                    document.body.classList.toggle('dark-mode');
+                    if (document.body.classList.contains('dark-mode')) {
+                        localStorage.setItem('theme', 'dark');
+                        themeToggle.textContent = '☀️ Light Mode';
+                    } else {
+                        localStorage.setItem('theme', 'light');
+                        themeToggle.textContent = '🌙 Dark Mode';
+                    }
+                });
+            }
+
+            // 1. JWT Security Gate
+            if (!token) {
+                alert("Unauthorized. Please log in.");
+                window.location.replace('Login.html');
+                return;
+            }
+
+            const authHeaders = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            };
+
+            // 🛡️ ================= AUTO-LOCK SECURITY SYSTEM ================= 🛡️
+            let idleTimer;
+            const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minutes
+            const lockScreen = document.getElementById('auto-lock-screen');
+            const unlockBtn = document.getElementById('unlock-btn');
+            const unlockPinInput = document.getElementById('unlock-pin-input');
+            const unlockError = document.getElementById('unlock-error-msg');
+            const manualLockBtn = document.getElementById('manual-lock-btn');
+
+            function resetIdleTimer() {
+                if (lockScreen.classList.contains('active')) return; // متعملش ريسيت لو الشاشة مقفولة أصلاً
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(triggerLockScreen, IDLE_TIMEOUT);
+            }
+
+            function triggerLockScreen() {
+                lockScreen.classList.add('active');
+                unlockPinInput.value = '';
+                unlockError.style.display = 'none';
+                unlockPinInput.focus();
+            }
+
+            // تفعيل العداد مع أي حركة من المستخدم
+            ['mousemove', 'keydown', 'scroll', 'touchstart'].forEach(evt => 
+                window.addEventListener(evt, resetIdleTimer, true)
+            );
+            resetIdleTimer(); // تشغيل العداد أول ما الصفحة تفتح
+
+            // زرار القفل اليدوي من الـ Sidebar
+            manualLockBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                triggerLockScreen();
+                if(sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                }
+            });
+
+            // منطق فك القفل بالـ PIN
+            unlockBtn.addEventListener('click', async () => {
+                const pin = unlockPinInput.value;
+                if(pin.length < 4) {
+                    unlockError.innerText = "PIN must be at least 4 digits.";
+                    unlockError.style.display = 'block';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/verify-pin`, {
+                        method: 'POST',
+                        headers: authHeaders,
+                        body: JSON.stringify({ pin: pin })
+                    });
+                    
+                    if(response.ok) {
+                        lockScreen.classList.remove('active');
+                        unlockError.style.display = 'none';
+                        resetIdleTimer();
+                    } else {
+                        unlockError.innerText = "❌ Invalid PIN. Please try again.";
+                        unlockError.style.display = 'block';
+                        lockScreen.querySelector('.modal-content').classList.add('animate-shake');
+                        setTimeout(() => lockScreen.querySelector('.modal-content').classList.remove('animate-shake'), 300);
+                    }
+                } catch (err) {
+                    unlockError.innerText = "Network error. Try again.";
+                    unlockError.style.display = 'block';
+                }
+            });
+
+            // فك القفل بضغط الـ Enter
+            unlockPinInput.addEventListener('keypress', (e) => {
+                if(e.key === 'Enter') unlockBtn.click();
+            });
+            // ===============================================================
+
+            // Elements
+            const modal = document.getElementById('modal-overlay');
+            const form = document.getElementById('add-child-form');
+            const grid = document.getElementById('children-grid');
+            const modalTitle = modal.querySelector('h2');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            let currentEditId = null;
+
+            // Utilities
+            document.getElementById('open-modal').addEventListener('click', () => openModal());
+            document.getElementById('close-modal').addEventListener('click', () => modal.classList.remove('active'));
+
+            function openModal(child = null) {
+                modal.classList.add('active');
+                if (child) {
+                    currentEditId = child.id;
+                    modalTitle.textContent = "Edit Child Profile";
+                    submitBtn.textContent = "Save Changes";
+                    document.getElementById('child-name').value = child.first_name;
+                    document.getElementById('child-age').value = child.age;
+
+                    let currentCommLevel = child.communication_level || (child.autism_profile && child.autism_profile.communication_level) || "Verbal";
+                    const levelsMap = {
+                        "non-verbal": "Non-verbal",
+                        "minimal speech": "Minimal Speech",
+                        "minimal_speech": "Minimal Speech",
+                        "verbal": "Verbal",
+                        "tech-assisted": "Tech-Assisted",
+                        "tech_assisted": "Tech-Assisted"
+                    };
+
+                    let cleanKey = currentCommLevel.toString().trim().toLowerCase();
+                    if (levelsMap[cleanKey]) {
+                        currentCommLevel = levelsMap[cleanKey];
+                    }
+
+                    if (document.getElementById('child-comm')) {
+                        document.getElementById('child-comm').value = currentCommLevel;
+                    }
+                } else {
+                    currentEditId = null;
+                    modalTitle.textContent = "New Child Profile";
+                    submitBtn.textContent = "Create Profile";
+                    form.reset();
+                }
+            }
+
+            async function loadChildren() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/children`, { headers: authHeaders });
+                    if (response.status === 401) throw new Error("Session expired");
+                    const children = await response.json();
+
+                    grid.innerHTML = '';
+                    children.forEach(renderChildCard);
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            // 🛡️ التوجيه الآمن لصفحة الطفل (Security Enhancement)
+            async function selectChild(childId) {
+                // تخزين الـ ID في الجلسة بدل الرابط
+                sessionStorage.setItem('selectedChildId', childId);
+                localStorage.setItem('selectedChildId', childId); // كنسخة احتياطية
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/check-pin-status`, { headers: authHeaders });
+                    const data = await response.json();
+                    if (data.has_pin === true) {
+                        // توجيه نظيف بدون ?childId=... لمنع التلاعب
+                        window.location.href = 'child_profile.html';
+                    } else {
+                        if (document.getElementById('setup-pin-modal')) {
+                            document.getElementById('setup-pin-modal').classList.remove('hidden');
+                        } else {
+                            window.location.href = 'reset-pin.html';
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error checking PIN status:", error);
+                }
+            }
+
+            function renderChildCard(child) {
+                const card = document.createElement('div');
+                card.className = 'child-card glass-card';
+                card.innerHTML = `
+            <img src="${child.avatar_url}" alt="${child.first_name}" class="child-avatar">
+            <h3>${child.first_name}</h3>
+            <p>${child.age} years old</p>
+            <div class="card-actions">
+                <button class="action-btn edit-btn" title="Edit">✏️</button>
+                <button class="action-btn delete-btn" title="Delete">🗑️</button>
+            </div>
+        `;
+
+                card.querySelector('.edit-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(child);
+                });
+
+                card.querySelector('.delete-btn').addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (confirm(`Are you sure you want to remove ${child.first_name}? All diagnostic data will be lost.`)) {
+                        await deleteChild(child.id, card);
+                    }
+                });
+
+                grid.appendChild(card);
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.action-btn')) return;
+                    selectChild(child.id);
+                });
+            }
+
+            async function deleteChild(id, cardElement) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/parent/delete-child/${id}`, {
+                        method: 'DELETE',
+                        headers: authHeaders
+                    });
+                    if (response.ok) {
+                        cardElement.remove();
+                    } else {
+                        alert("Failed to delete profile.");
+                    }
+                } catch (err) { console.error(err); }
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const payload = {
+                    first_name: document.getElementById('child-name').value,
+                    age: parseInt(document.getElementById('child-age').value),
+                    communication_level: document.getElementById('child-comm').value,
+                    sensory_sensitivities: document.getElementById('child-sensory').value || null,
+                    special_interests: document.getElementById('child-interests').value || null
+                };
+
+                const url = currentEditId
+                    ? `${API_BASE_URL}/parent/edit-child/${currentEditId}`
+                    : `${API_BASE_URL}/parent/add-child`;
+
+                const method = currentEditId ? 'PUT' : 'POST';
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: authHeaders,
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error('Failed to save profile');
+                    modal.classList.remove('active');
+                    loadChildren();
+
+                } catch (error) {
+                    alert(error.message);
+                }
+            });
+
+            loadChildren();
+        });
+
+       // ================= ADVANCED AUTISM SCREENER LOGIC (DSM-5 Based) =================
+    const screenerQuestions = [
+        // --- 1. Communication & Speech (Determines Verbal Status) ---
+        {
+            q: "1. How does your child primarily communicate their needs?",
+            options: [
+                { text: "Speaks in full, clear sentences", score: 0, val: "Verbal" },
+                { text: "Uses single words or short phrases", score: 1, val: "Minimal Speech" },
+                { text: "Uses pointing, pulling, or gestures", score: 2, val: "Non-verbal" },
+                { text: "Uses a tablet, cards, or AAC device", score: 1, val: "Tech-Assisted" }
+            ]
+        },
+        {
+            q: "2. Does your child respond (look at you or vocalize) when you call their name?",
+            options: [
+                { text: "Always", score: 0 },
+                { text: "Usually", score: 1 },
+                { text: "Rarely (often seems to ignore me)", score: 2 },
+                { text: "Never responds to their name", score: 3 }
+            ]
+        },
+        {
+            q: "3. Does your child make eye contact when talking or playing with you?",
+            options: [
+                { text: "Consistently makes good eye contact", score: 0 },
+                { text: "Sometimes makes eye contact", score: 1 },
+                { text: "Rarely makes eye contact", score: 2 },
+                { text: "Actively avoids eye contact", score: 3 }
+            ]
+        },
+        // --- 2. Social Interaction ---
+        {
+            q: "4. Does your child point at things to show them to you (e.g., an airplane in the sky)?",
+            options: [
+                { text: "Often points to share interest", score: 0 },
+                { text: "Sometimes", score: 1 },
+                { text: "Rarely points at things", score: 2 },
+                { text: "Never points, only brings things to me", score: 3 }
+            ]
+        },
+        {
+            q: "5. How does your child play with other children?",
+            options: [
+                { text: "Plays cooperatively and shares", score: 0 },
+                { text: "Plays alongside them (parallel play)", score: 1 },
+                { text: "Usually ignores other children", score: 2 },
+                { text: "Gets highly anxious or upset around them", score: 3 }
+            ]
+        },
+        // --- 3. Repetitive Behaviors (Determines Special Interests) ---
+        {
+            q: "6. Does your child perform repetitive body movements (e.g., hand-flapping, rocking, spinning)?",
+            options: [
+                { text: "Never", score: 0 },
+                { text: "Rarely (only when very excited)", score: 1 },
+                { text: "Often", score: 2 },
+                { text: "Constantly", score: 3 }
+            ]
+        },
+        {
+            q: "7. Does your child get extremely upset by minor changes in their daily routine?",
+            options: [
+                { text: "No, adapts easily", score: 0 },
+                { text: "Slightly annoyed but moves on", score: 1 },
+                { text: "Gets very upset/cries", score: 2 },
+                { text: "Has a severe meltdown", score: 3 }
+            ]
+        },
+        {
+            q: "8. Does your child have an intense, obsessive interest in specific objects or topics (e.g., lining up toys, spinning wheels, numbers)?",
+            options: [
+                { text: "No", score: 0, val: "" },
+                { text: "Mild interest, can be redirected", score: 1, val: "Strong interest in specific topics." },
+                { text: "Intense focus, hard to distract", score: 2, val: "Highly focused on specific objects/topics. Lines up toys." },
+                { text: "Obsessive, gets distressed if interrupted", score: 3, val: "Obsessive interests. Severe distress if interrupted." }
+            ]
+        },
+        // --- 4. Sensory Sensitivities (Determines Sensory Profile) ---
+        {
+            q: "9. How does your child react to loud noises, bright lights, or crowds?",
+            options: [
+                { text: "Normal reaction", score: 0, val: "" },
+                { text: "Mildly bothered", score: 1, val: "Mildly sensitive to loud noises/lights." },
+                { text: "Covers ears, closes eyes, or cries", score: 2, val: "Sensitive to loud noises, lights, or crowds (covers ears)." },
+                { text: "Severe panic or meltdown", score: 3, val: "Severe sensory overload with noises/crowds. Meltdowns." }
+            ]
+        },
+        {
+            q: "10. Does your child have strong aversions to certain clothing tags, fabrics, or specific food textures?",
+            options: [
+                { text: "No", score: 0, val: "" },
+                { text: "Mild picky eater / dislikes some tags", score: 1, val: "Mild sensitivity to certain clothing/food textures." },
+                { text: "Very sensitive to textures/clothing", score: 2, val: "Strong aversion to specific textures (clothing/food)." },
+                { text: "Extreme aversion, causes significant distress", score: 3, val: "Extreme tactile sensitivity. Distress from clothing/textures." }
+            ]
+        }
+    ];
+
+    let currentTestStep = 0;
+    let testAnswers = {}; 
+
+    window.openScreeningTest = function() {
+        currentTestStep = 0;
+        testAnswers = {};
+        document.getElementById('screeningTestModal').classList.add('active');
+        renderTestQuestion();
+    }
+
+    window.closeScreeningModal = function() {
+        document.getElementById('screeningTestModal').classList.remove('active');
+    }
+
+    function renderTestQuestion() {
+        const questionData = screenerQuestions[currentTestStep];
+        document.getElementById('test-question-text').innerText = questionData.q;
+        
+        const optionsArea = document.getElementById('test-options-area');
+        optionsArea.innerHTML = '';
+        
+        questionData.options.forEach((opt, index) => {
+            const isSelected = testAnswers[currentTestStep] === index;
+            const optHtml = `
+                <div class="test-option ${isSelected ? 'selected' : ''}" onclick="selectTestOption(${index})">
+                    <div class="test-radio"></div>
+                    ${opt.text}
+                </div>
+            `;
+            optionsArea.insertAdjacentHTML('beforeend', optHtml);
+        });
+
+        const progressPercent = ((currentTestStep + 1) / screenerQuestions.length) * 100;
+        document.getElementById('test-progress-line').style.width = `${progressPercent}%`;
+        document.getElementById('test-step-counter').innerText = `Question ${currentTestStep + 1} of ${screenerQuestions.length}`;
+
+        document.getElementById('btn-test-prev').style.display = currentTestStep === 0 ? 'none' : 'block';
+        const nextBtn = document.getElementById('btn-test-next');
+        nextBtn.innerText = currentTestStep === screenerQuestions.length - 1 ? 'FINISH & ANALYZE' : 'NEXT';
+        nextBtn.disabled = testAnswers[currentTestStep] === undefined;
+    }
+
+    window.selectTestOption = function(index) {
+        testAnswers[currentTestStep] = index;
+        renderTestQuestion(); 
+    }
+
+    window.prevTestQuestion = function() {
+        if (currentTestStep > 0) {
+            currentTestStep--;
+            renderTestQuestion();
+        }
+    }
+
+    window.nextTestQuestion = function() {
+        if (currentTestStep < screenerQuestions.length - 1) {
+            currentTestStep++;
+            renderTestQuestion();
+        } else {
+            analyzeAndAutoFill();
+        }
+    }
+
+    function analyzeAndAutoFill() {
+        let totalScore = 0;
+        let sensoryNotes = [];
+        let interestNotes = [];
+        let communicationLevel = "Verbal";
+
+        for (let i = 0; i < screenerQuestions.length; i++) {
+            const selectedOptIndex = testAnswers[i];
+            const optionData = screenerQuestions[i].options[selectedOptIndex];
+            
+            totalScore += optionData.score;
+            if (i === 0) communicationLevel = optionData.val;
+            if (i === 7 && optionData.val) interestNotes.push(optionData.val);
+            if (i === 8 && optionData.val) sensoryNotes.push(optionData.val);
+            if (i === 9 && optionData.val) sensoryNotes.push(optionData.val);
+        }
+
+        let riskLevel = "";
+        let riskColor = "";
+        if (totalScore <= 5) {
+            riskLevel = "Low Probability of ASD";
+            riskColor = "var(--success, #48BB78)";
+        } else if (totalScore <= 14) {
+            riskLevel = "Moderate Probability of ASD (Needs Monitoring)";
+            riskColor = "orange";
+        } else {
+            riskLevel = "High Probability of ASD (Clinical Evaluation Recommended)";
+            riskColor = "var(--danger, #F56565)";
+        }
+
+        document.getElementById('child-comm').value = communicationLevel;
+        document.getElementById('child-sensory').value = sensoryNotes.length > 0 ? sensoryNotes.join(" ") : "No significant sensory sensitivities observed.";
+        document.getElementById('child-interests').value = interestNotes.length > 0 ? interestNotes.join(" ") : "Typical interests.";
+
+        closeScreeningModal();
+        
+        const scoreDisplay = document.getElementById('result-score-display');
+        const riskBadge = document.getElementById('result-risk-badge');
+        const resultIcon = document.getElementById('result-icon');
+
+        scoreDisplay.innerText = `${totalScore}/30`;
+        riskBadge.innerText = riskLevel;
+
+        if (totalScore <= 5) {
+            riskBadge.style.background = 'rgba(72, 187, 120, 0.15)';
+            riskBadge.style.color = '#48BB78'; 
+            resultIcon.innerText = '✅';
+            scoreDisplay.style.color = '#48BB78';
+        } else if (totalScore <= 14) {
+            riskBadge.style.background = 'rgba(237, 137, 54, 0.15)';
+            riskBadge.style.color = '#ED8936'; 
+            resultIcon.innerText = '⚠️';
+            scoreDisplay.style.color = '#ED8936';
+        } else {
+            riskBadge.style.background = 'rgba(245, 101, 101, 0.15)';
+            riskBadge.style.color = '#F56565'; 
+            resultIcon.innerText = '🚨';
+            scoreDisplay.style.color = '#F56565';
+        }
+
+        document.getElementById('screeningResultModal').classList.add('active');
+    }
+
+    window.closeScreeningResultModal = function() {
+        document.getElementById('screeningResultModal').classList.remove('active');
+    }
+    
+    </script>
+</body>
+
+</html>

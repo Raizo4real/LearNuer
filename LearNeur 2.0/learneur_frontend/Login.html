@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LearNeur - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="config.js"></script>
+    <style>
+        /* === THEME VARIABLES (Premium Glassmorphism matching Dashboard) === */
+        :root {
+            /* Light Mode (Eye-Care Glass) */
+            --bg-gradient: linear-gradient(135deg, #E2E8F0 0%, #EDF2F7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-bg-hover: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --primary: #4FD1C5;
+            --primary-hover: #38B2AC;
+            --danger: #F56565;
+            --success: #48BB78;
+            --input-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        [data-theme="dark"] {
+            /* Premium Dark Mode (Exact match to Dashboard) */
+            --bg-gradient: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-bg-hover: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #EDF2F7;
+            --text-muted: #A0AEC0;
+            --primary: #4FD1C5;
+            --primary-hover: #81E6D9;
+            --danger: #FC8181;
+            --success: #68D391;
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* === GLOBAL RESET & TYPOGRAPHY === */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            background-attachment: fixed;
+        }
+
+        /* Ambient Animated Mesh Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(79, 209, 197, 0.08), transparent 40%),
+                        radial-gradient(circle at 80% 20%, rgba(99, 179, 237, 0.05), transparent 30%);
+            z-index: -1;
+            animation: backgroundDrift 20s infinite alternate linear;
+            pointer-events: none;
+        }
+
+        @keyframes backgroundDrift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(5%, 5%); }
+        }
+
+        /* === LAYOUT MODULES === */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: clamp(1rem, 3vmin, 2rem) clamp(1.5rem, 5vw, 4rem);
+            width: 100%;
+            z-index: 10;
+        }
+
+        .brand-logo {
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            font-weight: 900;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, var(--text-main), #63B3ED);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* === GLASSMORPHIC CARD (Sleek & Compact) === */
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: clamp(2rem, 5vw, 2.5rem);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 1.8rem;
+        }
+
+        /* === AUTH TABS === */
+        .auth-tabs {
+            display: flex;
+            gap: 0.8rem;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.4rem;
+            border-radius: 16px;
+        }
+        
+        [data-theme="dark"] .auth-tabs {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: var(--primary);
+            color: #0F2027; /* Dark text for contrast */
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+        }
+
+        /* === FORMS & INPUTS === */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .auth-form h2 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-align: center;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .hidden-form { display: none !important; }
+        .hidden-element { display: none !important; }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: start; /* Bilingual RTL support */
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--text-main);
+            padding-inline-start: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--glass-border); 
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.3s ease, background 0.3s ease;
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: var(--glass-bg-hover);
+        }
+
+        select {
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        select option {
+            background-color: #1A202C; 
+            color: #EDF2F7;
+        }
+
+        /* File Upload Neumorphic Styling */
+        .file-upload input[type="file"] {
+            padding: 0.8rem;
+            border: 1px dashed var(--glass-border);
+            background: transparent;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .file-upload small {
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding-inline-start: 0.5rem;
+            margin-top: 0.2rem;
+        }
+
+        /* === BUTTONS === */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #63B3ED 100%);
+            color: #0F2027;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(79, 209, 197, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 0.6rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg-hover);
+        }
+
+        /* === FEEDBACK MESSAGES === */
+        .error-message {
+            color: var(--danger);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 1.2rem;
+        }
+
+        .success-message {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 1.2rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    
+    <header class="navbar">
+        <a href="index.html" style="text-decoration: none; color: inherit;">
+    <h1 class="brand-logo">LearNeur</h1>
+</a>
+        <button id="theme-toggle" class="btn-secondary" aria-label="Toggle Dark Mode">☀️ Light Mode</button>
+    </header>
+
+    <main class="auth-container">
+        <div class="auth-card">
+            
+            <div class="auth-tabs">
+                <button id="tab-login" class="tab active">Login</button>
+                <button id="tab-register" class="tab">Register</button>
+            </div>
+
+            <form id="login-form" class="auth-form active-form">
+                <h2>Welcome Back</h2>
+                
+                <div class="input-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="input-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Enter your password">
+                </div>
+                
+                <div id="login-error" class="error-message"></div>
+                
+                <button type="submit" class="btn-primary">Log In</button>
+            </form>
+
+            <form id="register-form" class="auth-form hidden-form">
+                <h2>Create an Account</h2>
+                
+                <div class="input-group">
+                    <label for="reg-role">I am a...</label>
+                    <select id="reg-role" required>
+                        <option value="PARENT">Parent</option>
+                        <option value="DOCTOR">Doctor</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" required placeholder="John Doe">
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" required placeholder="john@example.com">
+                </div>
+
+                <div class="input-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" required placeholder="Create a strong password">
+                </div>
+
+                <div id="parent-fields" class="dynamic-fields">
+                    <div class="input-group">
+                        <label for="reg-confirm-password">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" placeholder="Confirm your password">
+                    </div>
+                </div>
+
+                <div id="doctor-fields" class="dynamic-fields hidden-element">
+                    <div class="input-group">
+                        <label for="reg-specialty">Medical Specialty</label>
+                        <input type="text" id="reg-specialty" placeholder="e.g., Pediatric Neurologist">
+                    </div>
+                    <div class="input-group file-upload">
+                        <label for="reg-document">Verification Document (PDF/JPG)</label>
+                        <input type="file" id="reg-document" accept=".pdf, .jpg, .jpeg, .png">
+                        <small>Admin approval required before access.</small>
+                    </div>
+                </div>
+
+                <div id="reg-error" class="error-message"></div>
+                <div id="reg-success" class="success-message"></div>
+                
+                <button type="submit" class="btn-primary">Register Account</button>
+            </form>
+            
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+  const themeToggleBtn = document.getElementById('theme-toggle');
+            
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    document.body.removeAttribute('data-theme');
+                    themeToggleBtn.innerHTML = '🌙 Dark Mode';
+                } else {
+                    document.body.setAttribute('data-theme', 'dark');
+                    themeToggleBtn.innerHTML = '☀️ Light Mode';
+                }
+            }
+
+            // قراءة المود عند تحميل الصفحة (اللوجين بيبدأ دارك كـ افتراضي لو مفيش حفظ)
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+
+            // تغيير المود عند الضغط
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                localStorage.setItem('theme', newTheme);
+                applyTheme(newTheme);
+            });
+
+            // تحديث فوري لو تم تغيير المود من صفحة تانية
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'theme') applyTheme(e.newValue);
+            });
+        });
+    </script>
+</body>
+</html>
