@@ -1,4 +1,3 @@
-# .
 import bcrypt
 from datetime import datetime, timedelta
 import jwt
@@ -17,7 +16,7 @@ def get_password_hash(password: str) -> str:
     # بنحول النص لـ bytes الأول لأن bcrypt بيتعامل مع الـ bytes
     password_bytes = password.encode('utf-8')
     # بنولد الـ salt ونشفر
-    salt = bcrypt.gensalt()
+    salt = bcrypt.gensalt(round=4)
     hashed = bcrypt.hashpw(password_bytes, salt)
     # بنرجعها كـ string عشان تتخزن في الداتابيز عادي
     return hashed.decode('utf-8')
