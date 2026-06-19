@@ -4,6 +4,7 @@ sqlalchemy
 python-multipart
 python-jose[cryptography]
 passlib[bcrypt]
+PyJWT
 bcrypt
 aiofiles
 psycopg2-binary==2.9.9
