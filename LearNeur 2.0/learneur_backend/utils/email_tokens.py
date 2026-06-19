@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
+import os
+from dotenv import load_dotenv
 
-# Use your existing SECRET_KEY and ALGORITHM from auth.py
-SECRET_KEY = "YOUR_SUPER_SECRET_KEY_HERE" 
-ALGORITHM = "HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256") # الـ HS256
+
 EMAIL_TOKEN_EXPIRE_HOURS = 24
 
 def create_email_verification_token(user_email: str) -> str:
