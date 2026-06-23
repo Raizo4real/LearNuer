@@ -185,7 +185,7 @@ class DoctorConnectionRequest(BaseModel):
 
 # --- ENDPOINT ---
 @router.post("/connect-doctor")
-async def connect_doctor(
+def connect_doctor(
     req: DoctorConnectionRequest, 
     db: Session = Depends(database.get_db), 
     current_parent: models.Parent = Depends(get_current_parent) # 👈 التعديل السحري هنا
@@ -226,7 +226,7 @@ async def connect_doctor(
 # ==========================================
 
 @router.get("/doctors-directory")
-async def get_doctors_directory(
+def get_doctors_directory(
     db: Session = Depends(get_db), 
     current_user: User = Depends(get_current_user)
 ):
@@ -276,7 +276,7 @@ async def get_doctors_directory(
 
 
 @router.get("/children")
-async def get_parent_children(
+def get_parent_children(
     db: Session = Depends(get_db), 
     current_user: User = Depends(get_current_user)
 ):
@@ -336,7 +336,7 @@ class RateRequest(BaseModel):
     rating: int
 
 @router.post("/rate-doctor/{connection_id}")
-async def rate_doctor(connection_id: int, req: RateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def rate_doctor(connection_id: int, req: RateRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # 1. التأكد إن الـ Connection ده يخص ولي الأمر وإنه Approved
     parent_profile = current_user.parent_profile
     if not parent_profile:
