@@ -1,7 +1,7 @@
 import enum
-from datetime import datetime , timezone
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey , Float , Text , UniqueConstraint
-from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum, ForeignKey, Float, Text, UniqueConstraint
+from sqlalchemy.orm import relationship, backref  # 👈 ضفنا backref هنا
 from database import Base
 from sqlalchemy.sql import func
 import uuid
@@ -52,9 +52,9 @@ class Doctor(Base):
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     full_name = Column(String, nullable=False)
     specialty = Column(String, nullable=True)
-    bio = Column(Text, nullable=True) # 👈 الحقل الجديد اللي ضفناه
+    bio = Column(Text, nullable=True)
     verification_document_url = Column(String, nullable=True)
-    is_approved = Column(Boolean, default=False)  # Admin must approve
+    is_approved = Column(Boolean, default=False)
     rating = Column(Integer, default=0)
     avatar_url = Column(String, default="default_doctor.png")
 
@@ -66,9 +66,10 @@ class Admin(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
-    admin_level = Column(Integer, default=1) # E.g., 1=Super, 2=Moderator
+    admin_level = Column(Integer, default=1)
 
     user = relationship("User", back_populates="admin_profile")
+
 class Child(Base):
     __tablename__ = "children"
 
@@ -115,41 +116,39 @@ class EmailHistory(Base):
     new_email = Column(String, nullable=False)
     changed_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    user = relationship("User", backref="email_history")   
+    # ⚡ تعديل: إضافة الـ Cascade هنا
+    user = relationship("User", backref=backref("email_history", cascade="all, delete-orphan"))   
 
 
 class DoctorChildConnection(Base):
     __tablename__ = "doctor_child_connections"
 
     id = Column(Integer, primary_key=True, index=True)
-    # NOTE: Change "doctors.id" to "users.id" if your doctors are stored in the main Users table
     doctor_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     child_id = Column(Integer, ForeignKey("children.id", ondelete="CASCADE"), nullable=False)
     
-    # Status can be: "pending", "approved", "rejected"
     status = Column(String, default="pending", nullable=False) 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Relationships (ensure your Doctor and Child models have back-populates if needed)
-    doctor = relationship("User", foreign_keys=[doctor_id], backref="child_connections") # Change "Doctor" to "User" if using single table
-    child = relationship("Child", backref="doctor_connections")
+    # ⚡ التعديل السحري: إضافة Cascade قوية لكل الروابط
+    doctor = relationship("User", foreign_keys=[doctor_id], backref=backref("child_connections", cascade="all, delete-orphan"))
+    child = relationship("Child", backref=backref("doctor_connections", cascade="all, delete-orphan"))
 
 
 class Message(Base):
     __tablename__ = "messages"
-
+    
     id = Column(Integer, primary_key=True, index=True)
     connection_id = Column(Integer, ForeignKey("doctor_child_connections.id", ondelete="CASCADE"), nullable=False)
-    # Using String assuming users.id is a String (UUID)
     sender_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     content = Column(Text, nullable=False)
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Relationships
-    connection = relationship("DoctorChildConnection", backref="messages")
-    sender = relationship("User", backref="sent_messages")
+    # ⚡ تعديل: إضافة الـ Cascade هنا
+    connection = relationship("DoctorChildConnection", backref=backref("messages", cascade="all, delete-orphan"))
+    sender = relationship("User", backref=backref("sent_messages", cascade="all, delete-orphan"))
 
-    # ==========================================
+# ==========================================
 # COMMUNITY & GENERAL INQUIRY MODELS (FORUM)
 # ==========================================
 
@@ -162,8 +161,8 @@ class BlogPost(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
-    # Relationship
-    author = relationship("User", backref="blog_posts")
+    # ⚡ تعديل: إضافة الـ Cascade هنا
+    author = relationship("User", backref=backref("blog_posts", cascade="all, delete-orphan"))
 
 
 class GeneralInquirySession(Base):
@@ -175,9 +174,9 @@ class GeneralInquirySession(Base):
     related_post_id = Column(Integer, ForeignKey("blog_posts.id", ondelete="SET NULL"), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Relationships
-    parent = relationship("User", foreign_keys=[parent_id], backref="started_inquiries")
-    doctor = relationship("User", foreign_keys=[doctor_id], backref="received_inquiries")
+    # ⚡ تعديل: إضافة الـ Cascade هنا
+    parent = relationship("User", foreign_keys=[parent_id], backref=backref("started_inquiries", cascade="all, delete-orphan"))
+    doctor = relationship("User", foreign_keys=[doctor_id], backref=backref("received_inquiries", cascade="all, delete-orphan"))
     post = relationship("BlogPost")
 
 
@@ -189,14 +188,12 @@ class InquiryMessage(Base):
     sender_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     content = Column(Text, nullable=False)
     
-    # 💡 السر هنا: الحقل ده هيخزن جزء من البوست اللي ولي الأمر بيسأل عنه (زي الـ Reply بتاع الواتساب)
     quoted_text = Column(Text, nullable=True) 
-    
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # Relationships
-    session = relationship("GeneralInquirySession", backref="messages")
-    sender = relationship("User", foreign_keys=[sender_id])
+    # ⚡ تعديل: إضافة الـ Cascade هنا
+    session = relationship("GeneralInquirySession", backref=backref("messages", cascade="all, delete-orphan"))
+    sender = relationship("User", foreign_keys=[sender_id], backref=backref("sent_inquiry_messages", cascade="all, delete-orphan"))
 
 class PostLike(Base):
     __tablename__ = "post_likes"
@@ -206,10 +203,7 @@ class PostLike(Base):
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
-    # عشان نمنع المستخدم يعمل لايك للبوست أكتر من مرة
     __table_args__ = (UniqueConstraint('post_id', 'user_id', name='_post_user_uc'),)
-
-from sqlalchemy import UniqueConstraint
 
 class DoctorRating(Base):
     __tablename__ = "doctor_ratings"
@@ -217,9 +211,6 @@ class DoctorRating(Base):
     id = Column(Integer, primary_key=True, index=True)
     doctor_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     parent_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    rating_value = Column(Integer, nullable=False) # من 1 لـ 5
+    rating_value = Column(Integer, nullable=False)
 
-    # منع ولي الأمر من تقييم نفس الدكتور أكتر من مرة (هيعمل Update للقديم)
     __table_args__ = (UniqueConstraint('doctor_id', 'parent_id', name='_doc_parent_rating_uc'),)
-
-
