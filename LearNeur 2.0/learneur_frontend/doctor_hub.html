@@ -834,7 +834,7 @@
             ? CONFIG.API_BASE_URL
             : ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.API_BASE_URL)
                 ? APP_CONFIG.API_BASE_URL
-                : 'http://127.0.0.1:8000');
+                : 'https://learneur-production.up.railway.app');
 
         const TOKEN = localStorage.getItem('token');
         const ROLE = localStorage.getItem('role');
@@ -1308,7 +1308,7 @@
                     for (let i = 0; i < 5; i++) {
                         stars += i < rating ? '⭐' : '<span style="opacity: 0.3">⭐</span>';
                     }
-                    const serverUrl = typeof CONFIG !== 'undefined' ? CONFIG.API_BASE_URL.replace('/api', '') : 'http://127.0.0.1:8000';
+                    const serverUrl = typeof CONFIG !== 'undefined' ? CONFIG.API_BASE_URL.replace('/api', '') : 'https://learneur-production.up.railway.app';
                     const avatarSrc = p.doctor_avatar && p.doctor_avatar !== 'default_doctor.png'
                     ? `${serverUrl}/${p.doctor_avatar}` : 'default_doctor.png';
                     const postHtml = `
@@ -1710,7 +1710,7 @@
     </style>
 
     <script>
-        const CHAT_API_URL = `${typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.API_BASE_URL : 'http://127.0.0.1:8000'}/chat`;
+        const CHAT_API_URL = `${typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.API_BASE_URL : 'https://learneur-production.up.railway.app'}/chat`;
 
         function getCorrectUserId() {
             let storedId = localStorage.getItem('user_id');
