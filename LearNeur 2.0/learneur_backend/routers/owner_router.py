@@ -164,12 +164,12 @@ def delete_parent(parent_id: str, db: Session = Depends(get_db)):
 # ==========================================
 
 @router.get("/admins", dependencies=owner_deps)
-async def get_all_admins(db: Session = Depends(get_db)):
+def get_all_admins(db: Session = Depends(get_db)):
     admins = db.query(User).filter(User.role == "ADMIN").all()
     return admins
 
 @router.post("/admins", dependencies=owner_deps)
-async def create_admin(email: str, password: str, name: str, db: Session = Depends(get_db)):
+def create_admin(email: str, password: str, name: str, db: Session = Depends(get_db)):
     # 1. نتأكد إن الإيميل مش متسجل قبل كده
     existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
@@ -197,7 +197,7 @@ async def create_admin(email: str, password: str, name: str, db: Session = Depen
     return {"message": f"Admin {name} created successfully!"}
 
 @router.delete("/admins/{admin_id}", dependencies=owner_deps)
-async def delete_admin(admin_id: str, db: Session = Depends(get_db), current_user: User = Depends(require_admin_or_owner)):
+def delete_admin(admin_id: str, db: Session = Depends(get_db), current_user: User = Depends(require_admin_or_owner)):
     admin_to_delete = db.query(User).filter(User.id == admin_id, User.role == "ADMIN").first()
     if not admin_to_delete:
         raise HTTPException(status_code=404, detail="Admin not found")
@@ -216,7 +216,7 @@ async def delete_admin(admin_id: str, db: Session = Depends(get_db), current_use
 # ==========================================
 
 @router.get("/users/{user_id}/email-history", dependencies=deps)
-async def get_user_email_history(user_id: int, db: Session = Depends(get_db)):
+def get_user_email_history(user_id: int, db: Session = Depends(get_db)):
     history = db.query(EmailHistory).filter(EmailHistory.user_id == user_id).order_by(EmailHistory.changed_at.desc()).all()
     if not history:
         return []
