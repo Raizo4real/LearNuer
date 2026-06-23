@@ -15,7 +15,13 @@ if SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgres://")
     SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 # 3. شلنا الـ connect_args الخاصة بـ SQLite
-engine = create_engine(SQLALCHEMY_DATABASE_URL) 
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    pool_size=5,          # عدد الخطوط المفتوحة دايماً
+    max_overflow=10,      # خطوط إضافية وقت الزحمة
+    pool_timeout=30,      # أقصى وقت للانتظار
+    pool_recycle=1800     # تنظيف الخطوط كل نص ساعة
+) 
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
