@@ -227,7 +227,7 @@ def register(
     }
 
 @router.get("/verify-email", response_class=HTMLResponse)
-async def verify_email(token: str, db: Session = Depends(get_db)):
+def verify_email(token: str, db: Session = Depends(get_db)):
     # 1. فك التوكن والتأكد إنه سليم
     email = verify_email_token(token)
     if not email:
