@@ -25,7 +25,7 @@ def require_doctor(current_user: User = Depends(get_current_user)):
     return current_user
 # --- ENDPOINT: Get Current Doctor Profile (With Live Rating & Avatar) ---
 @router.get("/my-profile")
-async def get_my_profile(db: Session = Depends(get_db), current_user: User = Depends(require_doctor)):
+def get_my_profile(db: Session = Depends(get_db), current_user: User = Depends(require_doctor)):
     profile = db.query(Doctor).filter(Doctor.user_id == str(current_user.id)).first()
     
     avg_rating = db.query(func.avg(DoctorRating.rating_value)).filter(DoctorRating.doctor_id == str(current_user.id)).scalar()
@@ -42,7 +42,7 @@ async def get_my_profile(db: Session = Depends(get_db), current_user: User = Dep
 
 # --- ENDPOINT: Upload Doctor Avatar ---
 @router.post("/upload-avatar")
-async def upload_doctor_avatar(
+def upload_doctor_avatar(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_doctor)
@@ -68,7 +68,7 @@ async def upload_doctor_avatar(
 
 # --- ENDPOINT: Update Doctor Profile ---
 @router.put("/update-profile")
-async def update_my_profile(
+def update_my_profile(
     payload: DoctorProfileUpdate, 
     db: Session = Depends(get_db), 
     current_user: User = Depends(require_doctor)
@@ -96,7 +96,7 @@ async def update_my_profile(
     return {"message": "Profile updated successfully!"}
 # --- ENDPOINT 1: Get Pending Requests ---
 @router.get("/requests/pending")
-async def get_pending_requests(db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
+def get_pending_requests(db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
     # Fetch pending connections for this specific doctor
     pending_conns = db.query(DoctorChildConnection).filter(
         DoctorChildConnection.doctor_id == str(current_doctor.id), 
@@ -129,7 +129,7 @@ async def get_pending_requests(db: Session = Depends(get_db), current_doctor: Us
 
 # --- ENDPOINT 2: Approve or Reject Request ---
 @router.put("/requests/{connection_id}/{action}")
-async def respond_to_request(connection_id: int, action: str, db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
+def respond_to_request(connection_id: int, action: str, db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
     if action not in ["approve", "reject"]:
         raise HTTPException(status_code=400, detail="Action must be exactly 'approve' or 'reject'.")
 
@@ -150,7 +150,7 @@ async def respond_to_request(connection_id: int, action: str, db: Session = Depe
 
 # --- ENDPOINT 3: Get Approved Patients ---
 @router.get("/my-patients")
-async def get_my_patients(db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
+def get_my_patients(db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
     approved_conns = db.query(DoctorChildConnection).filter(
         DoctorChildConnection.doctor_id == str(current_doctor.id),
         DoctorChildConnection.status == "approved"
@@ -177,7 +177,7 @@ async def get_my_patients(db: Session = Depends(get_db), current_doctor: User = 
 
 # --- ENDPOINT 4: Get REAL Patient Telemetry & Full Report ---
 @router.get("/patient-telemetry/{child_id}")
-async def get_patient_telemetry(child_id: int, db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
+def get_patient_telemetry(child_id: int, db: Session = Depends(get_db), current_doctor: User = Depends(require_doctor)):
     # 🔒 Security: Check if Doctor is approved for this specific child
     conn = db.query(DoctorChildConnection).filter(
         DoctorChildConnection.doctor_id == str(current_doctor.id),
