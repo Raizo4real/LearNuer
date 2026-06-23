@@ -25,7 +25,7 @@ class InquiryMessageCreate(BaseModel):
 
 # 1. عمل لايك أو إلغاؤه (Toggle Like)
 @router.post("/posts/{post_id}/like")
-async def toggle_like(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def toggle_like(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     existing_like = db.query(PostLike).filter(PostLike.post_id == post_id, PostLike.user_id == str(current_user.id)).first()
     
     if existing_like:
@@ -56,7 +56,7 @@ async def create_post(post: PostCreate, db: Session = Depends(get_db), current_u
 
 # 2. جلب المنشورات (بالترتيب الجديد: الأحدث، التريندنج، الأعلى تقييماً)
 @router.get("/posts")
-async def get_all_posts(sort_by: str = "latest", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_all_posts(sort_by: str = "latest", db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # عمل Subquery عشان نحسب عدد اللايكات لكل بوست بكفاءة
     likes_subq = db.query(PostLike.post_id, func.count(PostLike.id).label('like_count')).group_by(PostLike.post_id).subquery()
     
@@ -107,7 +107,7 @@ async def get_all_posts(sort_by: str = "latest", db: Session = Depends(get_db), 
 
 # 3. ولي الأمر بيدوس "شات" تحت البوست (بيفتح Session استفسار جديدة أو بيجيب القديمة)
 @router.get("/inquiry/session/{post_id}")
-async def get_or_create_inquiry_session(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_or_create_inquiry_session(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != RoleEnum.PARENT:
         raise HTTPException(status_code=403, detail="Only parents can initiate post inquiries.")
     
@@ -136,7 +136,7 @@ async def get_or_create_inquiry_session(post_id: int, db: Session = Depends(get_
 
 # 4. إرسال وجلب رسائل الاستفسار (بالاقتباس)
 @router.post("/inquiry/messages/{session_id}")
-async def send_inquiry_message(session_id: int, msg: InquiryMessageCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def send_inquiry_message(session_id: int, msg: InquiryMessageCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # التأكد إن الـ Session موجودة
     session = db.query(GeneralInquirySession).filter(GeneralInquirySession.id == session_id).first()
     if not session:
@@ -154,13 +154,13 @@ async def send_inquiry_message(session_id: int, msg: InquiryMessageCreate, db: S
     return new_msg
 
 @router.get("/inquiry/messages/{session_id}")
-async def get_inquiry_messages(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_inquiry_messages(session_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     messages = db.query(InquiryMessage).filter(InquiryMessage.session_id == session_id).order_by(InquiryMessage.timestamp.asc()).all()
     return messages
 
 # 5. جلب قائمة الاستفسارات الخاصة بالدكتور
 @router.get("/inquiry/doctor-sessions")
-async def get_doctor_inquiry_sessions(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_doctor_inquiry_sessions(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     if current_user.role != RoleEnum.DOCTOR:
         raise HTTPException(status_code=403, detail="Not authorized")
     
