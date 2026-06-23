@@ -27,7 +27,7 @@ class MessageResponse(BaseModel):
 
 # --- ENDPOINTS ---
 @router.get("/{connection_id}", response_model=List[MessageResponse])
-async def get_messages(
+def get_messages(
     connection_id: int, 
     db: Session = Depends(get_db), 
     current_user: User = Depends(get_current_user)
@@ -52,7 +52,7 @@ async def get_messages(
 
 
 @router.post("/{connection_id}", response_model=MessageResponse)
-async def send_message(
+def send_message(
     connection_id: int, 
     message_data: MessageCreate, 
     db: Session = Depends(get_db), 
