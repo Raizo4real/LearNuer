@@ -26,6 +26,8 @@ app = FastAPI(
     description="Backend API for the LearNeur platform handling auth, telemetry, and reporting.",
     version="1.0.0"
 )
+os.makedirs("uploads/verification", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # 3. Configure CORS Middleware
 # Allows the frontend HTML/JS to communicate with this backend.
@@ -36,7 +38,6 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1",
     "http://127.0.0.1:5500",
-    "https://learneur-eight.vercel.app",
 ]
 
 app.add_middleware(
