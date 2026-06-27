@@ -31,10 +31,12 @@
         body {
             margin: 0; padding: 0; background-color: var(--bg);
             font-family: 'Nunito', 'Tajawal', sans-serif; color: var(--text-main);
-            height: 100vh; width: 100vw; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; overflow: hidden;
+            min-height: 100vh; min-height: 100dvh; width: 100vw; 
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start; 
+            overflow-x: hidden; overflow-y: auto;
             user-select: none; -webkit-user-select: none;
-            -webkit-touch-callout: none; /* 🛡️ Disable callout on mobile */
+            -webkit-touch-callout: none;
             position: relative;
         }
 
@@ -140,11 +142,29 @@
         }
 
         #game-container { 
-            width: 100%; height: 100%; max-width: 1400px; display: none; position: relative; 
-            padding: clamp(1rem, 3vw, 2rem); box-sizing: border-box; flex-direction: column; align-items: center; 
+            width: 100%; min-height: 100vh; max-width: 1400px; display: none; position: relative; 
+            padding: clamp(1rem, 3vw, 2rem); padding-bottom: 4rem; box-sizing: border-box; 
+            flex-direction: column; align-items: center; justify-content: flex-start; 
             z-index: 10;
         }
 
+        /* Top Bar & Exit Button */
+        .top-bar { 
+            width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 2rem; margin-top: 1rem; background: rgba(255,255,255,0.6); padding: 1rem; 
+            border-radius: 30px; border: 4px solid #FFF; box-shadow: 0 8px 0 var(--clay-depth);
+            position: relative; z-index: 50; flex-wrap: wrap; gap: 1rem;
+        }
+        
+        #exit-btn { 
+            background: #FC8181; color: #FFF; border: 4px solid #FFF; outline: none;
+            box-shadow: 0 6px 0 #E53E3E, 0 10px 15px rgba(0,0,0,0.1);
+            padding: 0.5rem 1.2rem; border-radius: 20px; font-family: 'Tajawal', sans-serif;
+            font-weight: 900; font-size: clamp(1rem, 3vw, 1.5rem); cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        #exit-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #E53E3E; }
+        
         /* Typography & Progress */
         h1.game-prompt { 
             font-family: 'Fredoka One', cursive; 
@@ -159,9 +179,9 @@
         #boot-title { text-shadow: 4px 4px 0px #FFF, 8px 8px 20px rgba(0,0,0,0.15); }
 
         .progress-bar { 
-            width: clamp(200px, 50vw, 400px); height: 25px; border-radius: 20px; 
-            margin-top: 1rem; margin-bottom: 2rem; overflow: hidden; 
-            background: rgba(255,255,255,0.6); border: 4px solid #FFF;
+            flex: 1; min-width: 150px; height: 25px; border-radius: 20px; 
+            overflow: hidden; background: rgba(255,255,255,0.6); border: 4px solid #FFF;
+            margin: 0;
         }
         .progress-fill { 
             height: 100%; width: 0%; background: var(--primary); 
@@ -334,10 +354,24 @@
     </div>
 
     <div id="game-container">
-        <div class="progress-bar neu-pressed"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="top-bar">
+            <button id="exit-btn">❌ خروج</button>
+            <div class="progress-bar neu-pressed"><div class="progress-fill" id="progress-fill"></div></div>
+        </div>
         <h1 class="game-prompt" id="prompt-txt"></h1>
         <div id="render-zone" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
     </div>
+    <div id="custom-confirm-modal" class="modal-overlay hidden">
+        <div class="modal-card" style="max-width: 400px; padding: 2rem; margin: 0 1.5rem; text-align: center;">
+            <h3 style="color: var(--error); margin: 0 0 1rem 0; font-family: 'Tajawal', sans-serif; font-size: 1.8rem;">⚠️ تنبيه</h3>
+            <p style="margin: 0 0 2rem 0; font-size: 1.2rem; font-weight: 700; color: var(--text-main);">هل تريد بالتأكيد مغادرة اللعبة؟ لن يتم حفظ التقدم الحالي.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="confirm-yes-btn" class="modal-btn" style="background: var(--error); color: white; padding: 0.8rem; font-size: 1.2rem; flex: 1; margin: 0;">خروج</button>
+                <button id="confirm-no-btn" class="modal-btn" style="background: var(--clay-depth); padding: 0.8rem; font-size: 1.2rem; flex: 1; margin: 0;">إلغاء</button>
+            </div>
+        </div>
+    </div>
+    <div id="pin-modal" class="modal-overlay hidden"></div>
 
     <div id="pin-modal" class="modal-overlay hidden">
         <div id="pin-modal-content" class="modal-card dir-rtl">
@@ -391,6 +425,22 @@
             window.history.pushState(null, "", window.location.href);
             document.getElementById('lock-btn').click(); 
         };
+    // 🛡️ Custom Confirm Modal Logic for Exit
+        function showCustomConfirm(onYesCallback) {
+            const modal = document.getElementById('custom-confirm-modal');
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            const noBtn = document.getElementById('confirm-no-btn');
+            modal.classList.remove('hidden');
+
+            yesBtn.onclick = function() {
+                modal.classList.add('hidden');
+                if(onYesCallback) onYesCallback();
+            };
+
+            noBtn.onclick = function() {
+                modal.classList.add('hidden');
+            };
+        }
     </script>
 
     <script>
@@ -1221,6 +1271,15 @@
                 Controllers[currentGame.ctrl]();
             });
 
+            // 🛡️ Exit Button Handler
+            document.getElementById('exit-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                showCustomConfirm(() => {
+                    window.location.replace('child_profile.html');
+                });
+            });
+            
             // ==========================================
             // KIOSK BACKEND LOCK CONTROLS
             // ==========================================
