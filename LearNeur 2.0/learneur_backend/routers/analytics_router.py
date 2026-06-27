@@ -47,7 +47,8 @@ def get_child_analytics(
         {
             "session_id": f"Session {i + 1}",
             "time_taken": s.time_taken_seconds,
-            "frantic_clicks": s.frantic_clicks
+            "frantic_clicks": s.frantic_clicks,
+            "created_at": s.created_at.isoformat() if getattr(s, 'created_at', None) else None
         }
         for i, s in enumerate(sessions)
     ]
