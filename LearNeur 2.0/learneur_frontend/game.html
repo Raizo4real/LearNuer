@@ -1154,30 +1154,37 @@
                         uiPrompt.innerText = "What is this feeling?"; 
                         speak(uiPrompt.innerText);
 
-                        // عداد الصح والغلط زي الصورة بالظبط
-                        const scoreBoard = document.createElement('div');
-                        scoreBoard.style.cssText = "width: 90%; max-width: 600px; display: flex; justify-content: flex-end; gap: 1.5rem; margin-bottom: 1rem; font-family: 'Fredoka One', cursive;";
-                        scoreBoard.innerHTML = `
-                            <div style="text-align: center;"><div style="background: var(--success); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 5px;">✔</div><span style="color: var(--success); font-size: 1.2rem;">${correctCount}</span></div>
-                            <div style="text-align: center;"><div style="background: var(--error); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 5px;">✖</div><span style="color: var(--error); font-size: 1.2rem;">${wrongCount}</span></div>
-                        `;
-
-                        // المربع الكبير اللي فيه الإيموجي (باستخدام نفس ستايلات الـ Clay بتاعتك)
+                        // 1. الكارت الأبيض اللي فيه الإيموجي
                         const emojiPanel = document.createElement('div');
                         emojiPanel.className = 'neu-panel';
-                        emojiPanel.style.cssText = "width: 90%; max-width: 600px; padding: 4rem 1rem; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; font-size: clamp(5rem, 12vw, 8rem); background: #FFF;";
-                        emojiPanel.innerText = r.e;
+                        // قللنا البادينج وخليناه relative عشان نحط العداد جواه
+                        emojiPanel.style.cssText = "position: relative; width: 90%; max-width: 600px; min-height: 250px; padding: 2rem; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; background: #FFF;";
 
-                        // حاوية الاختيارات (مرصوصين تحت بعض)
+                        // 2. العداد (أخضر وأحمر) هنحطه جوه الكارت من فوق على اليمين
+                        const scoreBoard = document.createElement('div');
+                        scoreBoard.style.cssText = "position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 1rem; font-family: 'Fredoka One', cursive;";
+                        scoreBoard.innerHTML = `
+                            <div style="display: flex; flex-direction: column; align-items: center;"><div style="background: var(--success); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; margin-bottom: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">✔</div><span style="color: var(--success); font-size: 1rem;">${correctCount}</span></div>
+                            <div style="display: flex; flex-direction: column; align-items: center;"><div style="background: var(--error); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; margin-bottom: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">✖</div><span style="color: var(--error); font-size: 1rem;">${wrongCount}</span></div>
+                        `;
+
+                        // 3. الإيموجي نفسه (كبرناه واديناه ظل عشان ينطق)
+                        const emojiDisplay = document.createElement('div');
+                        emojiDisplay.style.cssText = "font-size: clamp(6rem, 15vw, 9rem); line-height: 1; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15)); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);";
+                        emojiDisplay.innerText = r.e;
+
+                        emojiPanel.append(scoreBoard, emojiDisplay);
+
+                        // 4. حاوية الاختيارات
                         const optionsCont = document.createElement('div');
-                        optionsCont.style.cssText = "width: 90%; max-width: 600px; display: flex; flex-direction: column; gap: 1.2rem;";
+                        optionsCont.style.cssText = "width: 90%; max-width: 600px; display: flex; flex-direction: column; gap: 1rem;";
 
                         const opts = shuffle([ {v: r.a, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
                         
                         opts.forEach(opt => {
                             const btn = document.createElement('div'); 
                             btn.className = 'neu-btn';
-                            btn.style.cssText = "width: 100%; padding: 1.5rem; font-size: clamp(1.2rem, 3vw, 1.8rem); font-family: 'Nunito', sans-serif;";
+                            btn.style.cssText = "width: 100%; padding: 1.2rem; font-size: clamp(1.3rem, 3vw, 1.8rem); font-family: 'Nunito', sans-serif; font-weight: 800;";
                             btn.innerText = opt.v;
 
                             btn.addEventListener('click', () => {
@@ -1185,7 +1192,9 @@
                                 if(opt.c) { 
                                     correctCount++;
                                     SFX.ding(); 
-                                    btn.classList.add('anim-success'); 
+                                    btn.classList.add('anim-success');
+                                    // حركة لذيذة للإيموجي لما الطفل يجاوب صح
+                                    emojiDisplay.style.transform = "scale(1.2)"; 
                                     speak(opt.v);
                                     setTimeout(()=>{State.round++; load();}, 1500); 
                                 } else { 
@@ -1198,7 +1207,7 @@
                             optionsCont.appendChild(btn);
                         });
 
-                        uiRender.append(scoreBoard, emojiPanel, optionsCont);
+                        uiRender.append(emojiPanel, optionsCont);
                         unlockGameInputs(); 
                     }
                     load();
