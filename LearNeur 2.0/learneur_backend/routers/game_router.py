@@ -36,7 +36,7 @@ def save_telemetry(
     
     return {"status": "success", "message": "Telemetry data securely logged."}
 
-@router.get("/telemetry", response_model=list[schemas.TelemetryCreate], status_code=status.HTTP_200_OK)
+@router.get("/telemetry", response_model=list[schemas.TelemetryResponse], status_code=status.HTTP_200_OK)
 def get_telemetry(
     child_id: int, 
     db: Session = Depends(database.get_db), 
