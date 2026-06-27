@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional , List
 from models import RoleEnum
+from datetime import datetime
 
 # -----------------
 # Login Schemas
@@ -80,6 +81,14 @@ class TelemetryCreate(BaseModel):
     total_clicks: int
     frantic_clicks: int
     is_completed: bool
+
+# 👇 الكلاس الجديد اللي هيرجع الداتا للفرونت إند ومعاها التاريخ
+class TelemetryResponse(TelemetryCreate):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 # -----------------
 # Pin Schemas (Phase 9)
