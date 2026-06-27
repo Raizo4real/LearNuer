@@ -458,6 +458,13 @@
             <div class="controls-wrapper">
                 <select id="child-selector" class="child-dropdown">
                     </select>
+                
+                <select id="time-filter" class="child-dropdown" style="border-color: var(--primary);">
+                    <option value="7">Last Week</option>
+                    <option value="30">Last Month</option>
+                    <option value="all">All Time</option>
+                </select>
+
                 <button id="print-report-btn" class="btn-export">📄 Export Medical Report</button>
             </div>
         </section>
@@ -749,7 +756,9 @@
                 "emotion_lab": "Emotion Lab (PECS/AAC)"
             };
 
-            async function executeTelemetryFetchPipeline(childId) {
+            let globalTelemetryRecords = [];
+            
+          async function executeTelemetryFetchPipeline(childId) {
                 if (!childId) return;
                 try {
                     const response = await fetch(`${API_BASE_URL}/game/telemetry?child_id=${childId}`, {
@@ -763,18 +772,48 @@
                     if (!response.ok) throw new Error("No telemetry data");
                     const data = await response.json();
 
-                    if (!data || data.length === 0) {
-                        processAndRenderTelemetry([]);
-                    } else {
-                        processAndRenderTelemetry(data);
-                    }
+                    globalTelemetryRecords = data || [];
+                    applyTimeFilterAndRender(); // 👈 استدعاء الفلتر
 
                 } catch (err) {
-                    // 🛡️ Fallback to empty state on error (No mock data)
-                    processAndRenderTelemetry([]);
+                    globalTelemetryRecords = [];
+                    applyTimeFilterAndRender();
                 }
             }
 
+            // 👇 دالة الفلترة الذكية
+            function applyTimeFilterAndRender() {
+                const timeFilterVal = document.getElementById('time-filter').value;
+                let filteredRecords = globalTelemetryRecords;
+
+                if (timeFilterVal !== 'all') {
+                    const daysToSubtract = parseInt(timeFilterVal);
+                    const cutoffDate = new Date();
+                    cutoffDate.setDate(cutoffDate.getDate() - daysToSubtract);
+
+                    filteredRecords = globalTelemetryRecords.filter(record => {
+                        if (!record.created_at) return true; // لو مفيش تاريخ، اعرضه
+                        const recordDate = new Date(record.created_at);
+                        return recordDate >= cutoffDate;
+                    });
+                }
+                processAndRenderTelemetry(filteredRecords);
+            }
+
+            // تشغيل الفلتر لما المستخدم يغير القائمة
+            document.getElementById('time-filter').addEventListener('change', applyTimeFilterAndRender);
+
+            function processAndRenderTelemetry(records) {
+                renderCalculatedKPIs(records);
+                renderDynamicCharts(records);
+                renderTechnicalMetricTables(records);
+            }
+
+            // 🆕 تشغيل الفلتر لما المستخدم يغير القائمة المنسدلة
+            document.getElementById('time-filter').addEventListener('change', () => {
+                applyTimeFilterAndRender();
+            });
+            
             function processAndRenderTelemetry(records) {
                 renderCalculatedKPIs(records);
                 renderDynamicCharts(records);
