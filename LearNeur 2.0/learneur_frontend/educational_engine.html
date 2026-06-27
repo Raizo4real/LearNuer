@@ -474,11 +474,31 @@
                 renderExercise();
             });
 
-            // 🛡️ استخدام Confirm Modal المخصص بدلاً من confirm()
+           // 🛡️ استخدام Confirm Modal المخصص وإرسال تقرير الانسحاب
             document.getElementById('exit-btn').addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                showCustomConfirm("هل تريد بالتأكيد مغادرة الركن التعليمي؟ لن يتم حفظ التقدم الحالي.", () => {
+                showCustomConfirm("هل تريد التأكيد بالمغادره؟", async () => {
+                    
+                    // 1. إرسال الداتا للباك إند بـ is_completed: false
+                    const telemetryPayload = {
+                        child_id: parseInt(childId), 
+                        game_name: `الركن التعليمي - ${moduleTitle}`,
+                        time_taken_seconds: parseFloat(((Date.now() - State.startTime) / 1000).toFixed(2)),
+                        total_clicks: State.totalClicks,
+                        frantic_clicks: State.franticClicks,
+                        is_completed: false // ⬅️ السر هنا
+                    };
+
+                    try {
+                        await fetch(`${API_BASE_URL}/game/telemetry`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify(telemetryPayload)
+                        });
+                    } catch (err) { console.error("Telemetry failed:", err); }
+
+                    // 2. الخروج للصفحة الرئيسية
                     window.location.replace('child_profile.html');
                 });
             });
