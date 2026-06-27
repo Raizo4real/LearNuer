@@ -505,6 +505,14 @@
                     {c1:"Hot", c2:"Cold", i1:["🔥","☀️","☕"], i2:["🧊","⛄","🍦"]},
                     {c1:"In Sky", c2:"In Water", i1:["☁️","☀️","✈️"], i2:["🐟","🐳","🚢"]},
                     {c1:"Fruits", c2:"Veggies", i1:["🍎","🍌","🍇"], i2:["🥦","🥕","🧅"]}
+                ],
+                "emotion_lab": [
+                    {e: "😠", a: "Angry", w: ["Scared", "Sad", "Happy"]},
+                    {e: "😊", a: "Happy", w: ["Scared", "Sad", "Angry"]},
+                    {e: "😢", a: "Sad", w: ["Scared", "Happy", "Angry"]},
+                    {e: "😨", a: "Scared", w: ["Happy", "Sad", "Angry"]},
+                    {e: "😲", a: "Surprised", w: ["Angry", "Sad", "Happy"]},
+                    {e: "🥱", a: "Sleepy", w: ["Scared", "Sad", "Angry"]}
                 ]
             };
             const GAME_CONFIG = {
@@ -515,7 +523,8 @@
                 "vb_social": {n:"Social Choices", ctrl:"scenario"}, "vb_sequence": {n:"Timeline", ctrl:"timeline"},
                 "vb_opposites": {n:"Opposites", ctrl:"grid_quiz"}, "vb_riddle": {n:"Riddles", ctrl:"grid_riddle"},
                 "ta_aac": {n:"Sentence Builder", ctrl:"aac"}, "ta_simon": {n:"Memory Flash", ctrl:"simon"},
-                "ta_routine": {n:"Daily Routines", ctrl:"timeline"}, "ta_smart_sort": {n:"Smart Sorting", ctrl:"sort_advanced"}
+                "ta_routine": {n:"Daily Routines", ctrl:"timeline"}, "ta_smart_sort": {n:"Smart Sorting", ctrl:"sort_advanced"},
+                "emotion_lab": {n:"Emotion Lab", ctrl:"emotion_lab_ctrl"}
             };
             const currentGame = GAME_CONFIG[gameType];
             if (!currentGame) { document.getElementById('boot-title').innerText = "Game Error"; return;
@@ -797,7 +806,7 @@
                         uiPrompt.innerText = r.p || r.a;
                         if(r.p) speak(r.p);
                         const grid = document.createElement('div'); grid.className = 'standard-grid';
-                        const opts = shuffle([ {v: r.a||r.n, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
+                        const opts = shuffle([ {v: r.n || r.a, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
                         opts.forEach(opt => {
                             const btn = document.createElement('div'); btn.className = 'neu-btn grid-item';
                             if(gameType==='ms_actions') { btn.innerHTML = `<span class="grid-text">${opt.v}</span>`; }
@@ -858,7 +867,7 @@
                         updateProgress();
                         if(State.round >= 5) return triggerWin();
                         const r = rounds[State.round];
-                        uiPrompt.innerText = `Who says ${r.n}?`; speak(uiPrompt.innerText);
+                        uiPrompt.innerText = `Who says ${r.s}?`; speak(uiPrompt.innerText);
                         
                         const grid = document.createElement('div');
                         grid.className = 'standard-grid';
@@ -1128,6 +1137,69 @@
                         for (let i = sCont.children.length; i >= 0; i--) { sCont.appendChild(sCont.children[Math.random() * i | 0]);
                         }
                         uiRender.append(bCont, sCont);
+                    }
+                    load();
+                },
+            
+                "emotion_lab_ctrl": () => {
+                    const rounds = shuffle(POOLS[gameType]).slice(0, 5);
+                    let correctCount = 0;
+                    let wrongCount = 0;
+
+                    function load() {
+                        uiRender.innerHTML = '';
+                        updateProgress();
+                        if(State.round >= 5) return triggerWin();
+                        const r = rounds[State.round];
+                        uiPrompt.innerText = "What is this feeling?"; 
+                        speak(uiPrompt.innerText);
+
+                        // عداد الصح والغلط زي الصورة بالظبط
+                        const scoreBoard = document.createElement('div');
+                        scoreBoard.style.cssText = "width: 90%; max-width: 600px; display: flex; justify-content: flex-end; gap: 1.5rem; margin-bottom: 1rem; font-family: 'Fredoka One', cursive;";
+                        scoreBoard.innerHTML = `
+                            <div style="text-align: center;"><div style="background: var(--success); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 5px;">✔</div><span style="color: var(--success); font-size: 1.2rem;">${correctCount}</span></div>
+                            <div style="text-align: center;"><div style="background: var(--error); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 5px;">✖</div><span style="color: var(--error); font-size: 1.2rem;">${wrongCount}</span></div>
+                        `;
+
+                        // المربع الكبير اللي فيه الإيموجي (باستخدام نفس ستايلات الـ Clay بتاعتك)
+                        const emojiPanel = document.createElement('div');
+                        emojiPanel.className = 'neu-panel';
+                        emojiPanel.style.cssText = "width: 90%; max-width: 600px; padding: 4rem 1rem; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; font-size: clamp(5rem, 12vw, 8rem); background: #FFF;";
+                        emojiPanel.innerText = r.e;
+
+                        // حاوية الاختيارات (مرصوصين تحت بعض)
+                        const optionsCont = document.createElement('div');
+                        optionsCont.style.cssText = "width: 90%; max-width: 600px; display: flex; flex-direction: column; gap: 1.2rem;";
+
+                        const opts = shuffle([ {v: r.a, c: true}, ...r.w.map(w => ({v: w, c: false})) ]);
+                        
+                        opts.forEach(opt => {
+                            const btn = document.createElement('div'); 
+                            btn.className = 'neu-btn';
+                            btn.style.cssText = "width: 100%; padding: 1.5rem; font-size: clamp(1.2rem, 3vw, 1.8rem); font-family: 'Nunito', sans-serif;";
+                            btn.innerText = opt.v;
+
+                            btn.addEventListener('click', () => {
+                                lockGameInputs(); 
+                                if(opt.c) { 
+                                    correctCount++;
+                                    SFX.ding(); 
+                                    btn.classList.add('anim-success'); 
+                                    speak(opt.v);
+                                    setTimeout(()=>{State.round++; load();}, 1500); 
+                                } else { 
+                                    wrongCount++;
+                                    SFX.buzz(); 
+                                    btn.classList.add('anim-error'); 
+                                    setTimeout(()=>{btn.classList.remove('anim-error'); load(); unlockGameInputs();}, 800); 
+                                }
+                            });
+                            optionsCont.appendChild(btn);
+                        });
+
+                        uiRender.append(scoreBoard, emojiPanel, optionsCont);
+                        unlockGameInputs(); 
                     }
                     load();
                 }
