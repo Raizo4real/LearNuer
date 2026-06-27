@@ -862,7 +862,7 @@
 
     <script>
         const API_BASE_URL = `${CONFIG.API_BASE_URL}/admin`;
-
+        const serverUrl = API_BASE_URL.replace('/admin', '');
         // ==========================================
         // 1. CRITICAL SECURITY GUARD
         // ==========================================
@@ -1168,7 +1168,7 @@
                         <h3>${d.full_name}</h3>
                         <p>📧 ${d.email}</p>
                         <p>🩺 ${d.specialty}</p>
-                        <a href="${d.document_url !== '#' ? 'https://learnuer-production.up.railway.app/' + d.document_url : '#'}" target="_blank" class="link-btn" style="text-align:left;">📄 View Verification Document</a>
+                        <a href="${d.document_url !== '#' ? serverUrl + d.document_url : '#'}" target="_blank" class="link-btn" style="text-align:left;">📄 View Verification Document</a>
                         <div class="card-actions">
                             <button class="btn-clay w-100" onclick="approveDoctor('${d.id}')">✅ Approve</button>
                             <button class="btn-clay danger w-100" onclick="deleteDoctor('${d.id}')">❌ Reject</button>
@@ -1198,7 +1198,7 @@
                         <td>${d.specialty}</td>
                         <td>${d.email}</td>
                         <td class="action-links">
-                            <a href="${d.document_url !== '#' ? 'https://learnuer-production.up.railway.app/' + d.document_url : '#'}" target="_blank" class="link-btn" title="View Document">📄 Doc</a>
+                            <a href="${d.document_url !== '#' ? serverUrl  + d.document_url : '#'}" target="_blank" class="link-btn" title="View Document">📄 Doc</a>
                             <button type="button" class="link-btn" onclick="openEditDoctor('${d.id}', '${d.full_name}', '${d.email}', '${d.specialty}')">Edit</button>
                             <button type="button" class="link-btn del" onclick="deleteDoctor('${d.id}')">Remove</button>
                         </td>
