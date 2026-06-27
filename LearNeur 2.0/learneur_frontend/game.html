@@ -1412,11 +1412,32 @@
                 Controllers[currentGame.ctrl]();
             });
 
+          
             // 🛡️ Exit Button Handler
             document.getElementById('exit-btn').addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                showCustomConfirm(() => {
+                showCustomConfirm(async () => {
+                    
+                    // إرسال تقرير الانسحاب (is_completed: false)
+                    if (State && State.active) {
+                        const payload = {
+                            child_id: parseInt(childId),
+                            game_name: currentGame.n,
+                            time_taken_seconds: parseFloat(((Date.now() - State.start) / 1000).toFixed(2)),
+                            total_clicks: State.clicks, 
+                            frantic_clicks: State.frantic, 
+                            is_completed: false 
+                        };
+                        try { 
+                            await fetch(`${API_BASE_URL}/game/telemetry`, { 
+                                method: 'POST', 
+                                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                                body: JSON.stringify(payload) 
+                            });
+                        } catch (err) {}
+                    }
+                    
                     window.location.replace('child_profile.html');
                 });
             });
@@ -1443,7 +1464,7 @@
                     });
                     if (response.ok) { 
                         // 🛡️ Clean redirect
-                        window.location.href = 'child_profile.html'; 
+                        window.location.href = 'dashboard.html'; 
                     } 
                     else {
                         const modalContent = document.getElementById('pin-modal-content');
