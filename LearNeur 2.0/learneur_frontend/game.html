@@ -474,36 +474,71 @@
             if (!childId || !token) { alert("Session expired."); window.location.href = 'child_hub.html'; return; }
 
             const POOLS = {
-                "nv_sensory": ["⭐","🔵","🟩","🔺","🔶","🔷","🤍","🎈","🫧","🎵"],
-                "nv_shadow": ["🍎","🚗","🧸","🐶","🐱","✈️","⚽","👟","🎒","🔑","📖","🐢"],
+                // 1. Sensory Canvas (20 Items)
+                "nv_sensory": ["⭐","🔵","🟩","🔺","🔶","🔷","🤍","🎈","🫧","🎵", "💜", "🟣", "🟧", "🌟", "🪀", "🔔", "🟢", "🟡", "🟥", "🧊"],
+                
+                // 2. Shadow Match (20 Items)
+                "nv_shadow": ["🍎","🚗","🧸","🐶","🐱","✈️","⚽","👟","🎒","🔑","📖","🐢", "🦆", "🦋", "🚲", "🍌", "🐟", "🚁", "🧢", "🧦"],
+                
+                // 3. Color Sort (6 Colors, 6 Items each - 36 Items Total)
                 "nv_sort": [
-                    {c:'Red', cHex:'#FC8181', items:['🍎','🚗','🎈','🍓']}, {c:'Blue', cHex:'#63B3ED', items:['💧','🚙','🐳','👖']},
-                    {c:'Green', cHex:'#68D391', items:['🌿','🍏','🐸','🐢']}, {c:'Yellow', cHex:'#F6E05E', items:['☀️','🍌','⭐','🐥']}
+                    {c:'Red', cHex:'#FC8181', items:['🍎','🚗','🎈','🍓', '🍅', '🥊']}, 
+                    {c:'Blue', cHex:'#63B3ED', items:['💧','🚙','🐳','👖', '📘', '🥶']},
+                    {c:'Green', cHex:'#68D391', items:['🌿','🍏','🐸','🐢', '🥦', '🐛']}, 
+                    {c:'Yellow', cHex:'#F6E05E', items:['☀️','🍌','⭐','🐥', '🧀', '🍋']},
+                    {c:'Orange', cHex:'#ED8936', items:['🍊','🏀','🥕','🎃', '🦊', '⛺']}, 
+                    {c:'Purple', cHex:'#9F7AEA', items:['🍇','🍆','👾','☂️', '🔮', '🟣']}
                 ],
-                "nv_music": [{c:'#FC8181', f:261.6},{c:'#F6E05E', f:329.6},{c:'#68D391', f:392.0},{c:'#63B3ED', f:523.2}],
+                
+                // 4. Music Xylophone (Full 8-Note Octave for Better Audio Scaling)
+                "nv_music": [
+                    {c:'#FC8181', f:261.6}, {c:'#FBD38D', f:293.6}, {c:'#F6E05E', f:329.6}, {c:'#68D391', f:349.2},
+                    {c:'#4FD1C5', f:392.0}, {c:'#63B3ED', f:440.0}, {c:'#9F7AEA', f:493.8}, {c:'#F687B3', f:523.2}
+                ],
+                
+                // 5. Visual Completion / Missing Part (15 Items)
                 "ms_missing": [
                     {p:"The sky is missing the...", a:"☀️", w:["🚗","👟"]}, {p:"The fish needs...", a:"💧", w:["🔥","🌳"]},
                     {p:"The bed is for...", a:"🛌", w:["⚽","🍽️"]}, {p:"The shoe goes on the...", a:"🦶", w:["✋","👂"]},
                     {p:"I eat with a...", a:"🥄", w:["✏️","🔑"]}, {p:"I read a...", a:"📖", w:["📱","⚽"]},
                     {p:"A bird flies in the...", a:"☁️", w:["🌊","🔥"]}, {p:"I wear a hat on my...", a:"👦", w:["🦶","✋"]},
-                    {p:"A car drives on the...", a:"🛣️", w:["☁️","🌊"]}, {p:"I drink...", a:"🥛", w:["🍔","🍕"]}
+                    {p:"A car drives on the...", a:"🛣️", w:["☁️","🌊"]}, {p:"I drink...", a:"🥛", w:["🍔","🍕"]},
+                    {p:"I brush my teeth with a...", a:"🪥", w:["🥄","🖊️"]}, {p:"I cut paper with...", a:"✂️", w:["🥄","🔨"]},
+                    {p:"I sit on a...", a:"🪑", w:["🚗","⚽"]}, {p:"I sweep the floor with a...", a:"🧹", w:["🥄","🪥"]},
+                    {p:"The plant needs...", a:"💧", w:["🔥","🍞"]}
                 ],
+                
+                // 6. Build a Face (15 Ascii/Part Faces)
                 "ms_emotion": [
-                    {p:"Happy", e:"^ ^", m:"‿"}, {p:"Sad", e:"T T", m:"︵"}, {p:"Surprised", e:"O O", m:"O"},
-                    {p:"Angry", e:"Ò Ó", m:"︹"}, {p:"Sleepy", e:"- -", m:"zZ"}, {p:"Cool", e:"🕶️", m:"‿"}
+                    {p:"Happy", e:"^^", m:"‿"}, {p:"Sad", e:"TT", m:"︵"}, {p:"Surprised", e:"OO", m:"O"},
+                    {p:"Angry", e:"ÒÓ", m:"︹"}, {p:"Sleepy", e:"--", m:"zZ"}, {p:"Cool", e:"🕶️", m:"‿"},
+                    {p:"Laughing", e:"^^", m:"D"}, {p:"Crying", e:"TT", m:"o"}, {p:"Winking", e:"~^", m:"‿"}, 
+                    {p:"Silly", e:"><", m:"P"}, {p:"Thinking", e:"OO", m:"~"}, {p:"Scared", e:"OO", m:"△"}, 
+                    {p:"Sick", e:"--", m:"~"}, {p:"Loving", e:"♡♡", m:"‿"}, {p:"Dizzy", e:"@@", m:"o"}
                 ],
+                
+                // 7. Animal/Object Sounds (15 Items)
                 "ms_sounds": [
-                    {a:"🐮", n:"Cow", s:"Moo", f:150}, {a:"🐶", n:"Dog", s:"Woof", f:300}, {a:"🐱", n:"Cat", s:"Meow", f:600}, {a:"🐷", n:"Pig", s:"Oink", f:200},
-                    {a:"🦆", n:"Duck", s:"Quack", f:400}, {a:"🐸", n:"Frog", s:"Ribbit", f:250}, {a:"🚗", n:"Car", s:"Vroom", f:100}, {a:"✈️", n:"Plane", s:"Swoosh", f:800},
-                    {a:"🚂", n:"Train", s:"Choo Choo", f:120}, {a:"🔔", n:"Bell", s:"Ding", f:900}
+                    {a:"🐮", n:"Cow", s:"Moo", f:150}, {a:"🐶", n:"Dog", s:"Woof", f:300}, {a:"🐱", n:"Cat", s:"Meow", f:600}, 
+                    {a:"🐷", n:"Pig", s:"Oink", f:200}, {a:"🦆", n:"Duck", s:"Quack", f:400}, {a:"🐸", n:"Frog", s:"Ribbit", f:250}, 
+                    {a:"🚗", n:"Car", s:"Vroom", f:100}, {a:"✈️", n:"Plane", s:"Swoosh", f:800}, {a:"🚂", n:"Train", s:"Choo Choo", f:120}, 
+                    {a:"🔔", n:"Bell", s:"Ding", f:900}, {a:"🐑", n:"Sheep", s:"Baa", f:250}, {a:"🐎", n:"Horse", s:"Neigh", f:400}, 
+                    {a:"🐝", n:"Bee", s:"Buzz", f:800}, {a:"🦁", n:"Lion", s:"Roar", f:150}, {a:"⏰", n:"Clock", s:"Tick Tock", f:900}
                 ],
+                
+                // 8. Action Words (15 Items)
                 "ms_actions": [
                     {a:"🏃", n:"Running", w:["Sleeping","Eating"]}, {a:"🛌", n:"Sleeping", w:["Walking","Swimming"]},
                     {a:"🍽️", n:"Eating", w:["Reading","Running"]}, {a:"📖", n:"Reading", w:["Swimming","Eating"]},
                     {a:"🏊", n:"Swimming", w:["Sleeping","Writing"]}, {a:"✍️", n:"Writing", w:["Running","Sleeping"]},
                     {a:"💃", n:"Dancing", w:["Reading","Eating"]}, {a:"🎤", n:"Singing", w:["Writing","Sleeping"]},
-                    {a:"🚶", n:"Walking", w:["Swimming","Eating"]}, {a:"🚿", n:"Showering", w:["Reading","Running"]}
+                    {a:"🚶", n:"Walking", w:["Swimming","Eating"]}, {a:"🚿", n:"Showering", w:["Reading","Running"]},
+                    {a:"🤸", n:"Jumping", w:["Sleeping","Reading"]}, {a:"🧗", n:"Climbing", w:["Swimming","Eating"]}, 
+                    {a:"🥤", n:"Drinking", w:["Writing","Walking"]}, {a:"😭", n:"Crying", w:["Laughing","Singing"]}, 
+                    {a:"🧼", n:"Washing", w:["Eating","Reading"]}
                 ],
+                
+                // 9. Social Pragmatic Scenarios (15 Items - Vital for ASD)
                 "vb_social": [
                     {s:"Your friend is crying.", c:{t:"Comfort them", i:"🫂"}, w:{t:"Laugh at them", i:"😂"}},
                     {s:"Someone says hello.", c:{t:"Say Hi back", i:"👋"}, w:{t:"Walk away", i:"🚶"}},
@@ -512,21 +547,41 @@
                     {s:"Someone gives a gift.", c:{t:"Say Thank You", i:"🙏"}, w:{t:"Throw it", i:"🗑️"}},
                     {s:"A friend falls down.", c:{t:"Help them up", i:"🤝"}, w:{t:"Point and stare", i:"👀"}},
                     {s:"You feel very angry.", c:{t:"Take deep breaths", i:"😮‍💨"}, w:{t:"Yell loudly", i:"🗯️"}},
-                    {s:"You don't understand.", c:{t:"Ask for help", i:"🙋"}, w:{t:"Give up", i:"😞"}}
+                    {s:"You don't understand.", c:{t:"Ask for help", i:"🙋"}, w:{t:"Give up", i:"😞"}},
+                    {s:"A friend loses a game.", c:{t:"Say Good Game", i:"👍"}, w:{t:"Make fun of them", i:"😛"}},
+                    {s:"You want a turn.", c:{t:"Wait patiently", i:"⏳"}, w:{t:"Push them", i:"👊"}},
+                    {s:"You make a mistake.", c:{t:"Try again", i:"💪"}, w:{t:"Break things", i:"💥"}},
+                    {s:"Teacher is talking.", c:{t:"Listen quietly", i:"👂"}, w:{t:"Talk loud", i:"🗣️"}},
+                    {s:"See someone lonely.", c:{t:"Ask to play", i:"🤝"}, w:{t:"Ignore them", i:"🚶"}},
+                    {s:"You feel scared.", c:{t:"Tell an adult", i:"🙋"}, w:{t:"Run away", i:"🏃"}},
+                    {s:"Someone says NO.", c:{t:"Accept it", i:"👌"}, w:{t:"Scream", i:"😱"}}
                 ],
+                
+                // 10. Story & Task Timeline (15 Items)
                 "vb_sequence": [
                     {p:"How a flower grows", s:["🌱","🌿","🌻"]}, {p:"Making a sandwich", s:["🍞","🧀","🥪"]},
                     {p:"Butterfly life cycle", s:["🥚","🐛","🦋"]}, {p:"Day to night", s:["🌅","☀️","🌙"]},
                     {p:"Building a snowman", s:["❄️","⛄","🧣"]}, {p:"Eating an apple", s:["🍎","🍏","🍎‍🍏"]},
-                    {p:"Writing a letter", s:["✏️","✉️","📫"]}, {p:"Washing hands", s:["👐","🧼","✨"]}
+                    {p:"Writing a letter", s:["✏️","✉️","📫"]}, {p:"Washing hands", s:["👐","🧼","✨"]},
+                    {p:"Washing dishes", s:["🍽️","🧼","✨"]}, {p:"Brushing teeth", s:["🪥","🦷","✨"]},
+                    {p:"Baking a cake", s:["🥚","🥣","🎂"]}, {p:"Mailing a letter", s:["✉️","📫","📬"]},
+                    {p:"Painting a picture", s:["🎨","🖌️","🖼️"]}, {p:"Growing an apple tree", s:["🌱","🌳","🍎"]},
+                    {p:"Making tea", s:["💧","🫖","☕"]}
                 ],
+                
+                // 11. Opposites (16 Items)
                 "vb_opposites": [
                     {p:"Opposite of HOT", a:"🧊", w:["🔥","☀️"]}, {p:"Opposite of FAST", a:"🐢", w:["🐆","🚀"]},
                     {p:"Opposite of BIG", a:"🐜", w:["🐘","🐳"]}, {p:"Opposite of DAY", a:"🌙", w:["☀️","☁️"]},
                     {p:"Opposite of HAPPY", a:"😢", w:["😄","🥳"]}, {p:"Opposite of UP", a:"⬇️", w:["⬆️","↗️"]},
                     {p:"Opposite of OPEN", a:"🚪", w:["🪟","📖"]}, {p:"Opposite of WET", a:"🌵", w:["💧","🌊"]},
-                    {p:"Opposite of LOUD", a:"🤫", w:["🔊","📢"]}, {p:"Opposite of YOUNG", a:"👴", w:["👶","👦"]}
+                    {p:"Opposite of LOUD", a:"🤫", w:["🔊","📢"]}, {p:"Opposite of YOUNG", a:"👴", w:["👶","👦"]},
+                    {p:"Opposite of EMPTY", a:"🥛", w:["🗑️","📦"]}, {p:"Opposite of DIRTY", a:"✨", w:["💩","🗑️"]},
+                    {p:"Opposite of HARD", a:"🧸", w:["🧱","🔨"]}, {p:"Opposite of HEAVY", a:"🪶", w:["🪨","🐘"]},
+                    {p:"Opposite of COLD", a:"🔥", w:["🧊","⛄"]}, {p:"Opposite of SMALL", a:"🐘", w:["🐜","🐭"]}
                 ],
+                
+                // 12. Riddles (15 Items)
                 "vb_riddle": [
                     {p:"I have four legs and bark. What am I?", a:"🐶", w:["🐱","🦊"]},
                     {p:"I swim in the water and have fins.", a:"🐟", w:["🐦","🦆"]},
@@ -537,8 +592,15 @@
                     {p:"I open to keep you dry in the rain.", a:"☔", w:["🎒","🧣"]},
                     {p:"I shine yellow in the sky.", a:"☀️", w:["🌙","⭐"]},
                     {p:"I am cold and melt in the sun.", a:"⛄", w:["🔥","🌳"]},
-                    {p:"I have pages for you to read.", a:"📖", w:["📱","📺"]}
+                    {p:"I have pages for you to read.", a:"📖", w:["📱","📺"]},
+                    {p:"I give you milk and say moo.", a:"🐮", w:["🐶","🐸"]},
+                    {p:"I have a long trunk and big ears.", a:"🐘", w:["🐭","🐢"]},
+                    {p:"I am yellow and monkeys eat me.", a:"🍌", w:["🍎","🍉"]},
+                    {p:"You sleep on me at night.", a:"🛌", w:["🪑","🚗"]},
+                    {p:"You use me to cut paper.", a:"✂️", w:["🥄","🖊️"]}
                 ],
+                
+                // 13. AAC Sentence Builder (15 Items)
                 "ta_aac": [
                     {p:"Build: I want Apple", s:["I want","Apple"], w:["Water","Play"]},
                     {p:"Build: I feel Happy", s:["I feel","Happy"], w:["Sad","Angry"]},
@@ -547,30 +609,65 @@
                     {p:"Build: Let's Play", s:["Let's","Play"], w:["Stop","Eat"]},
                     {p:"Build: I am Hungry", s:["I am","Hungry"], w:["Thirsty","Tired"]},
                     {p:"Build: More Please", s:["More","Please"], w:["Stop","No"]},
-                    {p:"Build: I feel Sad", s:["I feel","Sad"], w:["Happy","Excited"]}
+                    {p:"Build: I feel Sad", s:["I feel","Sad"], w:["Happy","Excited"]},
+                    {p:"Build: I want Help", s:["I want","Help"], w:["Stop","Play"]},
+                    {p:"Build: I need Bathroom", s:["I need","Bathroom"], w:["Food","Drink"]},
+                    {p:"Build: I feel Sick", s:["I feel","Sick"], w:["Happy","Angry"]},
+                    {p:"Build: I am Tired", s:["I am","Tired"], w:["Hungry","Thirsty"]},
+                    {p:"Build: Let's Go", s:["Let's","Go"], w:["Stop","Wait"]},
+                    {p:"Build: I want Toy", s:["I want","Toy"], w:["Sleep","Eat"]},
+                    {p:"Build: All Done", s:["All","Done"], w:["More","Play"]}
                 ],
-                "ta_simon": [{c:'#FC8181'}, {c:'#4FD1C5'}, {c:'#F6E05E'}, {c:'#B794F4'}],
+                
+                // 14. Simon Memory (6 Colors max for Autism Working Memory)
+                "ta_simon": [{c:'#FC8181'}, {c:'#4FD1C5'}, {c:'#F6E05E'}, {c:'#B794F4'}, {c:'#ED8936'}, {c:'#68D391'}],
+                
+                // 15. Daily Routines (15 Items)
                 "ta_routine": [
                     {p:"Morning Routine", s:["🛏️","🦷","👕"]}, {p:"Before Dinner", s:["👐","🧼","🍽️"]},
                     {p:"Bed Time", s:["🛁","📖","😴"]}, {p:"Going to School", s:["🎒","👟","🚌"]},
                     {p:"Doing Laundry", s:["🧺","🧼","👕"]}, {p:"Making Bed", s:["🛏️","🛌","✨"]},
-                    {p:"Taking a Bath", s:["🛁","🧼","🧴"]}, {p:"Eating Breakfast", s:["🥣","🥛","😋"]}
+                    {p:"Taking a Bath", s:["🛁","🧼","🧴"]}, {p:"Eating Breakfast", s:["🥣","🥛","😋"]},
+                    {p:"Washing Hands", s:["👐","🧼","🧻"]}, {p:"Crossing Street", s:["🛑","👀","🚶"]},
+                    {p:"Getting Ready for Bed", s:["🪥","🚽","🛏️"]}, {p:"Eating Lunch", s:["👐","🍱","😋"]},
+                    {p:"Going to Park", s:["👟","🌳","🛝"]}, {p:"Doing Homework", s:["🎒","✏️","📖"]},
+                    {p:"Feeding Pet", s:["🐶","🥣","😋"]}
                 ],
-               "ta_smart_sort": [
+                
+                // 16. Smart Categorization Sort (12 Items)
+                "ta_smart_sort": [
                     {c1:"Healthy", c2:"Junk", i1:["🍎","🥦","🥕"], i2:["🍔","🍕","🍩"]},
                     {c1:"Animals", c2:"Vehicles", i1:["🐶","🐱","🐮"], i2:["🚗","✈️","🚂"]},
                     {c1:"Clothes", c2:"Toys", i1:["👕","👖","👟"], i2:["🧸","⚽","🚂"]},
                     {c1:"Hot", c2:"Cold", i1:["🔥","☀️","☕"], i2:["🧊","⛄","🍦"]},
                     {c1:"In Sky", c2:"In Water", i1:["☁️","☀️","✈️"], i2:["🐟","🐳","🚢"]},
-                    {c1:"Fruits", c2:"Veggies", i1:["🍎","🍌","🍇"], i2:["🥦","🥕","🧅"]}
+                    {c1:"Fruits", c2:"Veggies", i1:["🍎","🍌","🍇"], i2:["🥦","🥕","🧅"]},
+                    {c1:"Big", c2:"Small", i1:["🐘","🐳","🏠"], i2:["🐜","🐭","🐞"]},
+                    {c1:"Day", c2:"Night", i1:["☀️","🌈","☁️"], i2:["🌙","⭐","🦉"]},
+                    {c1:"Land", c2:"Water", i1:["🚗","🚲","🚶"], i2:["🚢","🐟","🐙"]},
+                    {c1:"Sweet", c2:"Salty", i1:["🍩","🍫","🍰"], i2:["🍿","🥨","🍟"]},
+                    {c1:"Fast", c2:"Slow", i1:["🚀","🐆","✈️"], i2:["🐢","🐌","🚶"]},
+                    {c1:"Heavy", c2:"Light", i1:["🪨","🐘","🏋️"], i2:["🪶","🎈","🦋"]}
                 ],
+                
+                // 17. Emotion Lab / PECS (16 Items)
                 "emotion_lab": [
                     {e: "😠", a: "Angry", w: ["Scared", "Sad", "Happy"]},
                     {e: "😊", a: "Happy", w: ["Scared", "Sad", "Angry"]},
                     {e: "😢", a: "Sad", w: ["Scared", "Happy", "Angry"]},
                     {e: "😨", a: "Scared", w: ["Happy", "Sad", "Angry"]},
                     {e: "😲", a: "Surprised", w: ["Angry", "Sad", "Happy"]},
-                    {e: "🥱", a: "Sleepy", w: ["Scared", "Sad", "Angry"]}
+                    {e: "🥱", a: "Sleepy", w: ["Scared", "Sad", "Angry"]},
+                    {e: "🤢", a: "Disgusted", w: ["Happy", "Excited", "Loving"]},
+                    {e: "😕", a: "Confused", w: ["Happy", "Angry", "Bored"]},
+                    {e: "🤒", a: "Sick", w: ["Excited", "Happy", "Silly"]},
+                    {e: "🤩", a: "Excited", w: ["Sad", "Bored", "Angry"]},
+                    {e: "😒", a: "Bored", w: ["Surprised", "Excited", "Scared"]},
+                    {e: "😤", a: "Proud", w: ["Sad", "Scared", "Sick"]},
+                    {e: "🫣", a: "Shy", w: ["Angry", "Excited", "Silly"]},
+                    {e: "🤪", a: "Silly", w: ["Sad", "Angry", "Bored"]},
+                    {e: "😖", a: "Frustrated", w: ["Happy", "Loving", "Silly"]},
+                    {e: "🥰", a: "Loving", w: ["Angry", "Disgusted", "Scared"]}
                 ]
             };
             const GAME_CONFIG = {
