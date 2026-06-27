@@ -13,6 +13,9 @@
     <script src="config.js"></script>
     <style>
         /* === MAGICAL CLAYMORPHISM & SENSORY THEME === */
+        * {
+            box-sizing: border-box;
+        }
         :root {
             --bg: #EBF8FF; /* Soft Sky Background Fallback */
             --text-main: #2D3748;
@@ -33,8 +36,8 @@
             font-family: 'Nunito', 'Tajawal', sans-serif; color: var(--text-main);
             min-height: 100vh; min-height: 100dvh; width: 100vw; 
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start; 
-            overflow-x: hidden; overflow-y: auto;
+            align-items: center; justify-content: flex-start;
+            overflow-x: hidden; overflow-y: auto; /* بيسمح بالسكرول الناعم */
             user-select: none; -webkit-user-select: none;
             -webkit-touch-callout: none;
             position: relative;
@@ -142,16 +145,21 @@
         }
 
         #game-container { 
-            width: 100%; min-height: 100vh; max-width: 1400px; display: none; position: relative; 
-            padding: clamp(1rem, 3vw, 2rem); padding-bottom: 4rem; box-sizing: border-box; 
+            width: 100%; max-width: 800px; /* صغرناه عشان يبقى ملموم ومتسنتر على الكمبيوتر */
+            min-height: 100vh; min-height: 100dvh; 
+            display: none; position: relative; 
+            padding: 1rem; padding-bottom: 4rem; 
             flex-direction: column; align-items: center; justify-content: flex-start; 
+            margin: 0 auto; /* السطر ده بيسنتر اللعبة بالمللي في نص الشاشة */
             z-index: 10;
         }
 
         /* Top Bar & Exit Button */
         .top-bar { 
-            width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 2rem; margin-top: 1rem; background: rgba(255,255,255,0.6); padding: 1rem; 
+            width: 90%; max-width: 600px; /* خليناه نفس عرض اللعبة بالضبط عشان التناسق */
+            display: flex; justify-content: space-between; align-items: center; 
+            margin: 1rem auto 2rem auto; 
+            background: rgba(255,255,255,0.6); padding: 0.8rem 1rem; 
             border-radius: 30px; border: 4px solid #FFF; box-shadow: 0 8px 0 var(--clay-depth);
             position: relative; z-index: 50; flex-wrap: wrap; gap: 1rem;
         }
@@ -359,7 +367,7 @@
             <div class="progress-bar neu-pressed"><div class="progress-fill" id="progress-fill"></div></div>
         </div>
         <h1 class="game-prompt" id="prompt-txt"></h1>
-        <div id="render-zone" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+        <div id="render-zone" style="width: 100%; flex: 1; display: flex; flex-direction: column; align-items: center; padding-bottom: 2rem;"></div>
     </div>
     <div id="custom-confirm-modal" class="modal-overlay hidden">
         <div class="modal-card" style="max-width: 400px; padding: 2rem; margin: 0 1.5rem; text-align: center;">
