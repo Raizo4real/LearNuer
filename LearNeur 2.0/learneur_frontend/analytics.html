@@ -745,7 +745,8 @@
                 "ta_aac": "Smart AAC Sentence Builder Strip",
                 "ta_simon": "Simon Sequential Short-Term Memory",
                 "ta_routine": "Vertical Behavioral Schedule Planner",
-                "ta_smart_sort": "Advanced Categorization Matrix Sorting"
+                "ta_smart_sort": "Advanced Categorization Matrix Sorting",
+                "emotion_lab": "Emotion Lab (PECS/AAC)"
             };
 
             async function executeTelemetryFetchPipeline(childId) {
@@ -931,7 +932,7 @@
                 const gamesBody = document.querySelector('#games-table tbody');
                 const eduBody = document.querySelector('#educational-table tbody');
 
-                const GAMES_INDEX = ["nv_sensory", "nv_shadow", "nv_sort", "nv_music", "ms_emotion", "ms_sounds", "vb_sequence", "ta_simon"];
+                const GAMES_INDEX = ["nv_sensory", "nv_shadow", "nv_sort", "nv_music", "ms_emotion", "ms_sounds", "vb_sequence", "ta_simon", "emotion_lab"];
                 const EDUCATION_INDEX = ["ms_missing", "ms_actions", "vb_social", "vb_opposites", "vb_riddle", "ta_aac", "ta_routine", "ta_smart_sort"];
 
                 gamesBody.innerHTML = '';
