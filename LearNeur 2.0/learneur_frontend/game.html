@@ -998,16 +998,52 @@
                         mSlot.className = 'face-slot f-mouth';
                         face.append(eSlot, mSlot);
 
-                        const tray = document.createElement('div'); tray.className = 'source-grid neu-pressed'; tray.style.padding="2rem"; tray.style.borderRadius="30px";
-                        const opts = shuffle([ {t:'e', v:r.e, c:true}, {t:'m', v:r.m, c:true}, {t:'e', v:'🥺', c:false}, {t:'m', v:'😮', c:false} ]);
+                        const tray = document.createElement('div'); 
+                        tray.className = 'source-grid neu-pressed'; 
+                        tray.style.padding = "2rem"; 
+                        tray.style.borderRadius = "30px";
+                        
+                        // 1. فلترة المشاعر عشان نستبعد الإجابة الصح، وبعدين نلخبط الباقي
+                        const otherEmotions = shuffle(POOLS[gameType].filter(x => x.p !== r.p));
+                        
+                        // 2. نسحب عيون وفم عشوائيين من المشاعر الغلط عشان التنوع
+                        const wrongEye = otherEmotions[0].e;
+                        const wrongMouth = otherEmotions[1].m;
+
+                        const opts = shuffle([ 
+                            {t:'e', v:r.e, c:true}, 
+                            {t:'m', v:r.m, c:true}, 
+                            {t:'e', v:wrongEye, c:false}, 
+                            {t:'m', v:wrongMouth, c:false} 
+                        ]);
+                        
                         let activeNode = null;
                         opts.forEach(opt => {
-                            const btn = document.createElement('div'); btn.className = 'neu-btn source-item'; btn.innerText = opt.v;
-                            btn.addEventListener('click', () => { SFX.pop(); document.querySelectorAll('.source-item').forEach(b=>b.classList.remove('active-tap')); btn.classList.add('active-tap'); activeNode = opt; });
+                            const btn = document.createElement('div'); 
+                            btn.className = 'neu-btn source-item'; 
+                            btn.innerText = opt.v;
+                            
+                            // السطر ده بيمنع العيون إنها تتكسر وتنزل سطر جديد
+                            btn.style.whiteSpace = "nowrap"; 
+                            
+                            btn.addEventListener('click', () => { 
+                                SFX.pop(); 
+                                document.querySelectorAll('.source-item').forEach(b => b.classList.remove('active-tap')); 
+                                btn.classList.add('active-tap'); 
+                                activeNode = opt; 
+                            });
                             tray.appendChild(btn);
                         });
-                        const check = () => { if(eSlot.innerText === r.e && mSlot.innerText === r.m) { SFX.ding(); face.classList.add('anim-success'); setTimeout(()=>{State.round++; load();}, 1500);
-                        } };
+
+                        // باقي لوجيك اللعبة الأساسي بتاعك
+                        const check = () => { 
+                            if(eSlot.innerText === r.e && mSlot.innerText === r.m) { 
+                                SFX.ding(); 
+                                face.classList.add('anim-success'); 
+                                setTimeout(()=>{State.round++; load();}, 1500);
+                            } 
+                        };
+                        
                         eSlot.addEventListener('click', () => { if(activeNode && activeNode.t==='e') { SFX.pop(); eSlot.innerText = activeNode.v; check(); } else SFX.buzz(); });
                         mSlot.addEventListener('click', () => { if(activeNode && activeNode.t==='m') { SFX.pop(); mSlot.innerText = activeNode.v; check(); } else SFX.buzz(); });
 
