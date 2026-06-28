@@ -228,7 +228,7 @@ def delete_admin(admin_id: str, db: Session = Depends(get_db), current_user: Use
 # ==========================================
 
 @router.get("/users/{user_id}/email-history", dependencies=deps)
-def get_user_email_history(user_id: int, db: Session = Depends(get_db)):
+def get_user_email_history(user_id: str, db: Session = Depends(get_db)):
     history = db.query(EmailHistory).filter(EmailHistory.user_id == user_id).order_by(EmailHistory.changed_at.desc()).all()
     if not history:
         return []
