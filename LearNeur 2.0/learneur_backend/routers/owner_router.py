@@ -166,7 +166,18 @@ def delete_parent(parent_id: str, db: Session = Depends(get_db)):
 @router.get("/admins", dependencies=owner_deps)
 def get_all_admins(db: Session = Depends(get_db)):
     admins = db.query(User).filter(User.role == "ADMIN").all()
-    return admins
+    
+    result = []
+    for admin in admins:
+
+        admin_name = admin.admin_profile.full_name if admin.admin_profile else "Unknown"
+        
+        result.append({
+            "id": admin.id,
+            "name": admin_name, 
+            "email": admin.email
+        })
+    return result
 
 @router.post("/admins", dependencies=owner_deps)
 def create_admin(email: str, password: str, name: str, db: Session = Depends(get_db)):
@@ -189,6 +200,7 @@ def create_admin(email: str, password: str, name: str, db: Session = Depends(get
     # 3. ننشئ بروفايل للآدمن ونربطه باليوزر
     new_admin = Admin(
         user_id=new_user.id,
+        full_name=name,  
         admin_level=1 
     )
     db.add(new_admin)
