@@ -65,6 +65,7 @@ class Admin(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), unique=True)
+    full_name = Column(String, nullable=False, default="Admin")
     admin_level = Column(Integer, default=1) 
 
     user = relationship("User", back_populates="admin_profile")
@@ -210,5 +211,3 @@ class DoctorRating(Base):
     rating_value = Column(Integer, nullable=False) 
 
     __table_args__ = (UniqueConstraint('doctor_id', 'parent_id', name='_doc_parent_rating_uc'),)
-
-
