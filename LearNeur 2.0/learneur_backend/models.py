@@ -210,3 +210,5 @@ class DoctorRating(Base):
     rating_value = Column(Integer, nullable=False) 
 
     __table_args__ = (UniqueConstraint('doctor_id', 'parent_id', name='_doc_parent_rating_uc'),)
+
+
