@@ -1184,6 +1184,13 @@
             }
         }
 
+        function getAvatarIcon(name, colorHex) {
+            const cleanName = name ? name.replace(/^Dr\.?\s*/i, '').trim() : '';
+            const initial = cleanName ? cleanName.charAt(0).toUpperCase() : 'U';
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#${colorHex}"/><text x="50" y="50" font-family="Arial" font-size="45" font-weight="bold" fill="#ffffff" text-anchor="middle" alignment-baseline="central" dominant-baseline="central">${initial}</text></svg>`;
+            return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        }
+
         // 3. Fetch My Patients
         async function fetchMyPatients() {
             try {
@@ -1535,13 +1542,18 @@
                         stars += i < rating ? '⭐' : '<span style="opacity: 0.3">⭐</span>';
                     }
                     const serverUrl = typeof CONFIG !== 'undefined' ? CONFIG.API_BASE_URL.replace('/api', '') : 'https://learnuer-production.up.railway.app';
-                    const avatarSrc = p.doctor_avatar && p.doctor_avatar !== 'default_doctor.png'
-                        ? `${serverUrl}/${p.doctor_avatar}` : 'default_doctor.png';
+                    
+                    // 💡 توليد الصورة التلقائية بلون Teal للبوستات
+                    const fallbackAvatar = getAvatarIcon(p.doctor_name, '4FD1C5'); 
+                    
+                    const avatarSrc = p.doctor_avatar && p.doctor_avatar !== 'default_doctor.png' && p.doctor_avatar !== 'null'
+                        ? `${serverUrl}/${p.doctor_avatar}` : fallbackAvatar;
+
                     const postHtml = `
                         <div style="background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 20px; transition: 0.3s; box-shadow: var(--glass-shadow);">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
                                 <div style="display: flex; align-items: center; gap: 15px;">
-                                    <img src="${avatarSrc}" alt="Dr." style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue);">
+                                    <img src="${avatarSrc}" onerror="this.src='${fallbackAvatar}';" alt="Dr." style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-blue);">
                                     <div>
                                         <h4 style="margin: 0; color: var(--text-main); font-size: 1.1rem;">Dr. ${p.doctor_name}</h4>
                                         <div style="font-size: 0.75rem; margin-top: 3px;">${stars}</div>
@@ -1589,39 +1601,42 @@
                 const titleEl = document.querySelector('.doc-title');
                 if (titleEl) titleEl.innerText = profile.specialty || "Clinical Specialist";
 
-                const avatarEl = document.getElementById('doc-initial');
-                if (avatarEl && profile.full_name) {
-                    avatarEl.innerText = profile.full_name.charAt(0).toUpperCase();
-
-                    const avatarPath = profile.avatar_url && profile.avatar_url !== 'default_doctor.png'
-                        ? `${BASE_URL.replace('/api', '')}/${profile.avatar_url}`
-                        : 'default_doctor.png';
-
+                // 💡 تظبيط الصورة اللي فوق في الشريط والصورة اللي في الإعدادات
+                if (profile.full_name) {
+                    const fallbackAvatar = getAvatarIcon(profile.full_name, '63B3ED'); // لون أزرق شيك
+                    
+                    const avatarPath = profile.avatar_url && profile.avatar_url !== 'default_doctor.png' && profile.avatar_url !== 'null'
+                        ? `${BASE_URL.replace('/api', '')}/${profile.avatar_url}` 
+                        : fallbackAvatar;
+                    
                     const formAvatar = document.getElementById('form-doc-avatar');
-                    if (formAvatar) formAvatar.src = avatarPath;
-
+                    if (formAvatar) {
+                        formAvatar.src = avatarPath;
+                        formAvatar.onerror = function() { this.src = fallbackAvatar; };
+                    }
+                    
                     const navAvatar = document.getElementById('doc-initial');
                     if (navAvatar) {
-                        navAvatar.innerHTML = `<img src="${avatarPath}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-                        navAvatar.style.padding = "0";
+                        navAvatar.innerHTML = `<img src="${avatarPath}" onerror="this.src='${fallbackAvatar}';" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                        navAvatar.style.padding = "0"; 
                     }
                 }
 
                 const profileFullname = document.getElementById('profile-fullname');
                 if (profileFullname) profileFullname.value = profile.full_name || '';
-
+                
                 const profileSpecialty = document.getElementById('profile-specialty');
                 if (profileSpecialty) profileSpecialty.value = profile.specialty || '';
-
+                
                 const profileBio = document.getElementById('profile-bio');
                 if (profileBio) profileBio.value = profile.bio || '';
-
+                
                 const displayDocName = document.getElementById('display-doc-name');
                 if (displayDocName) displayDocName.innerText = profile.full_name ? `Dr. ${profile.full_name}` : 'Doctor Profile';
-
+                
                 const displayDocRating = document.getElementById('display-doc-rating');
                 if (displayDocRating) displayDocRating.innerText = `⭐ ${profile.rating ? profile.rating.toFixed(1) : '0.0'}`;
-
+                
                 const badge = document.getElementById('verification-badge');
                 if (badge) {
                     if (profile.is_verified) {
