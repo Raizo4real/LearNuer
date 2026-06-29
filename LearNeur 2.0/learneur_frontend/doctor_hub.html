@@ -1204,6 +1204,8 @@
 
                 grid.innerHTML = patients.map(p => `
                     <div class="glass-card data-card">
+                        <div class="badge hidden" id="patient-badge-${p.connection_id}">0 New</div>
+                        
                         <div class="card-icon" style="--clay-bg: #63B3ED; --clay-shadow: #3182CE; width: 60px; height: 60px; font-size: 1.5rem; margin-bottom: 1rem;">🧠</div>
                         <h3>${p.name}</h3>
                         <div class="meta-row"><span class="meta-icon">🎂</span> Age: ${p.age}</div>
@@ -1422,7 +1424,9 @@
 
                 sessions.forEach(s => {
                     const html = `
-                        <div class="inquiry-card-item">
+                        <div class="inquiry-card-item" style="position: relative;">
+                            <div class="badge hidden" id="inq-badge-${s.session_id}" style="top: -10px; right: -5px; padding: 2px 8px; font-size: 0.75rem;">0 New</div>
+                            
                             <div>
                                 <h4 style="margin: 0 0 5px 0; color: var(--text-main);">${s.parent_name}</h4>
                                 <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Re: ${s.post_title}</p>
