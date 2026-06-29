@@ -1412,6 +1412,10 @@
 
         async function fetchDoctorInquiries() {
             const listArea = document.getElementById('inquiries-list-area');
+            listArea.style.overflowX = 'hidden';
+            listArea.style.paddingTop = '12px';
+            listArea.style.paddingRight = '5px';
+
             listArea.innerHTML = '<p style="color: gray; text-align: center;">Loading...</p>';
             try {
                 const sessions = await authFetch('/forum/inquiry/doctor-sessions');
@@ -1425,7 +1429,7 @@
                 sessions.forEach(s => {
                     const html = `
                         <div class="inquiry-card-item" style="position: relative;">
-                            <div class="badge hidden" id="inq-badge-${s.session_id}" style="top: -10px; right: -5px; padding: 2px 8px; font-size: 0.75rem;">0 New</div>
+                            <div class="badge hidden" id="inq-badge-${s.session_id}" style="top: -12px; right: 10px; padding: 3px 9px; font-size: 0.75rem; border: 2px solid var(--glass-bg);">0 New</div>
                             
                             <div>
                                 <h4 style="margin: 0 0 5px 0; color: var(--text-main);">${s.parent_name}</h4>
@@ -1802,7 +1806,7 @@
                 }
 
             } catch (err) {
-                // صامت عشان مايطلعش إيرور للمستخدم
+                // صامت عشان مايطلعش إيرور للمستخدم 
             }
         }
     </script>
