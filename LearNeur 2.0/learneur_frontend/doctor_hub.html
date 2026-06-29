@@ -1746,7 +1746,19 @@
                         const msgs = await response.json();
                         const lastSeen = localStorage.getItem(`last_seen_chat_${p.connection_id}`) || 0;
                         const unread = msgs.filter(m => String(m.sender_id) !== String(myUserId) && new Date(m.timestamp).getTime() > lastSeen);
+                        
                         unreadTelemetry += unread.length;
+
+                        // 💡 تحديث البادج الفردي للمريض ده بالذات
+                        const patientBadge = document.getElementById(`patient-badge-${p.connection_id}`);
+                        if (patientBadge) {
+                            if (unread.length > 0) {
+                                patientBadge.innerText = `${unread.length} New`;
+                                patientBadge.classList.remove('hidden');
+                            } else {
+                                patientBadge.classList.add('hidden');
+                            }
+                        }
                     }
                 }
 
@@ -1756,10 +1768,22 @@
                     const msgs = await authFetch(`/forum/inquiry/messages/${s.session_id}`);
                     const lastSeen = localStorage.getItem(`last_seen_inq_${s.session_id}`) || 0;
                     const unread = msgs.filter(m => String(m.sender_id) !== String(myUserId) && new Date(m.timestamp).getTime() > lastSeen);
+                    
                     unreadForum += unread.length;
+
+                    // 💡 تحديث البادج الفردي للاستفسار ده بالذات
+                    const inqBadge = document.getElementById(`inq-badge-${s.session_id}`);
+                    if (inqBadge) {
+                        if (unread.length > 0) {
+                            inqBadge.innerText = `${unread.length} New`;
+                            inqBadge.classList.remove('hidden');
+                        } else {
+                            inqBadge.classList.add('hidden');
+                        }
+                    }
                 }
 
-                // تحديث شكل البادج للـ Telemetry
+                // تحديث شكل البادج الرئيسي للـ Telemetry (برة)
                 const telBadge = document.getElementById('telemetry-badge');
                 if (unreadTelemetry > 0) {
                     telBadge.innerText = `${unreadTelemetry} New`;
@@ -1768,7 +1792,7 @@
                     telBadge.classList.add('hidden');
                 }
 
-                // تحديث شكل البادج للـ Forum
+                // تحديث شكل البادج الرئيسي للـ Forum (برة)
                 const forumBadge = document.getElementById('forum-badge');
                 if (unreadForum > 0) {
                     forumBadge.innerText = `${unreadForum} New`;
