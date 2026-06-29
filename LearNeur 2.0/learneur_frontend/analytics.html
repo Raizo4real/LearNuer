@@ -753,7 +753,10 @@
                 "ta_simon": "Simon Sequential Short-Term Memory",
                 "ta_routine": "Vertical Behavioral Schedule Planner",
                 "ta_smart_sort": "Advanced Categorization Matrix Sorting",
-                "emotion_lab": "Emotion Lab (PECS/AAC)"
+                "emotion_lab": "Emotion Lab (PECS/AAC)",
+                "الركن التعليمي": "Educational Corner",
+                "الركن التعليمي - نطق الحروف": "Educational Corner - Pronunciation",
+                "الركن التعليمي - القراءة والكتابة": "Educational Corner - Reading & Writing"
             };
 
             let globalTelemetryRecords = [];
@@ -972,8 +975,10 @@
                 const eduBody = document.querySelector('#educational-table tbody');
 
                 const GAMES_INDEX = ["nv_sensory", "nv_shadow", "nv_sort", "nv_music", "ms_emotion", "ms_sounds", "vb_sequence", "ta_simon", "emotion_lab"];
-                const EDUCATION_INDEX = ["ms_missing", "ms_actions", "vb_social", "vb_opposites", "vb_riddle", "ta_aac", "ta_routine", "ta_smart_sort"];
-
+                const EDUCATION_INDEX = [
+                    "ms_missing", "ms_actions", "vb_social", "vb_opposites", "vb_riddle", "ta_aac", "ta_routine", "ta_smart_sort",
+                    "الركن التعليمي", "الركن التعليمي - نطق الحروف", "الركن التعليمي - القراءة والكتابة"
+                ];
                 gamesBody.innerHTML = '';
                 eduBody.innerHTML = '';
 
