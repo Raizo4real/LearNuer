@@ -789,39 +789,69 @@
             }
 
             /* HUD CHAT DESIGN */
-            .chat-modal-overlay {
-                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px);
-                display: flex; flex-direction: row; align-items: center; justify-content: space-between;
-                z-index: 4000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 2rem 5%; gap: 2rem;
-            }
-            .chat-modal-overlay.active { opacity: 1; pointer-events: all; }
-            .hud-left-panel { flex: 0 0 280px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 1.5rem; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); transform: translateX(-50px); transition: 0.4s ease; }
-            .chat-modal-overlay.active .hud-left-panel { transform: translateX(0); }
-            .chat-close-btn { background: none; border: none; color: #A0AEC0; font-size: 1.8rem; cursor: pointer; transition: 0.3s; line-height: 1; }
-            .chat-close-btn:hover { color: #F56565; transform: rotate(90deg); }
-            .chat-messages-area { flex: 1; max-width: 700px; height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding: 1rem; scroll-behavior: smooth; }
-            .chat-messages-area::-webkit-scrollbar { width: 4px; }
-            .chat-messages-area::-webkit-scrollbar-track { background: transparent; }
-            .chat-messages-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-            .msg-bubble { max-width: 80%; padding: 1rem 1.2rem; border-radius: 20px; font-size: 0.95rem; font-weight: 600; line-height: 1.4; word-wrap: break-word; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-            @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-            .msg-bubble.received { align-self: flex-start; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; color: #EDF2F7; }
-            .msg-bubble.sent { align-self: flex-end; background: var(--primary-teal, #4FD1C5); color: #0F172A; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.2); }
-            .msg-time { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; display: block; text-align: right; }
-            .hud-right-panel { flex: 0 0 auto; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: row; gap: 1rem; align-items: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3); transform: translateX(50px); transition: 0.4s ease; }
-            .chat-modal-overlay.active .hud-right-panel { transform: translateX(0); }
-            #chat-message-input { width: 250px; padding: 1rem 1.2rem; border-radius: 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); color: #FFF; outline: none; transition: 0.3s; }
-            #chat-message-input:focus { border-color: var(--primary-teal, #4FD1C5); background: rgba(255, 255, 255, 0.05); }
-            .chat-send-btn { background: var(--primary-teal, #4FD1C5); color: #0F172A; border: none; padding: 1rem 1.5rem; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-            .chat-send-btn:active { transform: translateY(2px); }
+            /* ==========================================
+           🌟 HUD CHAT DESIGN (Vertical Normal Layout)
+           ========================================== */
+        .chat-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(12px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 4000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 2rem; gap: 1rem;
+        }
+        .chat-modal-overlay.active { opacity: 1; pointer-events: all; }
 
-            @media (max-width: 900px) {
-                .chat-modal-overlay { flex-direction: column; padding: 1rem; justify-content: flex-start; gap: 1rem; }
-                .hud-left-panel, .hud-right-panel { width: 100%; flex: 0 0 auto; transform: none; }
-                .chat-messages-area { height: 60vh; width: 100%; max-width: 100%; }
-                #chat-message-input { flex: 1; width: auto; }
-            }
+        /* 1. Header (Top) */
+        .hud-left-panel { 
+            width: 100%; max-width: 800px; flex: 0 0 auto; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 20px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); 
+            transform: translateY(-30px); transition: 0.4s ease; 
+        }
+        .chat-modal-overlay.active .hud-left-panel { transform: translateY(0); }
+        .chat-close-btn { background: none; border: none; color: #A0AEC0; font-size: 1.8rem; cursor: pointer; transition: 0.3s; line-height: 1; }
+        .chat-close-btn:hover { color: #F56565; transform: rotate(90deg); }
+
+        /* 2. Messages Area (Center) */
+        .chat-messages-area { 
+            width: 100%; max-width: 800px; height: 60vh; flex: 1; 
+            background: rgba(0, 0, 0, 0.2); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);
+            overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem; scroll-behavior: smooth; 
+        }
+        .chat-messages-area::-webkit-scrollbar { width: 6px; }
+        .chat-messages-area::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        
+        .msg-bubble { max-width: 80%; padding: 1rem 1.2rem; border-radius: 20px; font-size: 0.95rem; font-weight: 600; line-height: 1.4; word-wrap: break-word; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .msg-bubble.received { align-self: flex-start; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); border-bottom-left-radius: 4px; color: #EDF2F7; }
+        .msg-bubble.sent { align-self: flex-end; background: var(--primary-teal, #4FD1C5); color: #0F172A; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(79, 209, 197, 0.2); }
+        .msg-time { font-size: 0.7rem; opacity: 0.7; margin-top: 5px; display: block; text-align: right; }
+
+        /* 3. Input Area (Bottom) */
+        .hud-right-panel { 
+            width: 100%; max-width: 800px; flex: 0 0 auto; 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 20px; padding: 1rem 1.5rem; display: flex; flex-direction: row; gap: 1rem; align-items: center; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); transform: translateY(30px); transition: 0.4s ease; 
+        }
+        .chat-modal-overlay.active .hud-right-panel { transform: translateY(0); }
+        
+        #chat-message-input, #inquiry-message-input { 
+            flex: 1; padding: 1rem 1.2rem; border-radius: 15px; background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #FFF; outline: none; transition: 0.3s; font-size: 1rem;
+        }
+        #chat-message-input:focus, #inquiry-message-input:focus { border-color: var(--primary-teal, #4FD1C5); background: rgba(0, 0, 0, 0.5); }
+        
+        .chat-send-btn { background: var(--primary-teal, #4FD1C5); color: #0F172A; border: none; padding: 1rem 2rem; border-radius: 15px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+        .chat-send-btn:active { transform: translateY(2px); }
+
+        /* Mobile Adjustments */
+        @media (max-width: 900px) {
+            .chat-modal-overlay { padding: 1rem; gap: 0.8rem; justify-content: flex-start; }
+            .chat-messages-area { height: 70vh; }
+            .hud-left-panel, .hud-right-panel, .chat-messages-area { max-width: 100%; }
+            #chat-message-input, #inquiry-message-input { width: auto; }
+        }
         </style>
 
         <script>
