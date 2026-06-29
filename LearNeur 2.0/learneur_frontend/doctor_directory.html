@@ -829,9 +829,9 @@
             const TOKEN = localStorage.getItem('token');
             const CHAT_API_URL = `${API_BASE_URL}/chat`;
 
-            // 🌟 دالة توليد صورة بأول حرف من الاسم محلياً بدون إنترنت
         function getAvatarIcon(name, colorHex) {
-            const initial = name ? name.trim().charAt(0).toUpperCase() : 'D';
+            const cleanName = name ? name.replace(/^Dr\.?\s*/i, '').trim() : '';
+            const initial = cleanName ? cleanName.charAt(0).toUpperCase() : 'U';           
             const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#${colorHex}"/><text x="50" y="50" font-family="Arial" font-size="45" font-weight="bold" fill="#ffffff" text-anchor="middle" alignment-baseline="central" dominant-baseline="central">${initial}</text></svg>`;
             return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
         }
